@@ -1,0 +1,22 @@
+{"properties": [
+  {
+    "name": "Key",
+    "type": "java.lang.String",
+    "description": "A description for 'Key'"
+  },
+  {
+    "name": "SignatureAlghoritm",
+    "type": "java.lang.String",
+    "description": "A description for 'SignatureAlghoritm'"
+  },
+  {
+    "name": "DefaultTenant",
+    "type": "java.lang.String",
+    "description": "A description for 'DefaultTenant'"
+  },
+  {
+    "name": "TokenValidityMinutes",
+    "type": "java.lang.String",
+    "description": "A description for 'TokenValidityMinutes'"
+  }
+]}
