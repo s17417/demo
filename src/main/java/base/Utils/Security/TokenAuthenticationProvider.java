@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
@@ -48,7 +49,6 @@ public class TokenAuthenticationProvider implements AuthenticationProvider {
 			String tenant=tokenUtil.getTenant(token);
 			List<GrantedAuthority> userAuthoritiesForTenant=new ArrayList<>();
 			MyUser<String,List<String>> user=(MyUser<String, List<String>>) userService.loadUserByUsername(username);
-			
 			if (user.getTenantsId().containsKey(tenant) && !user.getTenantsId().isEmpty()) {
 				for(String role:user.getTenantsId().get(tenant)) 
 					userAuthoritiesForTenant.add(new SimpleGrantedAuthority("ROLE_"+role));
@@ -74,7 +74,10 @@ public class TokenAuthenticationProvider implements AuthenticationProvider {
 			logger.error("Exception : {} failed : {}", token, e.getMessage());
 			throw new BadCredentialsException(e.getMessage(),e);
 		}
+		
 	}
+	
+	
 	
 	@Override
 	public boolean supports(Class<?> authentication) {

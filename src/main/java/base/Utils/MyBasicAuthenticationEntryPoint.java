@@ -7,6 +7,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -38,7 +40,7 @@ public class MyBasicAuthenticationEntryPoint  implements AuthenticationEntryPoin
         
         body.put("timestamp", Date.from(Instant.now()));
         body.put("status", HttpServletResponse.SC_UNAUTHORIZED);
-        body.put("error", "Unauthorized");  
+        body.put("error", "Unauthorized-1");  
         body.put("message", message);
         body.put("path", request.getServletPath());
         return body;

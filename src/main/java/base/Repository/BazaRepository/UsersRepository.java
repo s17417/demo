@@ -1,18 +1,20 @@
 package base.Repository.BazaRepository;
 
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.jpa.repository.EntityGraph;
+import javax.persistence.QueryHint;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.QueryHints;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import base.Model.baza.Users;
 
 @Repository
 public interface UsersRepository extends JpaRepository<Users, String> {
-
 	
-	@EntityGraph(value = "Users.usersTenantRole")
-	public Users findByName (String name);
+	@Query("SELECT u FROM Users u LEFT JOIN FETCH u.usersTenantRole utr LEFT JOIN FETCH utr.tenant WHERE u.name=:name")
+	@QueryHints({@QueryHint(name = "org.hibernate.cacheRegion", value ="UsersQueryCache"), @QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value ="true") })
+	public Users findByName (@Param("name") String name);
 
 }

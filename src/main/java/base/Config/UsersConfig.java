@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
+import org.hibernate.cfg.Environment;
+import org.hibernate.resource.jdbc.spi.PhysicalConnectionHandlingMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -22,6 +24,8 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+
 import base.Model.baza.Role;
 import base.Model.baza.Tenant;
 import base.Model.baza.Users;
@@ -125,9 +129,16 @@ public class UsersConfig {
 
     private Properties additionalProperties() {
         Properties properties = new Properties();
+        
         properties.setProperty("hibernate.hbm2ddl.auto", "create-drop");//create-drop
         properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL8Dialect");
-           
+        properties.setProperty("hibernate.temp.use_jdbc_metadata_defaults", "false");
+        properties.put(Environment.FORMAT_SQL, true);
+	    properties.put(Environment.SHOW_SQL, true);
+	    properties.put(Environment.USE_QUERY_CACHE,  Boolean.TRUE.toString());
+	    properties.put(Environment.CONNECTION_HANDLING, PhysicalConnectionHandlingMode.DELAYED_ACQUISITION_AND_RELEASE_AFTER_TRANSACTION);
+	    properties.put(Environment.POOL_SIZE, 15);
+        
         return properties;
     }
 

@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.Basic;
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,10 +13,15 @@ import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.NaturalId;
 
 import base.Model.AbstractPersistentClasses.AbstractAuditableObject;
 
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "TenantCache")
 @Entity
 public class Tenant extends AbstractAuditableObject<String> {
 	
@@ -63,7 +69,6 @@ public class Tenant extends AbstractAuditableObject<String> {
 	private String ddlGeneration="create-drop";
 
 	public Tenant() {
-		
 	}
 	
 	/**

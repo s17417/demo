@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.persistence.Basic;
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,8 +21,11 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -29,19 +33,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import base.Model.AbstractPersistentClasses.AbstractPersistentObject;
 
-@NamedEntityGraph(name = "Users.usersTenantRole",
-attributeNodes = {
-		@NamedAttributeNode(value = "usersTenantRole", subgraph = "usersTenantRole-tenant")
-		},
-subgraphs = {
-	    @NamedSubgraph(
-	      name = "usersTenantRole-tenant",
-	      attributeNodes = {
-	        @NamedAttributeNode("tenant")
-	      }
-	    )
-	  }
-)
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "UsersCache")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
 public class Users extends AbstractPersistentObject {
@@ -56,6 +49,7 @@ public class Users extends AbstractPersistentObject {
 	@Pattern(regexp = "^[\\w\\.]*$")
 	@Column(nullable=false, unique=true, length=60)
 	@Size(min=2, max=60)
+	@NaturalId
 	private String name;
 	
 	@Basic
@@ -114,6 +108,7 @@ public class Users extends AbstractPersistentObject {
 	@Basic
 	private LocalDateTime updateTimeStamp;
 	
+	@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "UsersTenantSetCache")
 	@JsonIgnore
 	@OneToMany(mappedBy="user",
 			fetch=FetchType.LAZY,

@@ -6,12 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +25,7 @@ import base.Utils.Security.TokenAuthenticationProvider;
 import base.Utils.Security.Filters.JwtAuthenticationFilter;
 import base.Utils.Security.Filters.JwtAuthorizationFilter;
 
+@SuppressWarnings("deprecation")
 @Configuration
 @EnableWebSecurity/*(debug=true)*/
 public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
@@ -73,8 +77,13 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.authenticationProvider(tokenAuthenticationProvider).userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-		
+		}
+	
+	@Bean
+	public UserDetailsChecker jwtAuthenticationDetailsChecker() {
+		return new AccountStatusUserDetailsChecker();
 	}
+	
 	
 	@Bean
 	@Override

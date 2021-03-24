@@ -105,13 +105,11 @@ public class Controller {
 	}
 	
 	@GetMapping(value= "/users/")
-	public String helloStringos() {
-		Users u=new Users();
-		u.setName("Tomasz");
-		u.setPassword("game");
+	public String helloStringos(@RequestParam String id) {
+		
 		//uDAO.save(u);
 		
-		return "ggg";
+		return uDAO.findById(id).toString();
 		//return "hello world2";
 	}
 	

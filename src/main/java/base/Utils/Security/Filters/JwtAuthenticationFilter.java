@@ -38,6 +38,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 	        setFilterProcessesUrl("/login");
 	    }
 	
+	
+	
 	@Override
 	protected void successfulAuthentication(
 	        HttpServletRequest request,

@@ -1,5 +1,6 @@
 package base.Model.baza;
 
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,8 +12,13 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 import base.Model.AbstractPersistentClasses.AbstractAuditableObject;
 
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE,  region = "UsersTenantRoleCache")
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = { "tenant_id","user_id","role" }))
 public class UsersTenantRole extends AbstractAuditableObject<String> {
@@ -22,10 +28,10 @@ public class UsersTenantRole extends AbstractAuditableObject<String> {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@ManyToOne(fetch=FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+	@ManyToOne(fetch=FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
 	private Users user;
 	
-	@ManyToOne(fetch=FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+	@ManyToOne(fetch=FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
 	private Tenant tenant;
 	
 	@Enumerated(EnumType.STRING)
@@ -92,7 +98,7 @@ public class UsersTenantRole extends AbstractAuditableObject<String> {
 
 	@Override
 	public String toString() {
-		return "UsersTenantRole [user=" + user + ", tenant=" + tenant + ", role=" + role + "]";
+		return "UsersTenantRole [role=" + role + "]";
 	}
 
 	
