@@ -138,7 +138,10 @@ public class UsersConfig {
 	    properties.put(Environment.USE_QUERY_CACHE,  Boolean.TRUE.toString());
 	    properties.put(Environment.CONNECTION_HANDLING, PhysicalConnectionHandlingMode.DELAYED_ACQUISITION_AND_RELEASE_AFTER_TRANSACTION);
 	    properties.put(Environment.POOL_SIZE, 15);
-        
+	    //properties.put(Environment.AUTOCOMMIT, true);
+
+	    //properties.put(Environment.C3P0_MIN_SIZE,1);
+	    //properties.put(Environment.C3P0_MAX_SIZE,10);
         return properties;
     }
 

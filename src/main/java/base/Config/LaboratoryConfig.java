@@ -9,6 +9,7 @@ import javax.sql.DataSource;
 import org.hibernate.MultiTenancyStrategy;
 import org.hibernate.cfg.Environment;
 import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
+import org.hibernate.resource.jdbc.spi.PhysicalConnectionHandlingMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
@@ -80,7 +81,7 @@ public class LaboratoryConfig {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setUrl("jdbc:mysql://localhost:3306/");
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        //dataSource.setUrl("jdbc:mysql://localhost:3306/default_schema1");
+        dataSource.setUrl("jdbc:mysql://localhost:3306/empty"); //uncomment on production
         dataSource.setUsername("root");
         dataSource.setPassword("root");
         
@@ -98,15 +99,20 @@ public class LaboratoryConfig {
 	
 	  private Properties additionalProperties() {
 	        Properties properties = new Properties();
-	        properties.setProperty(Environment.HBM2DDL_AUTO, "none");
+	        properties.setProperty(Environment.HBM2DDL_AUTO, "create-drop");
 	        properties.setProperty(Environment.DIALECT, "org.hibernate.dialect.MySQL8Dialect");
 	        properties.setProperty("hibernate.temp.use_jdbc_metadata_defaults", "false");
 	        properties.put(Environment.MULTI_TENANT, MultiTenancyStrategy.DATABASE);
 	        properties.put(Environment.MULTI_TENANT_CONNECTION_PROVIDER, dataSourceBasedMultiTenantConnectionProviderImpl);
 	        properties.put(Environment.MULTI_TENANT_IDENTIFIER_RESOLVER, currentTenantIdentifierResolverImpl);
-	       // properties.put(Environment.FORMAT_SQL, true);
-	       // properties.put(Environment.SHOW_SQL, true);
-	        
+	        properties.put(Environment.FORMAT_SQL, true);
+	        properties.put(Environment.SHOW_SQL, true);
+		    properties.put(Environment.CONNECTION_HANDLING, PhysicalConnectionHandlingMode.DELAYED_ACQUISITION_AND_RELEASE_AFTER_TRANSACTION);
+		    properties.put(Environment.POOL_SIZE, 15);
+		    //properties.put(Environment.USE_QUERY_CACHE,  Boolean.TRUE.toString());
+
+		    //properties.put(Environment.AUTOCOMMIT, true);
+
 	        return properties;
 	    }
 

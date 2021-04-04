@@ -7,6 +7,7 @@ import javax.validation.constraints.AssertTrue;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
+import base.Model.baza.Role;
 import base.Model.baza.Tenant;
 import base.Model.baza.Users;
 import base.Model.baza.UsersTenantRole;
@@ -21,7 +22,7 @@ public class UsersTenantRoleTest {
 		Tenant t=new Tenant();
 		Tenant t1=new Tenant();
 		t1.setName("t1");
-		UsersTenantRole usr= new UsersTenantRole(u,t);
+		UsersTenantRole usr= new UsersTenantRole(u,t, Role.BASIC_USER);
 		
 		Assert.assertTrue(usr.getTenant().equals(t));
 		Assert.assertTrue(usr.getUser().equals(u));
@@ -53,6 +54,7 @@ public class UsersTenantRoleTest {
 		usr.setUser(u1);
 		t1.removeUser(u1);
 		Assert.assertTrue(!t1.getUsersTenantRole().stream().anyMatch(e -> e.getUser().equals(u1))&&!t1.getUsersTenantRole().stream().anyMatch( e-> e.getUser().equals(u1)));
+	
 	}
 	
 	/**

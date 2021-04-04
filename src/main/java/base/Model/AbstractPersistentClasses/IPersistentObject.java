@@ -6,7 +6,7 @@ public interface IPersistentObject {
 
 	String getId();
 
-	void setId(String id);
+	public void setId(String id);
 
 	LocalDateTime getVersionTimestamp();
 

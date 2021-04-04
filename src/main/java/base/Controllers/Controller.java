@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,7 +27,10 @@ import base.DemoApplication;
 import base.DTO.MyUserImpl;
 import base.Model.baza.Users;
 import base.Model.baza.UsersTenantRole;
+import base.Model.baza1.LabQualityControl;
+import base.Model.baza1.LaboratoryTest;
 import base.Model.baza1.Patient;
+import base.Model.baza1.PatientOrder;
 import base.Repository.Baza1Repository.PatientRepository;
 import base.Repository.BazaRepository.UsersRepository;
 import base.Services.baza.UserDetailServiceImpl;
@@ -50,10 +54,15 @@ public class Controller {
 	@GetMapping(value= "/", produces=MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public List<Patient> helloString() {
-		//Patient p = new Patient();
-		//p.setName("lolek");
-		//p.setSurname("lolko");
-		//pDAO.save(p);
+		Patient p = new Patient();
+		p.setName("lolek");
+		p.setSurname("lolko");
+		
+		var labtest=new LaboratoryTest();
+		var labq=new PatientOrder(p,null,null);
+		labq.addLaboratoryTest(labtest);
+		pDAO.save(p);
+		//labtest.addQualityControlResult(null);
 		return pDAO.findAll();
 	}
 	@GetMapping(value= "/tenant/")

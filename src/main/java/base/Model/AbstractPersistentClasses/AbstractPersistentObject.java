@@ -3,6 +3,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -21,6 +23,7 @@ public abstract class AbstractPersistentObject implements IPersistentObject, Ser
 
 	@Id
 	@Column(length=60)
+	@Access(AccessType.PROPERTY)
 	private String Id=IdGenerator.getId().toString();
 	
 	@Version

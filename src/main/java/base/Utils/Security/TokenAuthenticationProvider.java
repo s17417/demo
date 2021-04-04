@@ -55,7 +55,13 @@ public class TokenAuthenticationProvider implements AuthenticationProvider {
 			} else
 				userAuthoritiesForTenant.add(new SimpleGrantedAuthority("ROLE_"+Role.BASIC_USER.name()));
 			
-			return new JwtAuthenticationToken(userAuthoritiesForTenant, tokenUtil.refreshTokenAtHalfTime(token), tenant, user, user.getPassword());
+			return new JwtAuthenticationToken(
+					userAuthoritiesForTenant,
+					tokenUtil.refreshTokenAtHalfTime(token),
+					tenant,
+					user,
+					user.getPassword()
+					);
 		}
 		
 		catch (UsernameNotFoundException e) {

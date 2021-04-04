@@ -1,21 +1,19 @@
 package base.Model.baza1;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 
 import org.hibernate.envers.Audited;
-import org.hibernate.envers.RelationTargetAuditMode;
-import org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import base.Model.AbstractPersistentClasses.AbstractAuditableObject;
-import base.Model.AbstractPersistentClasses.AbstractPersistentObject;
 
 @Entity
 @Audited
@@ -26,13 +24,21 @@ public class Patient extends AbstractAuditableObject<String> {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	 
 
-	//@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
 	@Basic
 	private String name;
 	
 	@Basic
 	private String surname;
+	
+	@JsonIgnore
+	@OneToMany(
+			cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REMOVE},
+			mappedBy = "patient"//,
+			//orphanRemoval = true
+			)
+	private Set<PatientOrder> patientOrders = new HashSet<>();
 	
 	public Patient() {
 		
@@ -49,6 +55,15 @@ public class Patient extends AbstractAuditableObject<String> {
 	}
 	public void setSurname(String surname) {
 		this.surname = surname;
+	}
+
+	public Set<PatientOrder> getPatientOrders() {
+		return patientOrders;
+	}
+
+	public void setPatientOrders(Set<PatientOrder> patientOrders) {
+		this.patientOrders.clear();
+		this.patientOrders.addAll(patientOrders);
 	}
 
 	@Override
