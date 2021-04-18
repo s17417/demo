@@ -34,7 +34,7 @@ public class LaboratoryTest extends AbstractAuditableObject<String> {
 			fetch = FetchType.LAZY,
 			mappedBy = "laboratoryTest"
 			)
-	private Set<LabTestOrder> labTestOrder = new HashSet<>();
+	private Set<LabTestOrder<?>> labTestOrder = new HashSet<>();
 	
 	@OneToMany(
 			cascade = {
@@ -47,29 +47,25 @@ public class LaboratoryTest extends AbstractAuditableObject<String> {
 			)
 	private Set<Method> methods = new HashSet<>();
 	
-	public Set<LabTestOrder> getLabTestOrder() {
+	public Set<LabTestOrder<?>> getLabTestOrder() {
 		return labTestOrder;
 	}
 
-	protected void setLabTestOrder(Set<LabTestOrder> labTestOrder) {
+	protected void setLabTestOrder(Set<LabTestOrder<?>> labTestOrder) {
 		this.labTestOrder.clear();
 		this.labTestOrder.addAll(labTestOrder);
 	}
 	
-	public OrderResult addPatientOrder(PatientOrder patientOrder) {
-		return new OrderResult(this, patientOrder);	
+	public OrderResult addPatientMethodResult(@NotNull @Valid PatientOrder patientOrder) {
+		return patientOrder.addMethodResult(this);	
 	}
 	
-	public LabQualityControlResult addQualityControlResult(@NotNull @Valid LabQualityControl labQualityControl) {
-		return new LabQualityControlResult(this, labQualityControl);
+	public LabQualityControlResult addControlMethodResult(@NotNull @Valid LabQualityControl labQualityControl, @Valid LabQualityControlResult parentTargetValue) {
+		return labQualityControl.addMethodControlResult(this, parentTargetValue);
 	}
 	
-	public LabQualityControlResult addQualityControlResult(@NotNull @Valid LabQualityControl labQualityControl, @NotNull @Valid LabQualityControlResult parentTargetValue) {
-		return new LabQualityControlResult(this, labQualityControl, parentTargetValue);
-	}
-	
-	public LabQualityControlResult addQualityControlTargetValue(@NotNull @Valid LabQualityControl labQualityControl) {
-		return new LabQualityControlResult(this, labQualityControl, true);
+	public LabQualityControlResult addControlMethodTargetValue(@NotNull @Valid LabQualityControl labQualityControl) {
+		return labQualityControl.addMethodControlTargetValue(this);
 	}
 
 	public Set<Method> getMethods() {

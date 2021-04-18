@@ -16,7 +16,7 @@ import org.hibernate.envers.Audited;
 @Entity
 @Audited
 @Check(constraints = "(targetValue=TRUE AND parentTargetValue_Id=NULL) OR (targetValue=FALSE)")
-public class LabQualityControlResult extends LabTestOrder {
+public class LabQualityControlResult extends LabTestOrder<LabQualityControl> {
 
 	/**
 	 * 
@@ -38,37 +38,38 @@ public class LabQualityControlResult extends LabTestOrder {
 			fetch = FetchType.LAZY
 			)
 	@JoinColumn(nullable=false)
-	private LabQualityControl labQualityControl;
+	private LabQualityControl order;
 	
 	protected LabQualityControlResult() {
 		super();
 	}
 
-	public LabQualityControlResult(@NotNull @Valid LaboratoryTest laboratoryTest, @NotNull @Valid LabQualityControl labQualityControl) {
+	protected LabQualityControlResult(@NotNull @Valid LaboratoryTest laboratoryTest, @NotNull @Valid LabQualityControl labQualityControl) {
 		super(laboratoryTest);
-		this.setLabQualityControl(labQualityControl);
+		this.setOrder(labQualityControl);
 	}
 	
-	public LabQualityControlResult(@NotNull @Valid LaboratoryTest laboratoryTest, @NotNull @Valid LabQualityControl labQualityControl, @NotNull @Valid LabQualityControlResult parentTargetValue) {
+	/*protected LabQualityControlResult(@NotNull @Valid LaboratoryTest laboratoryTest, @NotNull @Valid LabQualityControl labQualityControl, @NotNull @Valid LabQualityControlResult parentTargetValue) {
 		super(laboratoryTest);
-		this.setLabQualityControl(labQualityControl);
+		this.setOrder(labQualityControl);
 		this.setParentTargetValue(parentTargetValue);
 	}
 	
-	public LabQualityControlResult(@NotNull @Valid LaboratoryTest laboratoryTest, @NotNull @Valid LabQualityControl labQualityControl, @NotNull Boolean targetValue) {
+	protected LabQualityControlResult(@NotNull @Valid LaboratoryTest laboratoryTest, @NotNull @Valid LabQualityControl labQualityControl, @NotNull Boolean targetValue) {
 		super(laboratoryTest);
-		this.setLabQualityControl(labQualityControl);
+		this.setOrder(labQualityControl);
 		this.setTargetValue(targetValue);
+	}*/
+	
+	public LabQualityControl getOrder() {
+		return order;
 	}
 	
-	public LabQualityControl getLabQualityControl() {
-		return labQualityControl;
-	}
-
-	protected void setLabQualityControl(@NotNull @Valid LabQualityControl labQualityControl) {
-		if (labQualityControl == null) return;
-		this.labQualityControl = labQualityControl;
-		labQualityControl.getLabQualityControlResults().add(this);
+	@Override
+	protected void setOrder(@NotNull @Valid LabQualityControl order) {
+		if (order == null) return;
+		this.order = order;
+		order.getLabTestOrders().add(this);	
 	}
 
 	public Boolean getTargetValue() {
@@ -86,5 +87,5 @@ public class LabQualityControlResult extends LabTestOrder {
 	public void setParentTargetValue(LabQualityControlResult parentTargetValue) {
 		this.parentTargetValue = parentTargetValue;
 	}
-
+	
 }

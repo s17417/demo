@@ -29,8 +29,10 @@ import base.Model.baza.Users;
 import base.Model.baza.UsersTenantRole;
 import base.Model.baza1.LabQualityControl;
 import base.Model.baza1.LaboratoryTest;
+import base.Model.baza1.NumberAnalyteResult;
 import base.Model.baza1.Patient;
 import base.Model.baza1.PatientOrder;
+import base.Model.baza1.ResultType;
 import base.Repository.Baza1Repository.PatientRepository;
 import base.Repository.BazaRepository.UsersRepository;
 import base.Services.baza.UserDetailServiceImpl;
@@ -60,7 +62,7 @@ public class Controller {
 		
 		var labtest=new LaboratoryTest();
 		var labq=new PatientOrder(p,null,null);
-		labq.addLaboratoryTest(labtest);
+		labq.addMethodResult(labtest);
 		pDAO.save(p);
 		//labtest.addQualityControlResult(null);
 		return pDAO.findAll();

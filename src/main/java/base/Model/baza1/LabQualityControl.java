@@ -13,7 +13,7 @@ import org.hibernate.envers.Audited;
 
 @Entity
 @Audited
-public class LabQualityControl extends AbstractOrder {
+public class LabQualityControl extends AbstractOrder<LabQualityControlResult> {
 
 	/**
 	 * 
@@ -22,35 +22,35 @@ public class LabQualityControl extends AbstractOrder {
 	
 	@OneToMany(
 			cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
-			mappedBy = "labQualityControl"
+			mappedBy = "order"
 			)
-	private Set<LabQualityControlResult> labQualityControlResults = new HashSet<>();
+	private Set<LabQualityControlResult> labTestOrders = new HashSet<>();
 	
-	public Set<LabQualityControlResult> getLabQualityControlResults() {
-		return labQualityControlResults;
+	public Set<LabQualityControlResult> getLabTestOrders() {
+		return labTestOrders;
 	}
 
-	protected void setLabQualityControlResults(Set<LabQualityControlResult> labQualityControlResults) {
-		this.labQualityControlResults.clear();
-		this.labQualityControlResults.addAll(labQualityControlResults);
+	protected void setLabTestOrders(Set<LabQualityControlResult> getLabTestOrders) {
+		this.labTestOrders.clear();
+		this.labTestOrders.addAll(getLabTestOrders);
 	}
 
-	public LabQualityControlResult addQualityControlResult(@NotNull @Valid LaboratoryTest laboratoryTest) {
-		return new LabQualityControlResult(laboratoryTest, this);
+	@Override
+	protected LabQualityControlResult createLabTestOrder(LaboratoryTest laboratoryTest) {
+		return new LabQualityControlResult(laboratoryTest,this);
 	}
 	
-	public LabQualityControlResult addQualityControlResult(@NotNull @Valid LaboratoryTest laboratoryTest, @NotNull @Valid LabQualityControlResult parentTargetValue) {
-		return new LabQualityControlResult(laboratoryTest, this, parentTargetValue);
+	public LabQualityControlResult addMethodControlResult(@NotNull @Valid LaboratoryTest laboratoryTest, @Valid LabQualityControlResult parentTargetValue) {
+		var lab=createLabTestOrder(laboratoryTest);
+		if (parentTargetValue!=null)
+			lab.setParentTargetValue(parentTargetValue);
+		return lab;
 	}
 	
-	public LabQualityControlResult addQualityControlTargetValue(@NotNull @Valid LaboratoryTest laboratoryTest) {
-		return new LabQualityControlResult(laboratoryTest, this, true);
+	public LabQualityControlResult addMethodControlTargetValue(@NotNull @Valid LaboratoryTest laboratoryTest) {
+		var lab=createLabTestOrder(laboratoryTest);
+		lab.setTargetValue(true);
+		return lab;
 	}
-	
-	
-	/*public OrderResult setLabTestTarget(LaboratoryTest laboratoryTest) {
-		return new OrderResult(laboratoryTest, this);
-	}*/
-	
 
 }

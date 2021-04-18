@@ -13,7 +13,7 @@ import org.hibernate.envers.Audited;
 
 @Audited
 @Entity
-public class OrderResult extends LabTestOrder {
+public class OrderResult extends LabTestOrder<PatientOrder> {
 
 	/**
 	 * 
@@ -26,25 +26,25 @@ public class OrderResult extends LabTestOrder {
 			cascade = {CascadeType.PERSIST, CascadeType.MERGE}
 			)
 	@JoinColumn(nullable = false)
-	private PatientOrder patientOrder;
+	private PatientOrder order;
 
-	protected OrderResult() {
+	public OrderResult() {
 		super();
 	}
 
 	public OrderResult(LaboratoryTest laboratoryTest, PatientOrder patientOrder) {
 		super(laboratoryTest);
-		setPatientOrder(patientOrder);
+		setOrder(patientOrder);
 	}
 
-	public PatientOrder getPatientOrder() {
-		return patientOrder;
+	public PatientOrder getOrder() {
+		return order;
 	}
 
-	protected void setPatientOrder(@NotNull @Valid PatientOrder patientOrder) {
-		if (patientOrder == null) return;
-		this.patientOrder = patientOrder;
-		patientOrder.getOrderResults().add(this);
+	protected void setOrder(@NotNull @Valid PatientOrder order) {
+		if (order == null) return;
+		this.order = order;
+		order.getLabTestOrders().add(this);
 		
 	}
 	

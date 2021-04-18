@@ -1,10 +1,16 @@
 package base.Model.baza1;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -22,6 +28,10 @@ public class Method extends AbstractActiveObject<String> {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	@Enumerated
+	@Column(nullable=false, updatable=false)
+	private ResultType resultType;
 	
 	@Valid
 	@NotNull
@@ -41,7 +51,17 @@ public class Method extends AbstractActiveObject<String> {
 	@JoinColumn(nullable=false)
 	private LaboratoryTest laboratoryTest;
 	
-	protected Method() {
+	@OneToMany(
+			cascade = {
+					CascadeType.MERGE,
+					CascadeType.PERSIST,
+					CascadeType.REMOVE
+					},
+			fetch = FetchType.LAZY
+			)
+	private Set<AbstractAnalyteResult<?>> analyteResult = new HashSet<>();
+	
+	public Method() {
 		super();
 	}
 	
@@ -49,6 +69,14 @@ public class Method extends AbstractActiveObject<String> {
 		super();
 		this.setAnalyte(analyte);
 		this.setLaboratoryTest(laboratoryTest);
+	}
+	
+	public ResultType getResultType() {
+		return resultType;
+	}
+
+	public void setResultType(@NotNull ResultType resultType) {
+		this.resultType = resultType;
 	}
 
 	public Analyte getAnalyte() {
@@ -70,4 +98,15 @@ public class Method extends AbstractActiveObject<String> {
 		this.laboratoryTest = laboratoryTest;
 		this.laboratoryTest.getMethods().add(this);
 	}
+
+	public Set<AbstractAnalyteResult<?>> getAnalyteResult() {
+		return analyteResult;
+	}
+
+	protected void setAnalyteResult(Set<AbstractAnalyteResult<?>> analyteResult) {
+		this.analyteResult.clear();
+		this.analyteResult.addAll(analyteResult);
+	}
+	
+	
 }

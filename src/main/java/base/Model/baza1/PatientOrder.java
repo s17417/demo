@@ -16,7 +16,7 @@ import org.hibernate.envers.Audited;
 
 @Entity
 @Audited
-public class PatientOrder extends AbstractOrder {
+public class PatientOrder extends AbstractOrder<OrderResult> {
 
 	/**
 	 * 
@@ -39,9 +39,9 @@ public class PatientOrder extends AbstractOrder {
 
 	@OneToMany(
 			cascade = {CascadeType.PERSIST, CascadeType.MERGE,CascadeType.REMOVE},
-			mappedBy = "patientOrder"
+			mappedBy = "order"
 			)
-	private Set<OrderResult> orderResults = new HashSet<>();
+	private Set<OrderResult> labTestOrders = new HashSet<>();
 	
 	protected PatientOrder() {
 		
@@ -107,18 +107,22 @@ public class PatientOrder extends AbstractOrder {
 		}
 	}
 
-	public Set<OrderResult> getOrderResults() {
-		return orderResults;
+	public Set<OrderResult> getLabTestOrders() {
+		return labTestOrders;
 	}
 
-	protected void setOrderResults(Set<OrderResult> orderResults) {
-		this.orderResults.clear();
-		this.orderResults.addAll(orderResults);
+	protected void setLabTestOrders(Set<OrderResult> labTestOrders) {
+		this.labTestOrders.clear();
+		this.labTestOrders.addAll(labTestOrders);
 	}
 	
-	public OrderResult addLaboratoryTest(LaboratoryTest laboratoryTest) {
+	@Override
+	protected OrderResult createLabTestOrder(LaboratoryTest laboratoryTest) {
 		return new OrderResult(laboratoryTest, this);
 	}
 	
+	public OrderResult addMethodResult(LaboratoryTest laboratoryTest) {
+		return createLabTestOrder(laboratoryTest);
+	}
 	
 }
