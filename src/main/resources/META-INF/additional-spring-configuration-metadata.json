@@ -18,5 +18,10 @@
     "name": "TokenValidityMinutes",
     "type": "java.lang.String",
     "description": "A description for 'TokenValidityMinutes'"
+  },
+  {
+    "name": "EmailActivationTokenValidityMinutes",
+    "type": "java.lang.String",
+    "description": "A description for 'EmailActivationTokenValidityMinutes'"
   }
 ]}

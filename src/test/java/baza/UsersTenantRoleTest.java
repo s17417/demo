@@ -18,7 +18,7 @@ public class UsersTenantRoleTest {
 	public void testBidirectionalUserTenantRole_User() {
 		Users u = new Users();
 		Users u1=new Users();
-		u1.setName("u1");
+		u1.setLogin("u1");
 		Tenant t=new Tenant();
 		Tenant t1=new Tenant();
 		t1.setName("t1");
