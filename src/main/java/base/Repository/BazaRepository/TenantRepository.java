@@ -16,7 +16,4 @@ public interface TenantRepository extends JpaRepository<Tenant, String> {
 	@QueryHints({@QueryHint(name = "org.hibernate.cacheRegion", value ="TenantCache"), @QueryHint(name = "org.hibernate.cacheable", value ="true") })
 	public Tenant findByName(String name);
 
-
-	
-	
 }

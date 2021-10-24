@@ -13,8 +13,8 @@ import base.Model.baza.Users;
 @Repository
 public interface UsersRepository extends JpaRepository<Users, String> {
 	
-	@Query("SELECT u FROM Users u LEFT JOIN FETCH u.usersTenantRole utr LEFT JOIN FETCH utr.tenant WHERE u.name=:name")
+	@Query("SELECT u FROM Users u LEFT JOIN FETCH u.usersTenantRole utr LEFT JOIN FETCH utr.tenant WHERE u.email=:email")
 	@QueryHints({@QueryHint(name = "org.hibernate.cacheRegion", value ="UsersQueryCache"), @QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value ="true") })
-	public Users findByName (@Param("name") String name);
+	public Users findByEmail (@Param("email") String email);
 
 }

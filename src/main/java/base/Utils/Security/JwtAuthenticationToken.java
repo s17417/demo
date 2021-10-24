@@ -28,7 +28,7 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken implemen
 	 * @param token
 	 */
 	public JwtAuthenticationToken(String token) {
-		super(new ArrayList<GrantedAuthority>(Arrays.asList(new SimpleGrantedAuthority("ROLE_"+Role.BASIC_USER))));
+		super(new ArrayList<GrantedAuthority>(Arrays.asList(new SimpleGrantedAuthority(Role.BASIC_USER.toString()))));
 		this.token = token;
 	}
 	

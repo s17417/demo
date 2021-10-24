@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import base.Model.baza.Users;
 import base.Utils.Security.TokenConstant;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -33,17 +34,30 @@ public class JWTUtilImpl implements IJWTUtil {
 	
 	private Long tokenValidityMinutes;
 	
+	private Long emailActivationTokenValidityMinutes;
+	
 	private final Key key;
 	
+	private final Key emailActivationKey;
+	
 	@Autowired
-	public JWTUtilImpl(@Value("${Key}") String keyValue,
+	public JWTUtilImpl(
+			@Value("${Key}") String keyValue,
+			@Value("${KeyEmailActivation}") String emailKeyValue,
 			@Value("${SignatureAlghoritm}") String signatureAlghoritm,
-			@Value("${TokenValidityMinutes}") Long tokenValidityMinutes
+			@Value("${TokenValidityMinutes}") Long tokenValidityMinutes,
+			@Value("${EmailActivationTokenValidityMinutes}") Long emailActivationTokenValidityMinutes
 			) {
 		this.signatureAlghoritm = signatureAlghoritm;
 		this.tokenValidityMinutes = tokenValidityMinutes;
+		this.emailActivationTokenValidityMinutes=emailActivationTokenValidityMinutes;
 		this.key = new SecretKeySpec(
 				keyValue.getBytes(),
+				SignatureAlgorithm.forName(signatureAlghoritm).getJcaName()
+				);
+		
+		this.emailActivationKey = new SecretKeySpec(
+				emailKeyValue.getBytes(),
 				SignatureAlgorithm.forName(signatureAlghoritm).getJcaName()
 				);
 		
@@ -77,6 +91,29 @@ public class JWTUtilImpl implements IJWTUtil {
 		return Jwts
 				.parser()
 				.setSigningKey(key)
+				.parseClaimsJws(token)
+				.getBody();
+	}
+	
+	/**
+	 * Gets email activation claims from token.
+	 * <br> While reading a token a validation is performed. If token is malformed, expired, signature is changed or not present etc. one of the exception is thrown.
+	 * @throws UnsupportedJwtException if the claimsJws argument does not represent an Claims JWS
+	 * @throws MalformedJwtException if the claimsJws string is not a valid JWS
+	 * @throws SignatureException if the claimsJws JWS signature validation fails
+	 * @throws ExpiredJwtException if the specified JWT is a Claims JWT and the Claims has an expiration timebefore the time this method is invoked.
+	 * @throws IllegalArgumentException - if the claims Jws string is null or empty or only whitespace
+	 */
+	@Override
+	public Claims getEmailActivationClaims(String token)
+			throws ExpiredJwtException,
+			UnsupportedJwtException,
+			MalformedJwtException,
+			SignatureException, 
+			IllegalArgumentException {
+		return Jwts
+				.parser()
+				.setSigningKey(emailActivationKey)
 				.parseClaimsJws(token)
 				.getBody();
 	}
@@ -184,6 +221,23 @@ public class JWTUtilImpl implements IJWTUtil {
 	}
 	
 	/**
+	 * GeneratesToken with Subject as user ID from {@link UserDetails}.
+	 * @throws NullPointerException if user is null.
+	 */
+	@Override
+	public String generateEmailActivationToken(Users user) throws InvalidKeyException, NullPointerException {
+		if (user==null) throw new NullPointerException("User can't be null");
+		return
+				Jwts.builder()
+				.setSubject(user.getId())
+				.setIssuedAt(Date.from(Instant.now()))
+				.setExpiration(Date.from(Instant.now().plusSeconds(emailActivationTokenValidityMinutes)))
+				.signWith(SignatureAlgorithm.forName(signatureAlghoritm),emailActivationKey).compact();
+	}
+	
+	
+	
+	/**
 	 *  GeneratesToken from predefined {@link Claims}
 	 * @throws NullPointerException if claims is null.
 	 */
@@ -199,7 +253,9 @@ public class JWTUtilImpl implements IJWTUtil {
 				.setIssuedAt(Date.from(Instant.now()))
 				.setExpiration(Date.from(Instant.now().plusSeconds(tokenValidityMinutes)))
 				.signWith(SignatureAlgorithm.forName(signatureAlghoritm),key).compact();
-	}	
+	}
+	
+	
 	
 	
 	/**
@@ -232,4 +288,5 @@ public class JWTUtilImpl implements IJWTUtil {
 	public static void main(String args[]) {
 			
 	}
+
 }

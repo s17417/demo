@@ -24,14 +24,14 @@ import io.jsonwebtoken.JwtException;
 
 
 @Component
-@Order(1)
+//@Order(1)
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 	
 	private Logger logger=LoggerFactory.getLogger(getClass());
 	
 	@Autowired
 	public JwtAuthorizationFilter(@Lazy AuthenticationManager authenticationManagerBean,@Lazy AuthenticationEntryPoint authenticationEntryPoint) {
-		super(authenticationManagerBean,authenticationEntryPoint);	
+		super(authenticationManagerBean,authenticationEntryPoint);
 	}
 	
 	public JwtAuthenticationToken parseToken(HttpServletRequest request) throws JwtException{
@@ -46,17 +46,23 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-		
+	
 		try {
-			Authentication authResult=this.getAuthenticationManager().authenticate(parseToken(request));
-			this.onSuccessfulAuthentication(request, response, authResult);
+			onSuccessfulAuthentication(
+					request,
+					response, 
+					this.getAuthenticationManager().authenticate(parseToken(request))
+					);
 			chain.doFilter(request, response);
 			
 		} catch (AuthenticationException e) {
 			this.getAuthenticationEntryPoint().commence(request, response, e);
 			this.onUnsuccessfulAuthentication(request, response, e);
 			return;
-		}		
+		} catch (NullPointerException e) {
+			SecurityContextHolder.clearContext();
+			chain.doFilter(request, response); 
+		}
 	}
 
 	@Override

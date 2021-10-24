@@ -3,7 +3,13 @@ package base.Utils.Jwt;
 import java.security.InvalidKeyException;
 
 import org.springframework.security.core.userdetails.UserDetails;
+
+import base.Model.baza.Users;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
 
 /**
  * This interface adds an utility for JWT (Json Web Token) in form of signed token (JWS). Declares most method's for implementation token with multi-tenant database.
@@ -87,5 +93,24 @@ public interface IJWTUtil {
 	 * @throws InvalidKeyException when key for signing is invalid
 	 */
 	String refreshTokenAtHalfTime(String token) throws InvalidKeyException, NullPointerException;
+	
+	
+	/**
+	 * GeneratesToken with Subject as user ID from {@link UserDetails} .
+	 * @throws NullPointerException if user is null.
+	 */
+	String generateEmailActivationToken(Users user) throws InvalidKeyException, NullPointerException;
+
+	/**
+	 * Gets email activation claims from token.
+	 * <br> While reading a token a validation is performed. If token is malformed, expired, signature is changed or not present etc. one of the exception is thrown.
+	 * @throws UnsupportedJwtException if the claimsJws argument does not represent an Claims JWS
+	 * @throws MalformedJwtException if the claimsJws string is not a valid JWS
+	 * @throws SignatureException if the claimsJws JWS signature validation fails
+	 * @throws ExpiredJwtException if the specified JWT is a Claims JWT and the Claims has an expiration timebefore the time this method is invoked.
+	 * @throws IllegalArgumentException - if the claims Jws string is null or empty or only whitespace
+	 */
+	Claims getEmailActivationClaims(String token) throws ExpiredJwtException, UnsupportedJwtException,
+			MalformedJwtException, SignatureException, IllegalArgumentException;
 
 }

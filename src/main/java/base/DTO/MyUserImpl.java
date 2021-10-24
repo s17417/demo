@@ -12,7 +12,7 @@ import org.springframework.security.core.userdetails.User;
 
 /**
  * Implementation of Userdetails in form of subclass of class User with
- * additional implemented interface {@link MyUser}, addiotional field and methods
+ * additional implemented interface {@link MyUser}, additional field and methods
  * defining collection of tenants id.
  * @author Tomasz Poławski
  */

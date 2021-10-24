@@ -9,9 +9,13 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.Cache;
@@ -30,10 +34,12 @@ public class Tenant extends AbstractAuditableObject<String> {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	@NotNull
 	@Basic
 	@Column(nullable=false, unique=true, length=60)
 	@Size(min=2, max=60)
-	@NaturalId
+	@NaturalId(mutable=true)
+	@Pattern(regexp = "(^[a-zA-Z0-9]([\\w]|[-]){0,58}[a-zA-Z0-9]$)", message="can contain 'aA-zZ', '0-9' an special characters '_-' but not on the begining and ending of the word ")
 	private String name;
 	
 	@Basic
@@ -42,13 +48,20 @@ public class Tenant extends AbstractAuditableObject<String> {
 	
 	@Basic
 	@Column(nullable=false, length=180)
-	private String sqlServerUrl="jdbc:mysql://localhost:3306";
+	private String sqlServerUrl="jdbc:mysql://vifon41.hopto.org:3306";
 	
 	@OneToMany(mappedBy="tenant",
 			fetch=FetchType.LAZY, 
 			cascade = {CascadeType.REMOVE,CascadeType.PERSIST, CascadeType.MERGE},
 			orphanRemoval = true)
 	private Set<UsersTenantRole> usersTenantRole=new HashSet<>();
+	
+	@ManyToMany
+	@JoinTable(name = "TenantInvitation",
+			joinColumns = @JoinColumn(name= "tenantId"),
+			inverseJoinColumns = @JoinColumn(name="invitationId")
+	)
+	private Set<Invitation> invitation= new HashSet<>();
 	
 	@Basic
 	@Column(nullable=false, length=60)
@@ -119,7 +132,7 @@ public class Tenant extends AbstractAuditableObject<String> {
 	@Basic
 	@Transient
 	public String getDatabaseFullUrl() {
-		return sqlServerUrl+"/"+this.name;
+		return sqlServerUrl+"/"+this.databseUserName;
 	}
 
 	
@@ -195,6 +208,27 @@ public class Tenant extends AbstractAuditableObject<String> {
 							usr.setTenant(null);
 							}
 			);
+	}
+	
+	
+
+	public Set<Invitation> getInvitation() {
+		return invitation;
+	}
+
+	public void setInvitation(Set<Invitation> invitation) {
+		this.invitation.clear();
+		this.invitation.addAll(invitation);
+	}
+	
+	public void addInvitation(@NotNull Invitation invitation) throws NullPointerException {
+		invitation.getTenant().add(this);
+		getInvitation().add(invitation);
+	}
+	
+	public void removeInvitation(@NotNull Invitation invitation) throws NullPointerException {
+		this.getInvitation().remove(invitation);
+		invitation.getTenant().remove(this);
 	}
 
 	public String getName() {

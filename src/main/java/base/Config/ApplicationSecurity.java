@@ -21,13 +21,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import base.Repository.BazaRepository.UsersRepository;
+import base.Utils.Security.TenantTokenAuthenticationProvider;
 import base.Utils.Security.TokenAuthenticationProvider;
 import base.Utils.Security.Filters.JwtAuthenticationFilter;
 import base.Utils.Security.Filters.JwtAuthorizationFilter;
+import base.Utils.Security.Filters.JwtTenantAuthenticationFilter;
 
 @SuppressWarnings("deprecation")
 @Configuration
-@EnableWebSecurity/*(debug=true)*/
+@EnableWebSecurity(debug=true)
 public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
@@ -49,20 +51,41 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 	private TokenAuthenticationProvider tokenAuthenticationProvider;
 	
 	@Autowired
+	private TenantTokenAuthenticationProvider tenantTokenAuthenticationProvider;
+	
+	@Autowired
+	private JwtTenantAuthenticationFilter jwtTenantAuthenticationFilter;
+	
+	@Autowired
 	JwtAuthenticationFilter  jwtAuthenticationFilter;
 	
     @Override
     public void configure(HttpSecurity web) throws Exception {
-    	web.cors().and().csrf().disable()
+    	
+    	web
+    	.cors().and().csrf().disable()
     	.httpBasic().disable()
+    	
     	.addFilterAt(jwtAuthorizationFilter,BasicAuthenticationFilter.class)
-    	.addFilterBefore(jwtAuthenticationFilter, JwtAuthorizationFilter.class)
-    	.authorizeRequests()
+    	//.authorizeRequests((authz) -> authz.antMatchers("/users/create").authenticated())
+    	.addFilterAfter(jwtAuthenticationFilter, JwtAuthorizationFilter.class)
+    	.addFilterAfter(jwtTenantAuthenticationFilter, JwtAuthorizationFilter.class)
     	
-    	.antMatchers("/users/").hasRole("BASIC_USER")
-    	.antMatchers("/login/").permitAll()
+    	//.requestMatchers().antMatchers("/users/create").and()
     	
-    	.and()
+    	.authorizeRequests(
+    			auth -> auth
+    			.antMatchers("/login/").permitAll()
+    	    	.antMatchers("/users/create").permitAll()
+    	    	.antMatchers("/users/activate").permitAll()
+    	    	)  	
+    	.authorizeRequests(
+    			auth -> auth.anyRequest().authenticated())
+    	//.anyRequest()
+    	//.authenticated()
+    	//.antMatchers("/users/update").hasRole("BASIC_USER")
+    	
+    	//.and()
     	.sessionManagement()
     	.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
@@ -76,6 +99,7 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
     
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		auth.authenticationProvider(tenantTokenAuthenticationProvider);
 		auth.authenticationProvider(tokenAuthenticationProvider).userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
 		}
 	

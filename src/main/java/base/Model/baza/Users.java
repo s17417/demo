@@ -11,9 +11,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.NamedAttributeNode;
-import javax.persistence.NamedEntityGraph;
-import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -44,24 +41,23 @@ public class Users extends AbstractPersistentObject {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@Basic
+	/*@Basic
 	@NotBlank
 	@Pattern(regexp = "^[\\w\\.]*$")
 	@Column(nullable=false, unique=true, length=60)
 	@Size(min=2, max=60)
-	@NaturalId
-	private String name;
+	private String login;*/
 	
 	@Basic
 	@NotBlank
-	@Pattern(regexp = "^[a-zA-Z]*$")
+	@Pattern(regexp = "(^[a-zA-Z0-9]([\\w]|[-]){0,58}[a-zA-Z0-9]$)", message="can contain 'aA-zZ', '0-9' an special characters '_-' but not on the begining and ending of the word ")
 	@Column(nullable=false, length=60)
 	@Size(min=2, max=60)
 	private String firstname;
 	
 	@Basic
 	@NotBlank
-	@Pattern(regexp = "^[a-zA-Z]*$")
+	@Pattern(regexp = "(^[a-zA-Z0-9]([\\w]|[-]){0,58}[a-zA-Z0-9]$)", message="can contain 'aA-zZ', '0-9' an special characters '_-' but not on the begining and ending of the word ")
 	@Column(nullable=false, length=60)
 	@Size(min=2, max=60)
 	private String surname;
@@ -77,13 +73,13 @@ public class Users extends AbstractPersistentObject {
 	@NotNull
 	@Email
 	@Column(nullable=false, unique=true, length=60)
-	@Size(min=6, max=60)
+	@NaturalId
 	private String email;
 	
 	@NotNull
 	@Column(nullable=false)
-	@ColumnDefault("true")
-	private Boolean enabled=true;
+	@ColumnDefault("false")
+	private Boolean enabled=false;
 	
 	@NotNull
 	@Column(nullable=false)
@@ -161,12 +157,6 @@ public class Users extends AbstractPersistentObject {
 		this.updateTimeStamp = updateTimeStamp;
 	}
 
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
 	public String getPassword() {
 		return password;
 	}
@@ -232,7 +222,7 @@ public class Users extends AbstractPersistentObject {
 
 	@Override
 	public String toString() {
-		return "Users [getName()=" + getName() + ", getPassword()=" + getPassword() + ", getId()=" + getId()
+		return "Users [getEmail()=" + getEmail() + ", getPassword()=" + getPassword() + ", getId()=" + getId()
 				+ ", getVersionTimestamp()=" + getVersionTimestamp() + "]";
 	}
 	

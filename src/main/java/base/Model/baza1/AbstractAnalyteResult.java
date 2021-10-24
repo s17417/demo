@@ -28,7 +28,8 @@ public abstract class AbstractAnalyteResult<T> extends AbstractAuditableObject<S
 	
 	@Enumerated
 	@Column(name="resultType", insertable=false, nullable=false, updatable=false)
-	private IResultTypeAssociationCreator resultType;
+	private ResultType resultType;
+	//private IResultTypeAssociationCreator resultType;
 	
 	@ManyToOne(
 			cascade = {CascadeType.MERGE, CascadeType.PERSIST},
@@ -75,11 +76,11 @@ public abstract class AbstractAnalyteResult<T> extends AbstractAuditableObject<S
 		labTestOrder.getAnalyteResult().add(this);
 	}
 
-	public IResultTypeAssociationCreator getResultType() {
+	public ResultType getResultType() {
 		return resultType;
 	}
 
-	public void setResultType(IResultTypeAssociationCreator resultType) {
+	public void setResultType(ResultType resultType) {
 		this.resultType = resultType;
 	}
 	

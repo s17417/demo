@@ -14,6 +14,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import base.Model.baza.Tenant;
 import base.Model.baza.Users;
 import base.Model.baza.UsersTenantRole;
 
@@ -22,10 +23,12 @@ public interface UsersTenantRoleRepository extends JpaRepository<UsersTenantRole
 
 	public List<UsersTenantRole> findByUser(Users user);
 	
+	public List<UsersTenantRole> findByTenant(Tenant tenant);
+	
 	//@Cacheable("UsersTenants")
 	@QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value ="true") })
 	@Query(value="SELECT usr FROM UsersTenantRole usr"
-			+ " WHERE usr.user.name = :userName AND usr.tenant.name = :tenantName"
+			+ " WHERE usr.user.email = :userEmail AND usr.tenant.name = :tenantName"
 			)
-	public List<UsersTenantRole> findByUsersNameAndTenantName(@Param("userName") String userName,@Param("tenantName") String tenantName);
+	public List<UsersTenantRole> findByUsersEmailAndTenantName(@Param("userEmail") String userName,@Param("tenantName") String tenantName);
 }

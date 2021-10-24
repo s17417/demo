@@ -20,7 +20,7 @@ import base.Model.AbstractPersistentClasses.AbstractAuditableObject;
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE,  region = "UsersTenantRoleCache")
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = { "tenant_id","user_id","role" }))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = { "tenant_id","user_id",/*"role"*/}))
 public class UsersTenantRole extends AbstractAuditableObject<String> {
 	
 	/**
@@ -28,14 +28,16 @@ public class UsersTenantRole extends AbstractAuditableObject<String> {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	@NotNull
 	@ManyToOne(fetch=FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
 	private Users user;
 	
+	@NotNull
 	@ManyToOne(fetch=FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
 	private Tenant tenant;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(length=20)
+	@Column(length=50)
 	private Role role;
 	
 	protected UsersTenantRole() {

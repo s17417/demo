@@ -79,11 +79,11 @@ public class LaboratoryConfig {
 	@Bean (name="laboratoryDataSource")
     public DriverManagerDataSource defaultDataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setUrl("jdbc:mysql://localhost:3306/");
+        //dataSource.setUrl("jdbc:mysql://localhost:3306/");
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://localhost:3306/empty"); //uncomment on production
+        dataSource.setUrl("jdbc:mysql://vifon41.hopto.org:3306/empty"); //uncomment on production
         dataSource.setUsername("root");
-        dataSource.setPassword("root");
+        dataSource.setPassword("Lolita41bobo!");
         
         
         return dataSource;
@@ -99,7 +99,14 @@ public class LaboratoryConfig {
 	
 	  private Properties additionalProperties() {
 	        Properties properties = new Properties();
-	        properties.setProperty(Environment.HBM2DDL_AUTO, "create-drop");
+	        
+	        //properties.setProperty("hibernate.hbm2ddl.delimiter",";");
+	        //properties.setProperty("hibernate.hbm2dll.create_namespaces", "true");
+	        //properties.setProperty("javax.persistence.schema-generation.scripts.action", "drop-and-create");
+	        //properties.setProperty("javax.persistence.schema-generation.scripts.create-target", "laboratory-create.sql");
+	        //properties.setProperty("javax.persistence.schema-generation.scripts.drop-target", "laboratory-drop.sql");
+	        
+	        properties.setProperty(Environment.HBM2DDL_AUTO, "none");
 	        properties.setProperty(Environment.DIALECT, "org.hibernate.dialect.MySQL8Dialect");
 	        properties.setProperty("hibernate.temp.use_jdbc_metadata_defaults", "false");
 	        properties.put(Environment.MULTI_TENANT, MultiTenancyStrategy.DATABASE);

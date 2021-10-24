@@ -57,13 +57,21 @@ public class UsersConfig {
 	
 	@EventListener
     public void appReady(ApplicationReadyEvent event) {
-		if (usersRepo.findByName("tomasz")==null) {
+		if (usersRepo.findByEmail("tomasz")==null) {
 		Users user = new Users();
+		Users user2 = new Users();
+		
 		user.setEmail("1@1.pl");
 		user.setFirstname("tom");
-		user.setName("tomasz");
+		//user.setLogin("tomasz");
 		user.setPassword("Game@122W");
 		user.setSurname("gogo");
+		user.setEnabled(true);
+		
+		user2.setEmail("tomasz.polawski@gmail.comdscdsc");
+		user2.setFirstname("tom");
+		user2.setPassword("Game@122W");
+		user2.setSurname("gogo");
 		
         
         Tenant tenant = new Tenant();
@@ -72,10 +80,12 @@ public class UsersConfig {
         tenant.setName("default_schema1");
        // tenant.setDatabasePassword(IdGenerator.getId().toString());
         UsersTenantRole usr = new UsersTenantRole(user,tenant,Role.BASIC_USER);
-        UsersTenantRole usr1 = new UsersTenantRole(user,tenant,Role.APP_ADMIN);
-        usrRepo.saveAll(Arrays.asList(usr,usr1));
+        //UsersTenantRole usr1 = new UsersTenantRole(user,tenant,Role.APP_ADMIN);
+        usrRepo.saveAll(Arrays.asList(usr/*,usr1*/));
+        usersRepo.save(user2);
         
-        System.out.println(usrRepo.findByUsersNameAndTenantName("tomasz", "default_schema1"));
+        System.out.println(usrRepo.findByUsersEmailAndTenantName("1@1.pl", "default_schema1"));
+        System.out.println(usrRepo.findByUsersEmailAndTenantName("tomasz.polawski@gmail.com", "default_schema1"));
 		}
     }
 	
@@ -106,9 +116,9 @@ public class UsersConfig {
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://localhost:3306/default_schema");
+        dataSource.setUrl("jdbc:mysql://vifon41.hopto.org:3306/default_schema");
         dataSource.setUsername("root");
-        dataSource.setPassword("root");
+        dataSource.setPassword("Lolita41bobo!");
         
         return dataSource;
     }
@@ -130,14 +140,25 @@ public class UsersConfig {
     private Properties additionalProperties() {
         Properties properties = new Properties();
         
+        
+        
+        //properties.setProperty("javax.persistence.schema-generation.scripts.create-target", "drop.sql");
         properties.setProperty("hibernate.hbm2ddl.auto", "create-drop");//create-drop
         properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL8Dialect");
         properties.setProperty("hibernate.temp.use_jdbc_metadata_defaults", "false");
+
+        //properties.setProperty("hibernate.hbm2ddl.delimiter",";");
+        //properties.setProperty("hibernate.hbm2dll.create_namespaces", "true");
+        //properties.setProperty("javax.persistence.schema-generation.scripts.action", "drop-and-create");
+        //properties.setProperty("javax.persistence.schema-generation.scripts.create-target", "users-create.sql");
+        //properties.setProperty("javax.persistence.schema-generation.scripts.drop-target", "users-drop.sql");
+        
         properties.put(Environment.FORMAT_SQL, true);
 	    properties.put(Environment.SHOW_SQL, true);
 	    properties.put(Environment.USE_QUERY_CACHE,  Boolean.TRUE.toString());
 	    properties.put(Environment.CONNECTION_HANDLING, PhysicalConnectionHandlingMode.DELAYED_ACQUISITION_AND_RELEASE_AFTER_TRANSACTION);
 	    properties.put(Environment.POOL_SIZE, 15);
+	   
 	    //properties.put(Environment.AUTOCOMMIT, true);
 
 	    //properties.put(Environment.C3P0_MIN_SIZE,1);

@@ -40,7 +40,8 @@ public class UserDetailServiceImpl implements IUserDetailServiceTenant {
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly=true)
 	@Override
 	public MyUser<String,List<String>> loadUserByUsername(String username) throws UsernameNotFoundException {
-		Users user= userRepository.findByName(username);
+		Users user= userRepository.findByEmail(username);
+		
 		if (user==null) throw new UsernameNotFoundException("nie ma takiego chujka");
 		
 		Map<String,List<String>> tenantsId=user.getUsersTenantRole()
@@ -48,36 +49,39 @@ public class UserDetailServiceImpl implements IUserDetailServiceTenant {
 				.map(tenant -> tenant.getTenant().getName())
 				.distinct()
 				.collect(Collectors.toMap(k -> k,v-> new ArrayList<String>()));
+		
 		user.getUsersTenantRole()
 				.stream()
-				.forEach(e -> tenantsId.get(e.getTenant().getName()).add(e.getRole().name()));
+				.forEach(e -> tenantsId.get(e.getTenant().getName()).add(e.getRole().toString()));
 		
 		return MyUserImpl.myUserBuilder()
-				.username(user.getName())
+				.username(user.getEmail())
 				.password(user.getPassword())
 				.tenantsId(Collections.unmodifiableMap(tenantsId))
 				.accountExpired(!user.getAccountNonExpired())
 				.accountLocked(!user.getAccountNonLocked())
 				.credentialsExpired(!user.getCredentialsNonExpired())
 				.disabled(!user.getEnabled())
-				.authorities("ROLE_"+Role.BASIC_USER.name())
+				.authorities(Role.BASIC_USER.toString()) //zmienic na dodanie listy calej
+				//.authorities("ROLE_"+Role.BASIC_USER.name())
 				.build();
 	}
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly=true)
 	@Override
 	public List<GrantedAuthority> getAuthortiestForTenant(String username, String tenant) {
-		List<UsersTenantRole> userTenantRoles=usrTntRlRepository.findByUsersNameAndTenantName(username, tenant);
+		List<UsersTenantRole> userTenantRoles=usrTntRlRepository.findByUsersEmailAndTenantName(username, tenant);
 		List<GrantedAuthority> authorities = null;
 		if (tenant!=null) {
 			
 			authorities=userTenantRoles
 					.stream()
-					.map(e -> new SimpleGrantedAuthority("ROLE_"+e.getRole().name()))
+					.map(e -> new SimpleGrantedAuthority(e.getRole().toString()))
+					//.map(e -> new SimpleGrantedAuthority("ROLE_"+e.getRole().name()))
 					.collect(Collectors.toList());
 			return authorities;
 		}
-		return new ArrayList<GrantedAuthority>();
+		return Collections.unmodifiableList(new ArrayList<GrantedAuthority>());
 	} 
 
 }

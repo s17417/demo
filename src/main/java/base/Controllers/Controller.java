@@ -67,6 +67,7 @@ public class Controller {
 		//labtest.addQualityControlResult(null);
 		return pDAO.findAll();
 	}
+	
 	@GetMapping(value= "/tenant/")
 	@ResponseBody
 	public String generateTokenForTenant() {
