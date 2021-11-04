@@ -29,7 +29,7 @@ import base.Utils.Security.Filters.JwtTenantAuthenticationFilter;
 
 @SuppressWarnings("deprecation")
 @Configuration
-@EnableWebSecurity(debug=true)
+@EnableWebSecurity(/*debug=true*/)
 public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 	
 	@Autowired

@@ -166,6 +166,7 @@ public class JWTUtilImpl implements IJWTUtil {
 				.getId();
 	}
 	
+	@Override
 	/**
 	 * Gets tenant Id from tenantId field in body part of token. if field is not present then null returned.
 	 * <br> While reading a token a validation is performed. If token is malformed, expired, signature is changed or not present etc. one of the exception is thrown.
@@ -175,7 +176,6 @@ public class JWTUtilImpl implements IJWTUtil {
 	 * @throws ExpiredJwtException if the specified JWT is a Claims JWT and the Claims has an expiration time before the time this method is invoked.
 	 * @throws IllegalArgumentException - if the claims Jws string is null or empty or only whitespace
 	 */
-	@Override
 	public String getTenant(String token) 
 			throws ExpiredJwtException,
 			UnsupportedJwtException,

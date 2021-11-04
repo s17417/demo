@@ -62,7 +62,7 @@ public class UserDetailServiceImpl implements IUserDetailServiceTenant {
 				.accountLocked(!user.getAccountNonLocked())
 				.credentialsExpired(!user.getCredentialsNonExpired())
 				.disabled(!user.getEnabled())
-				.authorities(Role.BASIC_USER.toString()) //zmienic na dodanie listy calej
+				.authorities(user.getPersonalRole().toString()) //zmienic na dodanie listy calej
 				//.authorities("ROLE_"+Role.BASIC_USER.name())
 				.build();
 	}
@@ -77,8 +77,11 @@ public class UserDetailServiceImpl implements IUserDetailServiceTenant {
 			authorities=userTenantRoles
 					.stream()
 					.map(e -> new SimpleGrantedAuthority(e.getRole().toString()))
-					//.map(e -> new SimpleGrantedAuthority("ROLE_"+e.getRole().name()))
 					.collect(Collectors.toList());
+			/*authorities.addAll(userTenantRoles
+					.stream()
+					.map(e -> new SimpleGrantedAuthority(e.getUser().getPersonalRole().toString()))
+					.collect(Collectors.toList()));*/
 			return authorities;
 		}
 		return Collections.unmodifiableList(new ArrayList<GrantedAuthority>());

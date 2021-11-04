@@ -1,24 +1,10 @@
 package base.DTO.baza;
 
-public class UpdateUserTenantRoleDTO {
+import javax.validation.constraints.NotNull;
 
-	private String Id;
-	
-	private String role;
+import base.DTO.DTOObjectConstans;
 
-	public String getId() {
-		return Id;
-	}
+public class UpdateUserTenantRoleDTO extends AuditableObjectDTO {
 
-	public void setId(String id) {
-		Id = id;
-	}
 
-	public String getRole() {
-		return role;
-	}
-
-	public void setRole(String role) {
-		this.role = role;
-	}
 }

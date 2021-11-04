@@ -1,6 +1,5 @@
 package base.Services.baza;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,9 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import base.DTO.baza.TenantDTO;
-import base.DTO.baza.UpdateUserTenantRoleDTO;
-import base.DTO.baza.UserDTO;
+import base.DTO.DTOObjectConstans;
 import base.DTO.baza.UserTenantRoleDTO;
 import base.Model.baza.Role;
 import base.Model.baza.UsersTenantRole;
@@ -62,14 +59,33 @@ public class UserTenantService {
 				.collect(Collectors.toList());
 	}
 	
+	
 	@Transactional
-	public UpdateUserTenantRoleDTO updateUserTenantRole(UpdateUserTenantRoleDTO updateUserTenantRoleDTO) {
+	public UserTenantRoleDTO updateUserTenantRole(UserTenantRoleDTO updateUserTenantRoleDTO) {
 		var tenantName=((JwtAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getTenant();
-		var tenant=tenantRepository.findByName("tenant");
+		var tenant=tenantRepository.findByName(tenantName);
 		var userTenantRole = usersTenantRoleRepository.findById(updateUserTenantRoleDTO.getId());
-		if (!tenant.getUsersTenantRole().contains(userTenantRole)) throw new IllegalArgumentException("Relation N/A or no such user");
-		model
 		
+		if (userTenantRole.isEmpty() || !tenant.getUsersTenantRole().contains(userTenantRole.get())) 
+			throw new IllegalArgumentException("Relation N/A or no such user");
+		
+		if (userTenantRole.get().getRole().equals(Role.SPECIFIC_DATABASE_ADMIN)&&!updateUserTenantRoleDTO.getRole().equals(Role.SPECIFIC_DATABASE_ADMIN.name()) ) {
+		List<UsersTenantRole> admins = tenant.getUsersTenantRole()
+				.stream()
+				.filter(e -> e.getRole().equals(Role.SPECIFIC_DATABASE_ADMIN))
+				.collect(Collectors.toList());
+		if (admins.size()<2 && admins.contains(userTenantRole.get()))
+			throw new IllegalArgumentException("There must be at least 1 Admin relation");
+		}
+		
+		modelMapper.getTypeMap(UserTenantRoleDTO.class, UsersTenantRole.class, DTOObjectConstans.UPDATE.name()).map(updateUserTenantRoleDTO, userTenantRole.get());	
+		//userTenantRole.get().setRole(Role.valueOf(Role.class, updateUserTenantRoleDTO.getRole()));
+		var updatedObject = usersTenantRoleRepository.saveAndFlush(userTenantRole.get());
+		System.out.println(updatedObject.getCreatedBy());
+		System.out.println(updatedObject.getLastModifiedBy());
+
+		modelMapper.getTypeMap(UsersTenantRole.class, UserTenantRoleDTO.class).map(updatedObject,updateUserTenantRoleDTO);
+		return updateUserTenantRoleDTO;
 	}
 	
 	public List<Role> getRoles(){

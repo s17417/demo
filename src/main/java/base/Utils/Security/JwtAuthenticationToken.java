@@ -6,6 +6,8 @@ import java.util.Collection;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import base.Model.baza.AdminRole;
 import base.Model.baza.Role;
 
 public class JwtAuthenticationToken extends AbstractAuthenticationToken implements IJwtAuthenticationToken {
@@ -28,7 +30,7 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken implemen
 	 * @param token
 	 */
 	public JwtAuthenticationToken(String token) {
-		super(new ArrayList<GrantedAuthority>(Arrays.asList(new SimpleGrantedAuthority(Role.BASIC_USER.toString()))));
+		super(new ArrayList<GrantedAuthority>(Arrays.asList(new SimpleGrantedAuthority(AdminRole.BASIC_USER.toString()))));
 		this.token = token;
 	}
 	

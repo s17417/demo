@@ -3,7 +3,9 @@ package base.Services.baza;
 import java.net.InetAddress;
 import java.security.InvalidKeyException;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -22,6 +24,7 @@ import base.DTO.DTOObjectConstans;
 import base.DTO.baza.UserDTO;
 import base.Model.baza.Invitation;
 import base.Model.baza.Role;
+import base.Model.baza.Tenant;
 import base.Model.baza.Users;
 import base.Model.baza.UsersTenantRole;
 import base.Repository.BazaRepository.InvitationRepository;
@@ -55,6 +58,9 @@ public class UserService {
 	
 	@Value("${server.port}")
 	private String serverPort;
+	
+	@Autowired
+	private UserTenantService userTenantService;
 	
 	private Logger logger=LoggerFactory.getLogger(UserService.class);
 	
@@ -138,9 +144,17 @@ public class UserService {
 		return userDTO;
 	}
 	
-	
+	@Transactional
 	public void deleteUser() {
 		var user = userRepo.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+		List<String> list = user.getUsersTenantRole()
+			.stream()
+			.filter(e -> e.getRole().equals(Role.SPECIFIC_DATABASE_ADMIN))
+			.map(e -> e.getTenant())
+			.filter(e -> e.getUsersTenantRole().size()==1)
+			.map(e -> e.getName())
+			.collect(Collectors.toList());
+		if (list.size()>0) throw new IllegalArgumentException("Last admin user for databases: "+list+". To delete firstly delete databases");
 		userRepo.delete(user);
 	}
 	
@@ -156,5 +170,7 @@ public class UserService {
 			throw ex;
 		}
 	}
+	
+	
 
 }

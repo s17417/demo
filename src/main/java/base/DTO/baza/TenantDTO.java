@@ -10,24 +10,24 @@ import base.DTO.DTOObjectConstans.Create;
 import base.DTO.DTOObjectConstans.Update;
 
 
-public class TenantDTO {
+public class TenantDTO extends AuditableObjectDTO {
 	
-	@NotBlank(groups = DTOObjectConstans.Update.class)
+	/*@NotBlank(groups = DTOObjectConstans.Update.class)
 	@Null(groups = DTOObjectConstans.Create.class)
-	private String Id;
+	private String Id;*/
 	
 	@NotBlank
 	@Pattern(regexp = "(^[a-zA-Z0-9]([\\w]|[-]){0,18}[a-zA-Z0-9]$)")
 	@Size(min=2, max=60)
 	private String name;
 
-	public String getId() {
+	/*public String getId() {
 		return Id;
 	}
 
 	public void setId(String id) {
 		Id = id;
-	}
+	}*/
 
 	public String getName() {
 		return name;

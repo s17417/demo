@@ -11,17 +11,16 @@ import org.springframework.stereotype.Component;
 import base.DTO.MyUser;
 
 @Component("AuditorAwareImpl")
-@EnableJpaAuditing(auditorAwareRef = "AuditorAwareImpl")
 public class AuditorAwareImpl implements AuditorAware<String> {
 	
 	@Override
 	public Optional<String> getCurrentAuditor() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication!=null && authentication.isAuthenticated()) {
-			if (authentication.getPrincipal().equals("anonymousUser")) return Optional.of("anonymousUser"); //delete when security setted
+			//if (authentication.getPrincipal().equals("anonymousUser")) return Optional.of("anonymousUser"); //delete when security setted
 			return Optional.ofNullable(((MyUser<?,?>)authentication.getPrincipal()).getUsername());
 		}
-		return Optional.ofNullable(null);
+		return Optional.ofNullable("anonymousUser");
 	}
 
 }

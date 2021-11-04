@@ -3,7 +3,6 @@ package base.Controllers.baza;
 
 import java.security.InvalidKeyException;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import base.DTO.DTOObjectConstans;
 import base.DTO.baza.UserDTO;
+import base.DTO.baza.UserTenantRoleDTO;
 import base.Services.baza.UserService;
 import base.Services.baza.UserTenantService;
 
@@ -89,5 +89,14 @@ public class UsersController {
 		return new ResponseEntity<String>("User activated",HttpStatus.OK);
 	}
 	
+	@PutMapping(
+			value = "/updateRole",
+			consumes = MediaType.APPLICATION_JSON_VALUE,
+			produces = MediaType.APPLICATION_JSON_VALUE
+			)
+	public @ResponseBody  ResponseEntity<Object> updateUserRole(@Validated(DTOObjectConstans.Update.class) @RequestBody UserTenantRoleDTO updateUserTenantRoleDTO) {
+		userTenantService.updateUserTenantRole(updateUserTenantRoleDTO);
+		return new ResponseEntity<Object>(updateUserTenantRoleDTO, HttpStatus.OK);
+	}
 
 }

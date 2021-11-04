@@ -68,10 +68,11 @@ public class TenantService {
 	public TenantDTO createTenant(@NotNull TenantDTO tenantDTO) {
 		var user = userRepo.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
 		var tenant = modelMapper.getTypeMap(TenantDTO.class, Tenant.class, DTOObjectConstans.CREATE.name()).map(tenantDTO);
+		user.addTenant(tenant, Role.SPECIFIC_DATABASE_ADMIN);
 		tenant.setDatabasePassword(IdGenerator.getId().toString());
 		tenant.setDatabseUserName(tenant.getName());
 		var savedTenant = tenantRepo.saveAndFlush(tenant);
-		user.addTenant(tenant, Role.SPECIFIC_DATABASE_ADMIN);
+		
 		
 		modelMapper.getTypeMap(Tenant.class, TenantDTO.class).map(savedTenant, tenantDTO);
 		dataSourceGenerator.tenantDatabaseInitialization(savedTenant);

@@ -41,7 +41,7 @@ public interface IJWTUtil {
 	String getId(String token);
 
 	/**
-	 * gets id from field jti in body part of token
+	 * Gets tenant Id from tenantId field in body part of token.
 	 * @param token as String object.
 	 * @return String
 	 */

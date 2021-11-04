@@ -45,6 +45,7 @@ public class TokenAuthenticationProvider implements AuthenticationProvider {
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException, NullPointerException {
 		IJwtAuthenticationToken jwtAuthentication = (IJwtAuthenticationToken) authentication;
 		
+		
 		String token = jwtAuthentication.getToken();
 		if (token==null) throw new NullPointerException("JWT String argument cannot be null or empty.");
 		
@@ -58,17 +59,21 @@ public class TokenAuthenticationProvider implements AuthenticationProvider {
 			if (user.getTenantsId().containsKey(tenant) && !user.getTenantsId().isEmpty()) {
 				for(String role:user.getTenantsId().get(tenant)) 
 					userAuthoritiesForTenant.add(new SimpleGrantedAuthority(role));
-			} else
-				userAuthoritiesForTenant.add(new SimpleGrantedAuthority(Role.BASIC_USER.toString()));
+			}
+			userAuthoritiesForTenant.addAll(user.getAuthorities());
+			//else
+				//userAuthoritiesForTenant.add(new SimpleGrantedAuthority(Role.BASIC_USER.toString()));
 				//userAuthoritiesForTenant.add(new SimpleGrantedAuthority("ROLE_"+Role.BASIC_USER.name()));
 			
-			return new JwtAuthenticationToken(
+			var auth = new JwtAuthenticationToken(
 					Collections.unmodifiableList(userAuthoritiesForTenant),
 					tokenUtil.refreshTokenAtHalfTime(token),
 					tenant,
 					user,
 					user.getPassword()
 					);
+			auth.setAuthenticated(true);
+			return auth;
 		}
 		
 		catch (UsernameNotFoundException e) {

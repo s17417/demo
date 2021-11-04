@@ -6,8 +6,11 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 
+import base.DTO.DTOObjectConstans;
+import base.Model.AbstractPersistentClasses.AbstractPersistentObject;
 
-public class UserTenantRoleDTO{
+
+public class UserTenantRoleDTO extends AuditableObjectDTO{
 	
 	/*private String userFirsname;
 	
@@ -39,23 +42,23 @@ public class UserTenantRoleDTO{
 		this.userEmail = userEmail;
 	}*/
 
-	@NotNull
-	private String Id;
+	/*@NotNull(groups = {DTOObjectConstans.Update.class})
+	private String Id;*/
 	
-	@NotNull
+	@NotNull(groups = {DTOObjectConstans.Update.class})
 	private String role;
 	
 	private UserDTO user;
 	
 	private TenantDTO tenant;
 	
-	public String getId() {
+	/*public String getId() {
 		return Id;
 	}
 
 	public void setId(String id) {
 		Id = id;
-	}
+	}*/
 
 	public UserDTO getUser() {
 		return user;

@@ -1,5 +1,6 @@
 package base.Config;
 
+import java.beans.PropertyVetoException;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -25,7 +26,9 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import com.mchange.v2.c3p0.ComboPooledDataSource;
 
+import base.Model.baza.AdminRole;
 import base.Model.baza.Role;
 import base.Model.baza.Tenant;
 import base.Model.baza.Users;
@@ -79,7 +82,7 @@ public class UsersConfig {
         tenant.setDatabasePassword("root");
         tenant.setName("default_schema1");
        // tenant.setDatabasePassword(IdGenerator.getId().toString());
-        UsersTenantRole usr = new UsersTenantRole(user,tenant,Role.BASIC_USER);
+        UsersTenantRole usr = new UsersTenantRole(user,tenant,Role.SPECIFIC_DATABASE_TECHNICHAN);
         //UsersTenantRole usr1 = new UsersTenantRole(user,tenant,Role.APP_ADMIN);
         usrRepo.saveAll(Arrays.asList(usr/*,usr1*/));
         usersRepo.save(user2);
@@ -109,9 +112,25 @@ public class UsersConfig {
 	    		  .build();
 	   }
 	
+	/*Bean("usersDataSources")
+	public ComboPooledDataSource ()*/
 	
+	
+	@Bean(name="usersDataSource")
+    @Primary
+    public DataSource dataSource() throws PropertyVetoException {
+		ComboPooledDataSource pooledDataSource = new ComboPooledDataSource();
+		
+		pooledDataSource.setDriverClass("com.mysql.cj.jdbc.Driver");
+		pooledDataSource.setUser("root");
+		pooledDataSource.setPassword("Lolita41bobo!");
+		pooledDataSource.setJdbcUrl("jdbc:mysql://192.168.0.18:3306/default_schema");
+		pooledDataSource.setMaxPoolSize(2);
+		pooledDataSource.setMaxIdleTime(10);
+        return pooledDataSource;
+    }
 
-    @Bean(name="usersDataSource")
+    /*@Bean(name="usersDataSource")
     @Primary
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
@@ -121,7 +140,7 @@ public class UsersConfig {
         dataSource.setPassword("Lolita41bobo!");
         
         return dataSource;
-    }
+    }*/
 
     @Bean(name="usersTransactionManager")
     @Primary
@@ -155,13 +174,16 @@ public class UsersConfig {
         
         properties.put(Environment.FORMAT_SQL, true);
 	    properties.put(Environment.SHOW_SQL, true);
-	    properties.put(Environment.USE_QUERY_CACHE,  Boolean.TRUE.toString());
+	    //properties.put(Environment.cac, properties)
+	    properties.put(Environment.USE_QUERY_CACHE, true);
+	    properties.setProperty("hibernate.cache.region.factory_class","org.hibernate.cache.ehcache.EhCacheRegionFactory");
+	    properties.put(Environment.USE_SECOND_LEVEL_CACHE, true);
 	    properties.put(Environment.CONNECTION_HANDLING, PhysicalConnectionHandlingMode.DELAYED_ACQUISITION_AND_RELEASE_AFTER_TRANSACTION);
-	    properties.put(Environment.POOL_SIZE, 15);
+	    //properties.put(Environment.POOL_SIZE, 15);
 	   
 	    //properties.put(Environment.AUTOCOMMIT, true);
-
-	    //properties.put(Environment.C3P0_MIN_SIZE,1);
+	    //properties.put(Environment, properties)
+	    //properties.put(Environment.C3P0_MIN_SIZE,2);
 	    //properties.put(Environment.C3P0_MAX_SIZE,10);
         return properties;
     }

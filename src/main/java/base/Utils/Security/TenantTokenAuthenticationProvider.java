@@ -51,7 +51,6 @@ public class TenantTokenAuthenticationProvider  implements AuthenticationProvide
 		List<GrantedAuthority> list= userTenant.stream()
 				.filter(authority -> !authority.getAuthority().contentEquals(Role.SPECIFIC_DATABASE_INVITATION.toString()))
 				.collect(Collectors.toList());
-		list.add(new SimpleGrantedAuthority(Role.BASIC_USER.toString()));
 		if (list.isEmpty()) throw new BadCredentialsException("relation N/A or invitation not accepted yet");
 		
 		return new JwtTenantAuthenticationToken(

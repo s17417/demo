@@ -10,6 +10,8 @@ import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.Email;
@@ -75,6 +77,11 @@ public class Users extends AbstractPersistentObject {
 	@Column(nullable=false, unique=true, length=60)
 	@NaturalId
 	private String email;
+	
+	@NotNull
+	@Enumerated(EnumType.STRING)
+	@Column(length=50)
+	private AdminRole personalRole = AdminRole.BASIC_USER;
 	
 	@NotNull
 	@Column(nullable=false)
@@ -178,6 +185,14 @@ public class Users extends AbstractPersistentObject {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public AdminRole getPersonalRole() {
+		return personalRole;
+	}
+
+	public void setPersonalRole(AdminRole personalRole) {
+		this.personalRole = personalRole;
 	}
 
 	public String getSurname() {

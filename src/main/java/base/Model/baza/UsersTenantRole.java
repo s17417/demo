@@ -20,7 +20,7 @@ import base.Model.AbstractPersistentClasses.AbstractAuditableObject;
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE,  region = "UsersTenantRoleCache")
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = { "tenant_id","user_id",/*"role"*/}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = { "tenant_id","user_id"/*,"role"*/}))
 public class UsersTenantRole extends AbstractAuditableObject<String> {
 	
 	/**

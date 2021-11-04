@@ -1,29 +1,38 @@
 package base.Config;
 
+import org.aspectj.lang.annotation.Aspect;
 import org.modelmapper.Condition;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.web.context.request.RequestContextListener;
-import base.DTO.DTOObjectConstans;
-import base.DTO.baza.TenantDTO;
-import base.DTO.baza.UserDTO;
-import base.DTO.baza.UserTenantRoleDTO;
-import base.Model.baza.Tenant;
-import base.Model.baza.Users;
-import base.Model.baza.UsersTenantRole;
 
-//import com.fasterxml.jackson.databind.ObjectMapper;
+import base.Config.Aspect.IDtoConfigurtion;
+import base.Config.Aspect.PersistentAuditableDtoConfiguration;
 
 
 @Configuration
 public class Config {
+	
+	@Bean
+	public RequestContextListener requestContextListener(){
+	    return new RequestContextListener();
+	}
 
 	@Bean
-	public Converter<String,String> toLowerCaseConverter() {
+	public ModelMapper modelMapper() {
+		var mapper=new ModelMapper();
+		mapper.getConfiguration()
+		  .setMatchingStrategy(MatchingStrategies.STRICT).setImplicitMappingEnabled(false);	
+	    return mapper;
+	}
+	
+	@Bean
+	public Converter<String,String> toLowerCaseConverter(){ 
 		return mapper -> mapper.getSource()!=null ? mapper.getSource().strip().toLowerCase() : null;
 	}
 	
@@ -40,74 +49,17 @@ public class Config {
 	@Bean
 	public Condition<String, String> stringNotNullCondition(){
 		return condition -> condition.getSource()!=null;
-		
 	}
 	
 	/*@Bean
-	public ObjectMapper getJSONObjectMapper() {
-		return new ObjectMapper();
+	@Order(Ordered.HIGHEST_PRECEDENCE)
+	public IDtoConfigurtion persistentAuditableDtoConfiguration() {
+		return new PersistentAuditableDtoConfiguration();
+	}
+	
+	@Bean
+	@Order(Ordered.HIGHEST_PRECEDENCE)
+	public IDtoConfigurtion usersDtoConfiguration() {
+		return new PersistentAuditableDtoConfiguration();
 	}*/
-	
-	@Bean
-	public RequestContextListener requestContextListener(){
-	    return new RequestContextListener();
-	}
-	
-	@Bean
-	public ModelMapper modelMapper(
-			@Autowired @Qualifier("toLowerCaseConverter") Converter<String,String> toLowerCaseConverter,
-			@Autowired @Qualifier ("firstLetterUpperCaseConverter") Converter <String,String> firstLetterUpperCaseConverter,
-			@Autowired @Qualifier ("stripConverter") Converter<String,String> stripConverter,
-			@Autowired @Qualifier ("stringNotNullCondition") Condition<String,String> stringNotNullCondition
-			) {
-		var mapper=new ModelMapper();
-		
-		mapper.createTypeMap(Users.class, UserDTO.class)
-		.addMappings(map -> {
-			map.skip(UserDTO::setPassword);
-			}
-		);
-		
-		mapper.createTypeMap(UsersTenantRole.class, UserTenantRoleDTO.class)/*.addMappings( property ->{
-			property.map(UsersTenantRole::getUser, UserWithRoleDTO::setUser);
-		})*/;
-		
-		mapper.createTypeMap(UserDTO.class, Users.class, DTOObjectConstans.CREATE.name())
-		.addMappings(map -> {
-			map.skip(Users::setId);
-			map.using(toLowerCaseConverter).map(UserDTO::getEmail, Users::setEmail);
-			map.using(firstLetterUpperCaseConverter).map(UserDTO::getFirstname, Users::setFirstname);
-			map.using(firstLetterUpperCaseConverter).map(UserDTO::getSurname, Users::setSurname);
-			}
-		);
-		
-		mapper.createTypeMap(UserDTO.class, Users.class,DTOObjectConstans.UPDATE.name())
-		.addMappings( map -> {
-			map.using(stripConverter).map(UserDTO::getId, Users::setId);
-			map.skip(UserDTO::getEmail, Users::setEmail);
-			map.using(firstLetterUpperCaseConverter).map(UserDTO::getFirstname, Users::setFirstname);
-			map.using(firstLetterUpperCaseConverter).map(UserDTO::getSurname, Users::setSurname);
-			map.when(stringNotNullCondition).map(UserDTO::getPassword, Users::setPassword);
-			}
-		);
-		
-		mapper.createTypeMap(Tenant.class, TenantDTO.class);
-		
-		mapper.createTypeMap(TenantDTO.class, Tenant.class, DTOObjectConstans.CREATE.name())
-		.addMappings( map -> {
-			map.skip(TenantDTO::getId, Tenant::setId);
-			map.using(firstLetterUpperCaseConverter).map(TenantDTO::getName, Tenant::setName);
-			}
-		);
-		
-		mapper.createTypeMap(TenantDTO.class, Tenant.class, DTOObjectConstans.UPDATE.name())
-		.addMappings( map -> {
-			map.using(firstLetterUpperCaseConverter).map(TenantDTO::getName, Tenant::setName);
-		});
-		
-		//mapper.createTypeMap(UserWithRoleDTO, null)
-	
-	    return mapper;
-	}
-	
 }
