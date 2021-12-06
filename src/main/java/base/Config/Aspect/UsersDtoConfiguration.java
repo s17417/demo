@@ -9,9 +9,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import base.DTO.AuditableObjectDTO;
 import base.DTO.DTOObjectConstans;
-import base.DTO.baza.AuditableObjectDTO;
-import base.DTO.baza.PersistenceObjectDTO;
+import base.DTO.PersistenceObjectDTO;
 import base.DTO.baza.TenantDTO;
 import base.DTO.baza.UserDTO;
 import base.DTO.baza.UserTenantRoleDTO;
@@ -72,6 +72,16 @@ public class UsersDtoConfiguration implements IDtoConfigurtion {
 			}
 		)
 		.includeBase(PersistenceObjectDTO.class, AbstractPersistentObject.class);
+		
+		mapper.createTypeMap(UserDTO.class, Users.class)
+		.addMappings( map -> {
+			//map.using(stripConverter).map(UserDTO::getId, Users::setId);
+			map.skip(UserDTO::getEmail, Users::setEmail);
+			map.using(firstLetterUpperCaseConverter).map(UserDTO::getFirstname, Users::setFirstname);
+			map.using(firstLetterUpperCaseConverter).map(UserDTO::getSurname, Users::setSurname);
+			map.when(stringNotNullCondition).map(UserDTO::getPassword, Users::setPassword);
+			}
+		);
 		
 		
 		

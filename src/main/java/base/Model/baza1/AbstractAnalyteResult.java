@@ -1,9 +1,9 @@
 package base.Model.baza1;
 
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
@@ -19,7 +19,7 @@ import base.Model.AbstractPersistentClasses.AbstractAuditableObject;
 @Audited
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "resultType")
-public abstract class AbstractAnalyteResult<T> extends AbstractAuditableObject<String> {
+public abstract class AbstractAnalyteResult<T, M extends Method> extends AbstractAuditableObject<String> {
 	
 	/**
 	 * 
@@ -33,9 +33,9 @@ public abstract class AbstractAnalyteResult<T> extends AbstractAuditableObject<S
 	
 	@ManyToOne(
 			cascade = {CascadeType.MERGE, CascadeType.PERSIST},
-			fetch = FetchType.LAZY
+			fetch = FetchType.EAGER
 			)
-	private Method method;
+	private  M method;
 	
 	@ManyToOne(
 			cascade = {CascadeType.MERGE, CascadeType.PERSIST},
@@ -48,7 +48,7 @@ public abstract class AbstractAnalyteResult<T> extends AbstractAuditableObject<S
 		super();
 	}
 	
-	protected AbstractAnalyteResult(LabTestOrder<?> labTestOrder, Method method) {
+	protected AbstractAnalyteResult(LabTestOrder<?> labTestOrder, M method) {
 		super();
 		this.setLabTestOrder(labTestOrder);
 		this.setMethod(method);
@@ -58,13 +58,13 @@ public abstract class AbstractAnalyteResult<T> extends AbstractAuditableObject<S
 	
 	abstract public void setResult(T result);
 
-	public Method getMethod() {
+	public M getMethod() {
 		return method;
 	}
 
-	protected void setMethod(Method method) {
+	protected  void  setMethod(M method) {
 		this.method = method;
-		method.getAnalyteResult().add(this);
+		method.getAnalyteResults().add(this);
 	}
 
 	public LabTestOrder<?> getLabTestOrder() {
@@ -73,7 +73,7 @@ public abstract class AbstractAnalyteResult<T> extends AbstractAuditableObject<S
 
 	protected void setLabTestOrder(LabTestOrder<?> labTestOrder) {
 		this.labTestOrder = labTestOrder;
-		labTestOrder.getAnalyteResult().add(this);
+		labTestOrder.getAnalyteResults().add(this);
 	}
 
 	public ResultType getResultType() {

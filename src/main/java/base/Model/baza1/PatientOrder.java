@@ -1,17 +1,18 @@
 package base.Model.baza1;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
+import javax.validation.constraints.PastOrPresent;
 import org.hibernate.envers.Audited;
 
 @Entity
@@ -23,17 +24,19 @@ public class PatientOrder extends AbstractOrder<OrderResult> {
 	 */
 	private static final long serialVersionUID = 1L;
 
+
+	@Basic
+	@PastOrPresent
+	private LocalDate orderDate;
+
 	@NotNull
-	@Valid
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(nullable=false)
 	private Patient patient;
 	
-	@Valid
 	@ManyToOne(fetch = FetchType.LAZY)
 	private OrderingUnit orderingUnit;
 	
-	@Valid
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Phisician phisician;
 
@@ -47,10 +50,16 @@ public class PatientOrder extends AbstractOrder<OrderResult> {
 		
 	}
 	
-	public PatientOrder(@NotNull Patient patient, OrderingUnit orderingUnit, Phisician phisician) {
+	public PatientOrder(@NotNull Patient patient) {
 		this.setPatient(patient);
-		this.setOrderingUnit(orderingUnit);
-		this.setPhisician(phisician);
+	}
+
+	public LocalDate getOrderDate() {
+		return orderDate;
+	}
+
+	public void setOrderDate(LocalDate orderDate) {
+		this.orderDate = orderDate;
 	}
 
 	public Patient getPatient() {

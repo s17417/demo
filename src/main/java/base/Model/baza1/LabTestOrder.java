@@ -12,6 +12,7 @@ import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.Valid;
@@ -49,9 +50,10 @@ public abstract class LabTestOrder<T> extends AbstractAuditableObject<String> im
 					CascadeType.PERSIST,
 					CascadeType.REMOVE
 					},
-			fetch = FetchType.LAZY
+			fetch = FetchType.LAZY,
+			mappedBy = "labTestOrder"
 			)
-	private Set<AbstractAnalyteResult<?>> analyteResult = new HashSet<>();
+	private Set<AbstractAnalyteResult<?,?>> analyteResults = new HashSet<>();
 
 	public LabTestOrder() {
 		super();
@@ -71,16 +73,16 @@ public abstract class LabTestOrder<T> extends AbstractAuditableObject<String> im
 		laboratoryTest.getLabTestOrder().add(this);
 	}
 	
-	public Set<AbstractAnalyteResult<?>> getAnalyteResult() {
-		return analyteResult;
+	public Set<AbstractAnalyteResult<?,?>> getAnalyteResults() {
+		return analyteResults;
 	}
 
-	protected void setAnalyteResult(Set<AbstractAnalyteResult<?>> analyteResult) {
-		this.analyteResult.clear();
-		this.analyteResult.addAll(analyteResult);
+	protected void setAnalyteResults(Set<AbstractAnalyteResult<?,?>> analyteResults) {
+		this.analyteResults.clear();
+		this.analyteResults.addAll(analyteResults);
 	}
 
-	public Set<AbstractAnalyteResult<?>> createAnalyteResults(){
+	public Set<AbstractAnalyteResult<?,?>> createAnalyteResults(){
 		return this.laboratoryTest==null ? new HashSet<>() :
 			this.laboratoryTest.getMethods()
 			.stream()

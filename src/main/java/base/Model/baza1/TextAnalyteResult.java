@@ -3,11 +3,9 @@ package base.Model.baza1;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
-import org.hibernate.envers.Audited;
-
 @Entity
 //@Audited
-public class TextAnalyteResult extends AbstractAnalyteResult<String> {
+public class TextAnalyteResult extends AbstractAnalyteResult<String,QualitativeFormatMethod> {
 
 	/**
 	 * 
@@ -21,7 +19,7 @@ public class TextAnalyteResult extends AbstractAnalyteResult<String> {
 		super();
 	}
 
-	public TextAnalyteResult(LabTestOrder<?> labTestOrder, Method method) {
+	public TextAnalyteResult(LabTestOrder<?> labTestOrder,QualitativeFormatMethod method) {
 		super(labTestOrder, method);
 	}
 

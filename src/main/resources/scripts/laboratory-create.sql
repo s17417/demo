@@ -79,6 +79,7 @@
         cretionTimeStamp datetime(6),
         lastModifiedBy varchar(60),
         updateTimeStamp datetime(6),
+        orderIdentification varchar(128) not null,
         primary key (Id)
     ) engine=InnoDB;
 
@@ -90,6 +91,7 @@
         cretionTimeStamp datetime(6),
         lastModifiedBy varchar(60),
         updateTimeStamp datetime(6),
+        orderIdentification varchar(128),
         primary key (Id, REV)
     ) engine=InnoDB;
 
@@ -122,20 +124,6 @@
         primary key (Id)
     ) engine=InnoDB;
 
-    create table LabTestOrder_AbstractAnalyteResult (
-       LabTestOrder_Id varchar(60) not null,
-        analyteResult_Id varchar(60) not null,
-        primary key (LabTestOrder_Id, analyteResult_Id)
-    ) engine=InnoDB;
-
-    create table LabTestOrder_AbstractAnalyteResult_AUD (
-       REV integer not null,
-        LabTestOrder_Id varchar(60) not null,
-        analyteResult_Id varchar(60) not null,
-        REVTYPE tinyint,
-        primary key (REV, LabTestOrder_Id, analyteResult_Id)
-    ) engine=InnoDB;
-
     create table LabTestOrder_AUD (
        Id varchar(60) not null,
         REV integer not null,
@@ -162,20 +150,6 @@
         primary key (Id)
     ) engine=InnoDB;
 
-    create table Method_AbstractAnalyteResult (
-       Method_Id varchar(60) not null,
-        analyteResult_Id varchar(60) not null,
-        primary key (Method_Id, analyteResult_Id)
-    ) engine=InnoDB;
-
-    create table Method_AbstractAnalyteResult_AUD (
-       REV integer not null,
-        Method_Id varchar(60) not null,
-        analyteResult_Id varchar(60) not null,
-        REVTYPE tinyint,
-        primary key (REV, Method_Id, analyteResult_Id)
-    ) engine=InnoDB;
-
     create table Method_AUD (
        Id varchar(60) not null,
         REV integer not null,
@@ -198,6 +172,13 @@
         cretionTimeStamp datetime(6),
         lastModifiedBy varchar(60),
         updateTimeStamp datetime(6),
+        city varchar(255),
+        country varchar(255),
+        postalCode varchar(255),
+        state varchar(255),
+        street varchar(255),
+        name varchar(60),
+        shortName varchar(60),
         primary key (Id)
     ) engine=InnoDB;
 
@@ -209,6 +190,13 @@
         cretionTimeStamp datetime(6),
         lastModifiedBy varchar(60),
         updateTimeStamp datetime(6),
+        city varchar(255),
+        country varchar(255),
+        postalCode varchar(255),
+        state varchar(255),
+        street varchar(255),
+        name varchar(255),
+        shortName varchar(30),
         primary key (Id, REV)
     ) engine=InnoDB;
 
@@ -232,9 +220,23 @@
         cretionTimeStamp datetime(6),
         lastModifiedBy varchar(60),
         updateTimeStamp datetime(6),
-        name varchar(255),
-        surname varchar(255),
+        dateOfBirth date,
+        gender integer,
+        name varchar(60),
+        personalIdentificationNumber varchar(30),
+        surname varchar(120) not null,
         primary key (Id)
+    ) engine=InnoDB;
+
+    create table Patient_addresses (
+       Patient_Id varchar(60) not null,
+        city varchar(255),
+        country varchar(255),
+        postalCode varchar(255),
+        state varchar(255),
+        street varchar(255),
+        addresses_ORDER integer not null,
+        primary key (Patient_Id, addresses_ORDER)
     ) engine=InnoDB;
 
     create table Patient_AUD (
@@ -245,8 +247,45 @@
         cretionTimeStamp datetime(6),
         lastModifiedBy varchar(60),
         updateTimeStamp datetime(6),
-        name varchar(255),
-        surname varchar(255),
+        dateOfBirth date,
+        gender integer,
+        name varchar(60),
+        personalIdentificationNumber varchar(30),
+        surname varchar(120),
+        primary key (Id, REV)
+    ) engine=InnoDB;
+
+    create table Patient_PatientComment_AUD (
+       REV integer not null,
+        Patient_Id varchar(60) not null,
+        Id varchar(60) not null,
+        REVTYPE tinyint,
+        primary key (REV, Patient_Id, Id)
+    ) engine=InnoDB;
+
+    create table Patient_phoneNumbers (
+       Patient_Id varchar(60) not null,
+        phoneNumbers varchar(255) not null,
+        phoneNumbers_ORDER integer not null,
+        primary key (Patient_Id, phoneNumbers_ORDER)
+    ) engine=InnoDB;
+
+    create table PatientComment (
+       Id varchar(60) not null,
+        versionTimestamp datetime(6),
+        createdBy varchar(60),
+        cretionTimeStamp datetime(6),
+        lastModifiedBy varchar(60),
+        updateTimeStamp datetime(6),
+        comment varchar(255),
+        Patient_Id varchar(60) not null,
+        primary key (Id)
+    ) engine=InnoDB;
+
+    create table PatientComment_AUD (
+       Id varchar(60) not null,
+        REV integer not null,
+        REVTYPE tinyint,
         primary key (Id, REV)
     ) engine=InnoDB;
 
@@ -257,6 +296,8 @@
         cretionTimeStamp datetime(6),
         lastModifiedBy varchar(60),
         updateTimeStamp datetime(6),
+        orderIdentification varchar(128) not null,
+        orderDate date,
         orderingUnit_Id varchar(60),
         patient_Id varchar(60) not null,
         phisician_Id varchar(60),
@@ -271,6 +312,8 @@
         cretionTimeStamp datetime(6),
         lastModifiedBy varchar(60),
         updateTimeStamp datetime(6),
+        orderIdentification varchar(128),
+        orderDate date,
         orderingUnit_Id varchar(60),
         patient_Id varchar(60),
         phisician_Id varchar(60),
@@ -284,6 +327,9 @@
         cretionTimeStamp datetime(6),
         lastModifiedBy varchar(60),
         updateTimeStamp datetime(6),
+        name varchar(60),
+        personalIdentificationNumber varchar(30),
+        surname varchar(120),
         primary key (Id)
     ) engine=InnoDB;
 
@@ -295,6 +341,9 @@
         cretionTimeStamp datetime(6),
         lastModifiedBy varchar(60),
         updateTimeStamp datetime(6),
+        name varchar(60),
+        personalIdentificationNumber varchar(30),
+        surname varchar(120),
         primary key (Id, REV)
     ) engine=InnoDB;
 
@@ -318,11 +367,17 @@
         primary key (REV)
     ) engine=InnoDB;
 
-    alter table LabTestOrder_AbstractAnalyteResult 
-       add constraint UK_dtm11ubs1xciagbcay0jmm14q unique (analyteResult_Id);
+    alter table LabQualityControl 
+       add constraint UK_trlsvlwdwm9wn8sa2mw4ra7ib unique (orderIdentification);
 
-    alter table Method_AbstractAnalyteResult 
-       add constraint UK_ljri7hakroep1cqwexvlvgt1n unique (analyteResult_Id);
+    alter table Patient 
+       add constraint UK_9sy3r8nt1bq8e84mqsj7omfth unique (personalIdentificationNumber);
+
+    alter table PatientOrder 
+       add constraint UK_9erha28i1dowgkb2p0jaj68fc unique (orderIdentification);
+
+    alter table Phisician 
+       add constraint UK_hhhsqecp80pow3qrj66fnkmd7 unique (personalIdentificationNumber);
 
     alter table AbstractAnalyteResult 
        add constraint FK8bmge3b9exphdy4b6h2w3t2in 
@@ -379,21 +434,6 @@
        foreign key (laboratoryTest_Id) 
        references LaboratoryTest (Id);
 
-    alter table LabTestOrder_AbstractAnalyteResult 
-       add constraint FKl4qxegp3hx43pbt1urmnvcso6 
-       foreign key (analyteResult_Id) 
-       references AbstractAnalyteResult (Id);
-
-    alter table LabTestOrder_AbstractAnalyteResult 
-       add constraint FKopvl1sqd0xjhvdn0tthqluvs0 
-       foreign key (LabTestOrder_Id) 
-       references LabTestOrder (Id);
-
-    alter table LabTestOrder_AbstractAnalyteResult_AUD 
-       add constraint FK373038awned839yg4h5g70wxc 
-       foreign key (REV) 
-       references REVINFO (REV);
-
     alter table LabTestOrder_AUD 
        add constraint FK7qdwe1vfve8sqgj6f4xsi6cs 
        foreign key (REV) 
@@ -408,21 +448,6 @@
        add constraint FKnrwgpu4db8br1wg48b77qxlri 
        foreign key (laboratoryTest_Id) 
        references LaboratoryTest (Id);
-
-    alter table Method_AbstractAnalyteResult 
-       add constraint FK6pyj42xda7axkkadrch2qnaja 
-       foreign key (analyteResult_Id) 
-       references AbstractAnalyteResult (Id);
-
-    alter table Method_AbstractAnalyteResult 
-       add constraint FKf25qrc9smscb9xybwisiiy7id 
-       foreign key (Method_Id) 
-       references Method (Id);
-
-    alter table Method_AbstractAnalyteResult_AUD 
-       add constraint FKcur2698wiagj6or665mdsesrm 
-       foreign key (REV) 
-       references REVINFO (REV);
 
     alter table Method_AUD 
        add constraint FKbtsb1u7ddd5tysh348l7vt4k2 
@@ -449,8 +474,33 @@
        foreign key (Id, REV) 
        references LabTestOrder_AUD (Id, REV);
 
+    alter table Patient_addresses 
+       add constraint FK6rcnegjeixsve1wlafohe35ep 
+       foreign key (Patient_Id) 
+       references Patient (Id);
+
     alter table Patient_AUD 
        add constraint FKdlyae0mnlgiwq5mjh0e2s2qba 
+       foreign key (REV) 
+       references REVINFO (REV);
+
+    alter table Patient_PatientComment_AUD 
+       add constraint FK96mtlkd59a7rhigg7ains2mc4 
+       foreign key (REV) 
+       references REVINFO (REV);
+
+    alter table Patient_phoneNumbers 
+       add constraint FK5l8jlvv2g67kf9spp1nc7te14 
+       foreign key (Patient_Id) 
+       references Patient (Id);
+
+    alter table PatientComment 
+       add constraint FKpny0oc4dsrkolgfvfk0f0ntss 
+       foreign key (Patient_Id) 
+       references Patient (Id);
+
+    alter table PatientComment_AUD 
+       add constraint FKlhcer5lmym57jb4s2njuvlyby 
        foreign key (REV) 
        references REVINFO (REV);
 

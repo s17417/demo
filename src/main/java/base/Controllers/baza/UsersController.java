@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,7 +37,7 @@ public class UsersController {
 	private UserTenantService userTenantService;
 	
 	@PostMapping(
-			value= "/create",
+			value= "/",
 			produces=MediaType.APPLICATION_JSON_VALUE,
 			consumes=MediaType.APPLICATION_JSON_VALUE
 			)
@@ -46,12 +47,12 @@ public class UsersController {
 	}
 	
 	@PutMapping(
-			value= "/update",
+			value= "/{id}",
 			produces=MediaType.APPLICATION_JSON_VALUE,
 			consumes=MediaType.APPLICATION_JSON_VALUE
 			)
-	public @ResponseBody ResponseEntity<Object> updateUser(@Validated(DTOObjectConstans.Update.class) @RequestBody UserDTO userDTO) throws InvalidKeyException, NullPointerException {
-		userService.updateUser(userDTO);
+	public @ResponseBody ResponseEntity<Object> updateUser(@PathVariable String id, @Validated(DTOObjectConstans.Update.class) @RequestBody UserDTO userDTO) throws InvalidKeyException, NullPointerException {
+		userService.updateUser(id, userDTO);
 		return new ResponseEntity<Object>(userDTO,HttpStatus.OK);
 	}
 	
@@ -65,7 +66,7 @@ public class UsersController {
 	}
 	
 	@DeleteMapping(
-			value = "/delete"
+			value = "/"
 			)
 	public @ResponseBody ResponseEntity<Object> deleteUser() throws InvalidKeyException, NullPointerException {
 		userService.deleteUser();
@@ -81,10 +82,10 @@ public class UsersController {
 	}
 	
 	@GetMapping(
-			value="/activate",
+			value="/activate/{token}",
 			produces=MediaType.APPLICATION_JSON_VALUE
 			)
-	public @ResponseBody ResponseEntity<String> activateAccount(@NotBlank @RequestParam String token) {
+	public @ResponseBody ResponseEntity<String> activateAccount(@PathVariable String token) {
 		userService.activateUser(token);
 		return new ResponseEntity<String>("User activated",HttpStatus.OK);
 	}

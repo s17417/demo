@@ -5,9 +5,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import base.DTO.AuditableObjectDTO;
 import base.DTO.DTOObjectConstans;
-import base.DTO.baza.AuditableObjectDTO;
-import base.DTO.baza.PersistenceObjectDTO;
+import base.DTO.PersistenceObjectDTO;
 import base.DTO.baza.UserTenantRoleDTO;
 import base.Model.AbstractPersistentClasses.AbstractAuditableObject;
 import base.Model.AbstractPersistentClasses.AbstractPersistentObject;

@@ -124,7 +124,7 @@ public class UsersConfig {
 		pooledDataSource.setDriverClass("com.mysql.cj.jdbc.Driver");
 		pooledDataSource.setUser("root");
 		pooledDataSource.setPassword("Lolita41bobo!");
-		pooledDataSource.setJdbcUrl("jdbc:mysql://192.168.0.18:3306/default_schema");
+		pooledDataSource.setJdbcUrl("jdbc:mysql://vifon41.hopto.org:3306/default_schema");
 		pooledDataSource.setMaxPoolSize(2);
 		pooledDataSource.setMaxIdleTime(10);
         return pooledDataSource;

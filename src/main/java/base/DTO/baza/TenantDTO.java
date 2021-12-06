@@ -5,6 +5,7 @@ import javax.validation.constraints.Null;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import base.DTO.AuditableObjectDTO;
 import base.DTO.DTOObjectConstans;
 import base.DTO.DTOObjectConstans.Create;
 import base.DTO.DTOObjectConstans.Update;

@@ -15,6 +15,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import base.DTO.DTOObjectConstans;
+import base.DTO.PersistenceObjectDTO;
 import base.DTO.DTOObjectConstans.Create;
 import base.DTO.DTOObjectConstans.Update;
 

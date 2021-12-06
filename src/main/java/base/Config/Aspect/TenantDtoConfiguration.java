@@ -10,7 +10,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import base.DTO.DTOObjectConstans;
-import base.DTO.baza.PersistenceObjectDTO;
+import base.DTO.PersistenceObjectDTO;
 import base.DTO.baza.TenantDTO;
 import base.Model.AbstractPersistentClasses.AbstractPersistentObject;
 import base.Model.baza.Tenant;

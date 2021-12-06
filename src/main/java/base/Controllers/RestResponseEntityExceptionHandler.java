@@ -24,10 +24,12 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import base.Utils.Exceptions.EntityNotFoundException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 
@@ -43,6 +45,17 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 		
 		return handleExceptionInternal(ex, null, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
 		
+	}
+	
+	@ExceptionHandler({EntityNotFoundException.class})
+	protected ResponseEntity<Object> handleNullPointerException(EntityNotFoundException ex, WebRequest request){
+		var headers = new HttpHeaders();
+		Map<Integer, String> errors = new HashMap<>();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		errors.put(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+		
+		var body=createResponse(request, errors, HttpStatus.NOT_FOUND, ex);
+		return handleExceptionInternal(ex, convertToJson(body), headers, HttpStatus.NOT_FOUND, request);		
 	}
 	
 	@ExceptionHandler({NullPointerException.class})
@@ -160,7 +173,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         body.put("status", status.getReasonPhrase());
         body.put("error", ex.getClass().getSimpleName());  
         body.put("message", message);
-        body.put("path", request.getContextPath());
+        body.put("path", ServletUriComponentsBuilder.fromCurrentRequest().build().getPath());
         return body;
 	}
 	

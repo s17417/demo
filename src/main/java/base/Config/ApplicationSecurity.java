@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
@@ -20,6 +21,7 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
+import base.Model.baza.Role;
 import base.Repository.BazaRepository.UsersRepository;
 import base.Utils.Security.TenantTokenAuthenticationProvider;
 import base.Utils.Security.TokenAuthenticationProvider;
@@ -75,8 +77,9 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
     	
     	.authorizeRequests(
     			auth -> auth
+    			//.antMatchers(HttpMethod.DELETE,"/phisicians/*").hasRole(Role.SPECIFIC_DATABASE_VISITOR.name())
     			.antMatchers("/login/").permitAll()
-    	    	.antMatchers("/users/create").permitAll()
+    	    	.antMatchers("/users/").permitAll()
     	    	.antMatchers("/users/activate").permitAll()
     	    	)  	
     	.authorizeRequests(

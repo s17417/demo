@@ -43,18 +43,6 @@
        drop 
        foreign key FKjah3jpw3bulh8csm6hkmg6apn;
 
-    alter table LabTestOrder_AbstractAnalyteResult 
-       drop 
-       foreign key FKl4qxegp3hx43pbt1urmnvcso6;
-
-    alter table LabTestOrder_AbstractAnalyteResult 
-       drop 
-       foreign key FKopvl1sqd0xjhvdn0tthqluvs0;
-
-    alter table LabTestOrder_AbstractAnalyteResult_AUD 
-       drop 
-       foreign key FK373038awned839yg4h5g70wxc;
-
     alter table LabTestOrder_AUD 
        drop 
        foreign key FK7qdwe1vfve8sqgj6f4xsi6cs;
@@ -66,18 +54,6 @@
     alter table Method 
        drop 
        foreign key FKnrwgpu4db8br1wg48b77qxlri;
-
-    alter table Method_AbstractAnalyteResult 
-       drop 
-       foreign key FK6pyj42xda7axkkadrch2qnaja;
-
-    alter table Method_AbstractAnalyteResult 
-       drop 
-       foreign key FKf25qrc9smscb9xybwisiiy7id;
-
-    alter table Method_AbstractAnalyteResult_AUD 
-       drop 
-       foreign key FKcur2698wiagj6or665mdsesrm;
 
     alter table Method_AUD 
        drop 
@@ -99,9 +75,29 @@
        drop 
        foreign key FKap2gh8nv85jqmjxrw1h1jcinj;
 
+    alter table Patient_addresses 
+       drop 
+       foreign key FK6rcnegjeixsve1wlafohe35ep;
+
     alter table Patient_AUD 
        drop 
        foreign key FKdlyae0mnlgiwq5mjh0e2s2qba;
+
+    alter table Patient_PatientComment_AUD 
+       drop 
+       foreign key FK96mtlkd59a7rhigg7ains2mc4;
+
+    alter table Patient_phoneNumbers 
+       drop 
+       foreign key FK5l8jlvv2g67kf9spp1nc7te14;
+
+    alter table PatientComment 
+       drop 
+       foreign key FKpny0oc4dsrkolgfvfk0f0ntss;
+
+    alter table PatientComment_AUD 
+       drop 
+       foreign key FKlhcer5lmym57jb4s2njuvlyby;
 
     alter table PatientOrder 
        drop 
@@ -157,17 +153,9 @@
 
     drop table if exists LabTestOrder;
 
-    drop table if exists LabTestOrder_AbstractAnalyteResult;
-
-    drop table if exists LabTestOrder_AbstractAnalyteResult_AUD;
-
     drop table if exists LabTestOrder_AUD;
 
     drop table if exists Method;
-
-    drop table if exists Method_AbstractAnalyteResult;
-
-    drop table if exists Method_AbstractAnalyteResult_AUD;
 
     drop table if exists Method_AUD;
 
@@ -181,7 +169,17 @@
 
     drop table if exists Patient;
 
+    drop table if exists Patient_addresses;
+
     drop table if exists Patient_AUD;
+
+    drop table if exists Patient_PatientComment_AUD;
+
+    drop table if exists Patient_phoneNumbers;
+
+    drop table if exists PatientComment;
+
+    drop table if exists PatientComment_AUD;
 
     drop table if exists PatientOrder;
 

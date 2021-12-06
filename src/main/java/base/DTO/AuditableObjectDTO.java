@@ -1,6 +1,8 @@
-package base.DTO.baza;
+package base.DTO;
 
 import java.time.LocalDateTime;
+
+import base.Model.baza1.AbstractComment;
 
 
 public class AuditableObjectDTO extends PersistenceObjectDTO {

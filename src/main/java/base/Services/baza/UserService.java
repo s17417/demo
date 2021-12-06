@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.security.InvalidKeyException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -91,49 +92,21 @@ public class UserService {
 		return userDTO;
 	}
 	
-	/*@Transactional
-	public UserDTO createUserFromDTO(@NotNull UserDTO userDTO) throws InvalidKeyException, NullPointerException {
-		var user = modelMapper
-				.getTypeMap(UserDTO.class, Users.class,DTOObjectConstans.CREATE.name())
-				.map(userDTO);	
-		var savedUser=userRepo.saveAndFlush(user);
-		var invitations= invitationRepo.findByEmail(user.getEmail());
-		
-		if (invitations!=null) {
-			invitations.getTenant()
-			.stream()
-			.forEach( tenant ->{
-				new UsersTenantRole(savedUser, tenant, Role.SPECIFIC_DATABASE_INVITATION);
-				tenant.removeInvitation(invitations);
-			});
-			if (invitations.getTenant().isEmpty()) invitationRepo.delete(invitations);
-		}
-
-		String text = "For account click to attached link: "+serverAdress.getHostAddress()+":"+serverPort+"/users/activate?token="+jwtToken.generateEmailActivationToken(savedUser);
-		if (userRepo.findById(savedUser.getId()).isPresent())emailSender.sendEmailTo("tomasz.polawski@gmail.com", "probs", text);
-		
-		userDTO.setPassword(null);
-		modelMapper.getTypeMap(Users.class, UserDTO.class).map(savedUser,userDTO);
-		return userDTO;
-	}
 	
-	*/
-	public UserDTO updateUser(@NotNull UserDTO userDTO) throws IllegalArgumentException {
+	public UserDTO updateUser(@NotNull String id, @NotNull UserDTO userDTO) throws IllegalArgumentException {
 		var signedUserEmail=((AbstractAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getName();
-		var user = userRepo.findById(userDTO.getId());
+		var user = userRepo.findById(id).orElseThrow(() -> new NoSuchElementException("user: "+userDTO.getId()+" doesn't exists"));
 		
-		if (user.isEmpty())
-			throw new NullPointerException("user: "+userDTO.getId()+" doesn't exists");
-		if (!user.get().getEmail().contentEquals(signedUserEmail))
+		if (!user.getEmail().contentEquals(signedUserEmail))
 			throw new IllegalArgumentException("user: "+userDTO.getId()+" doesn't match signed user");
 		
 		modelMapper
 			.getTypeMap(UserDTO.class, Users.class, DTOObjectConstans.UPDATE.name())
-			.map(userDTO, user.get());	
-		userRepo.save(user.get());
+			.map(userDTO, user);	
+		userRepo.save(user);
 		
 		userDTO.setPassword(null);
-		modelMapper.getTypeMap(Users.class, UserDTO.class).map(user.get(),userDTO);
+		modelMapper.getTypeMap(Users.class, UserDTO.class).map(user,userDTO);
 		return userDTO;
 	}
 	

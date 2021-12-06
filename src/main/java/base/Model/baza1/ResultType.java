@@ -5,8 +5,8 @@ import java.util.Optional;
 
 public enum ResultType implements IResultTypeAssociationCreator {
 	
-	TEXT(TextAnalyteResult.class),
-	NUMBER(NumberAnalyteResult.class);
+	QUALITATIVE_ANALYTE_RESULT(TextAnalyteResult.class),
+	QUANTITATIVE_ANALYTE_RESULT(QuantitativeAnalyteResult.class);
 	
 	private Class<?> value;
 
@@ -19,10 +19,10 @@ public enum ResultType implements IResultTypeAssociationCreator {
 	}
 	
 	@Override
-	public Optional<AbstractAnalyteResult<?>> createAnalyteResult(LabTestOrder<?> labTestOrder, Method method) {
+	public Optional<AbstractAnalyteResult<?,?>> createAnalyteResult(LabTestOrder<?> labTestOrder, Method method) {
 		try {
 			return Optional.ofNullable(
-					(AbstractAnalyteResult<?>) method.getResultType().getValue()
+					(AbstractAnalyteResult<?,?>) method.getResultType().getValue()
 					.getConstructor(LabTestOrder.class, Method.class)
 					.newInstance(labTestOrder, method)
 					);

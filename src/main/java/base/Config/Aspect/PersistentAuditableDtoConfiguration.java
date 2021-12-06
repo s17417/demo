@@ -13,12 +13,14 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import base.DTO.AuditableObjectDTO;
 import base.DTO.DTOObjectConstans;
-import base.DTO.baza.AuditableObjectDTO;
-import base.DTO.baza.PersistenceObjectDTO;
+import base.DTO.PersistenceObjectDTO;
 import base.DTO.baza.TenantDTO;
 import base.DTO.baza.UserDTO;
 import base.DTO.baza.UserTenantRoleDTO;
+import base.DTO.baza1.ActiveObjectDTO;
+import base.Model.AbstractPersistentClasses.AbstractActiveObject;
 import base.Model.AbstractPersistentClasses.AbstractAuditableObject;
 import base.Model.AbstractPersistentClasses.AbstractPersistentObject;
 import base.Model.baza.Tenant;
@@ -70,6 +72,12 @@ public class PersistentAuditableDtoConfiguration implements IDtoConfigurtion {
 					);
 		
 		mapper
+		.createTypeMap(
+				PersistenceObjectDTO.class,
+				AbstractPersistentObject.class
+				);
+		
+		mapper
 			.createTypeMap(
 					AbstractAuditableObject.class,
 					AuditableObjectDTO.class
@@ -79,12 +87,26 @@ public class PersistentAuditableDtoConfiguration implements IDtoConfigurtion {
 					AuditableObjectDTO.class,
 					AbstractAuditableObject.class,
 					DTOObjectConstans.UPDATE.name()
-					);
+					).includeBase(PersistenceObjectDTO.class, AbstractPersistentObject.class);
 		mapper
 			.createTypeMap(
 					AuditableObjectDTO.class,
 					AbstractAuditableObject.class,
 					DTOObjectConstans.CREATE.name()
-					);
+					).includeBase(PersistenceObjectDTO.class, AbstractPersistentObject.class);
+		
+		mapper
+		.createTypeMap(
+				AuditableObjectDTO.class,
+				AbstractAuditableObject.class
+				).includeBase(PersistenceObjectDTO.class, AbstractPersistentObject.class);
+		
+		mapper
+		.createTypeMap(
+				AbstractActiveObject.class,
+				ActiveObjectDTO.class
+				)
+		.includeBase(AbstractAuditableObject.class, AuditableObjectDTO.class)
+		.implicitMappings();
 	}
 }

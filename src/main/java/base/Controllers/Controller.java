@@ -29,7 +29,7 @@ import base.Model.baza.Users;
 import base.Model.baza.UsersTenantRole;
 import base.Model.baza1.LabQualityControl;
 import base.Model.baza1.LaboratoryTest;
-import base.Model.baza1.NumberAnalyteResult;
+import base.Model.baza1.QuantitativeAnalyteResult;
 import base.Model.baza1.Patient;
 import base.Model.baza1.PatientOrder;
 import base.Model.baza1.ResultType;

@@ -16,6 +16,7 @@ import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -89,6 +90,7 @@ public class LaboratoryConfig {
         return dataSource;
     }
 	
+	
 	@Bean(name="laboratoryTransactionManager")
     public PlatformTransactionManager hibernateTransactionManager(@Qualifier("laboratoryEntityManagerFactory") EntityManagerFactory emf) {
     	 JpaTransactionManager transactionManager = new JpaTransactionManager();
@@ -100,11 +102,11 @@ public class LaboratoryConfig {
 	  private Properties additionalProperties() {
 	        Properties properties = new Properties();
 	        
-	        //properties.setProperty("hibernate.hbm2ddl.delimiter",";");
-	        //properties.setProperty("hibernate.hbm2dll.create_namespaces", "true");
-	        //properties.setProperty("javax.persistence.schema-generation.scripts.action", "drop-and-create");
-	        //properties.setProperty("javax.persistence.schema-generation.scripts.create-target", "laboratory-create.sql");
-	        //properties.setProperty("javax.persistence.schema-generation.scripts.drop-target", "laboratory-drop.sql");
+	        properties.setProperty("hibernate.hbm2ddl.delimiter",";");
+	        properties.setProperty("hibernate.hbm2dll.create_namespaces", "true");
+	        properties.setProperty("javax.persistence.schema-generation.scripts.action", "drop-and-create");
+	        properties.setProperty("javax.persistence.schema-generation.scripts.create-target", "laboratory-create.sql");
+	        properties.setProperty("javax.persistence.schema-generation.scripts.drop-target", "laboratory-drop.sql");
 	        
 	        properties.setProperty(Environment.HBM2DDL_AUTO, "none");
 	        properties.setProperty(Environment.DIALECT, "org.hibernate.dialect.MySQL8Dialect");

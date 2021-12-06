@@ -1,18 +1,25 @@
 package base.Config;
 
-import org.aspectj.lang.annotation.Aspect;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.modelmapper.Condition;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.core.CollectionFactory;
 import org.springframework.web.context.request.RequestContextListener;
 
-import base.Config.Aspect.IDtoConfigurtion;
-import base.Config.Aspect.PersistentAuditableDtoConfiguration;
+import base.DTO.DTOObjectConstans;
+import base.DTO.baza1.AddressDTO;
+import base.DTO.baza1.CommentDTO;
+import base.Model.baza1.Address;
+import base.Model.baza1.PatientComment;
 
 
 @Configuration
@@ -37,6 +44,11 @@ public class Config {
 	}
 	
 	@Bean
+	public Converter<String,String> toUpperCaseConverter(){ 
+		return mapper -> mapper.getSource()!=null ? mapper.getSource().strip().toUpperCase() : null;
+	}
+	
+	@Bean
 	public Converter<String,String> firstLetterUpperCaseConverter(){
 		return mapper -> mapper.getSource()!=null ? mapper.getSource().strip().substring(0, 1).toUpperCase() + mapper.getSource().strip().toLowerCase().substring(1) : null;
 	}
@@ -47,19 +59,33 @@ public class Config {
 	}
 	
 	@Bean
-	public Condition<String, String> stringNotNullCondition(){
-		return condition -> condition.getSource()!=null;
-	}
-	
-	/*@Bean
-	@Order(Ordered.HIGHEST_PRECEDENCE)
-	public IDtoConfigurtion persistentAuditableDtoConfiguration() {
-		return new PersistentAuditableDtoConfiguration();
+	public Converter <List<AddressDTO>,List<Address>> adressDtoListToEntityConverter(@Autowired @Lazy ModelMapper modelMapper){
+		return mapper -> mapper.getSource()
+				.stream()
+				.map(obj -> modelMapper.getTypeMap(AddressDTO.class, Address.class, DTOObjectConstans.CREATE.name()).map(obj))
+				.collect(Collectors.toList());
 	}
 	
 	@Bean
-	@Order(Ordered.HIGHEST_PRECEDENCE)
-	public IDtoConfigurtion usersDtoConfiguration() {
-		return new PersistentAuditableDtoConfiguration();
-	}*/
+	public Converter <List<CommentDTO>,List<PatientComment>> commentDtoSetToEntityConverter(@Autowired @Lazy ModelMapper modelMapper){
+		return mapper -> mapper.getSource()
+				.stream()
+				.map(obj -> modelMapper.getTypeMap(CommentDTO.class, PatientComment.class, DTOObjectConstans.CREATE.name()).map(obj))
+				.collect(Collectors.toList());
+	}
+	
+	
+	 
+	@SuppressWarnings("unchecked")
+	@Bean
+	public <X,T extends Collection<X>, R extends Collection<X>> Converter<T,R> collectionTypeConverter(){
+		return context -> (R) context.getSource()
+				.stream()
+				.collect(Collectors.toCollection(() -> CollectionFactory.createCollection(context.getDestinationType(), 0)));
+	};
+	
+	@Bean
+	public Condition<String, String> stringNotNullCondition(){
+		return condition -> condition.getSource()!=null;
+	}
 }

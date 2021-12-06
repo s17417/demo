@@ -6,6 +6,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 
+import base.DTO.AuditableObjectDTO;
 import base.DTO.DTOObjectConstans;
 import base.Model.AbstractPersistentClasses.AbstractPersistentObject;
 
