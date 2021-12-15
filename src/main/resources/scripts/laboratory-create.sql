@@ -7,7 +7,7 @@
         cretionTimeStamp datetime(6),
         lastModifiedBy varchar(60),
         updateTimeStamp datetime(6),
-        NumberResult bigint,
+        NumberResult decimal(36,18),
         TextResult varchar(255),
         labTestOrder_Id varchar(60),
         method_Id varchar(60),
@@ -29,6 +29,7 @@
     ) engine=InnoDB;
 
     create table Analyte (
+    
        Id varchar(60) not null,
         versionTimestamp datetime(6),
         createdBy varchar(60),
@@ -36,6 +37,9 @@
         lastModifiedBy varchar(60),
         updateTimeStamp datetime(6),
         isActive bit not null,
+        description varchar(255),
+        name varchar(180),
+        shortName varchar(30),
         primary key (Id)
     ) engine=InnoDB;
 
@@ -48,6 +52,9 @@
         lastModifiedBy varchar(60),
         updateTimeStamp datetime(6),
         isActive bit,
+        description varchar(255),
+        name varchar(180),
+        shortName varchar(30),
         primary key (Id, REV)
     ) engine=InnoDB;
 
@@ -58,6 +65,10 @@
         cretionTimeStamp datetime(6),
         lastModifiedBy varchar(60),
         updateTimeStamp datetime(6),
+        isActive bit not null,
+        description varchar(255),
+        name varchar(180),
+        shortName varchar(30),
         primary key (Id)
     ) engine=InnoDB;
 
@@ -69,6 +80,10 @@
         cretionTimeStamp datetime(6),
         lastModifiedBy varchar(60),
         updateTimeStamp datetime(6),
+        isActive bit,
+        description varchar(255),
+        name varchar(180),
+        shortName varchar(30),
         primary key (Id, REV)
     ) engine=InnoDB;
 
@@ -137,14 +152,22 @@
     ) engine=InnoDB;
 
     create table Method (
-       Id varchar(60) not null,
+       resultType varchar(31) not null,
+        Id varchar(60) not null,
         versionTimestamp datetime(6),
         createdBy varchar(60),
         cretionTimeStamp datetime(6),
         lastModifiedBy varchar(60),
         updateTimeStamp datetime(6),
         isActive bit not null,
-        resultType integer not null,
+        analyticalMethodType varchar(180),
+        printable bit default true,
+        decimalFormat varchar(255),
+        limitOfDetection decimal(36,18),
+        limitOfQuantification decimal(36,18),
+        roundingMode varchar(255),
+        sensitivity decimal(36,18),
+        units varchar(30),
         analyte_Id varchar(60) not null,
         laboratoryTest_Id varchar(60) not null,
         primary key (Id)
@@ -153,15 +176,23 @@
     create table Method_AUD (
        Id varchar(60) not null,
         REV integer not null,
+        resultType varchar(31) not null,
         REVTYPE tinyint,
         createdBy varchar(60),
         cretionTimeStamp datetime(6),
         lastModifiedBy varchar(60),
         updateTimeStamp datetime(6),
         isActive bit,
-        resultType integer,
+        analyticalMethodType varchar(180),
+        printable bit,
         analyte_Id varchar(60),
         laboratoryTest_Id varchar(60),
+        decimalFormat varchar(255),
+        limitOfDetection decimal(36,18),
+        limitOfQuantification decimal(36,18),
+        roundingMode varchar(255),
+        sensitivity decimal(36,18),
+        units varchar(30),
         primary key (Id, REV)
     ) engine=InnoDB;
 
@@ -177,8 +208,8 @@
         postalCode varchar(255),
         state varchar(255),
         street varchar(255),
-        name varchar(60),
-        shortName varchar(60),
+        name varchar(255),
+        shortName varchar(30),
         primary key (Id)
     ) engine=InnoDB;
 
@@ -361,11 +392,30 @@
         primary key (REV, orderingUnitId, phisicianId)
     ) engine=InnoDB;
 
+    create table QualitativeFormatMethod_resultTemplates (
+       QualitativeFormatMethod_Id varchar(60) not null,
+        resultTemplates varchar(255)
+    ) engine=InnoDB;
+
+    create table QualitativeFormatMethod_resultTemplates_AUD (
+       REV integer not null,
+        QualitativeFormatMethod_Id varchar(60) not null,
+        resultTemplates varchar(255) not null,
+        REVTYPE tinyint,
+        primary key (REV, QualitativeFormatMethod_Id, resultTemplates)
+    ) engine=InnoDB;
+
     create table REVINFO (
        REV integer not null auto_increment,
         REVTSTMP bigint,
         primary key (REV)
     ) engine=InnoDB;
+
+    alter table Analyte 
+       add constraint UK_47x69sl7aoei6c0giwnca5qxt unique (shortName);
+
+    alter table LaboratoryTest 
+       add constraint UK_fiqfkklxeqombys4ekliflm47 unique (shortName);
 
     alter table LabQualityControl 
        add constraint UK_trlsvlwdwm9wn8sa2mw4ra7ib unique (orderIdentification);
@@ -541,5 +591,15 @@
 
     alter table PhisicianOrderingUnit_AUD 
        add constraint FKhivinq2u3s7y9ewfebcck2nnn 
+       foreign key (REV) 
+       references REVINFO (REV);
+
+    alter table QualitativeFormatMethod_resultTemplates 
+       add constraint FKsvkk12kvdypx9kp69qba8emk4 
+       foreign key (QualitativeFormatMethod_Id) 
+       references Method (Id);
+
+    alter table QualitativeFormatMethod_resultTemplates_AUD 
+       add constraint FKnq8dn9dr2hxa3d70rf59tkicg 
        foreign key (REV) 
        references REVINFO (REV);

@@ -22,8 +22,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import base.DTO.DTOObjectConstans;
 import base.DTO.baza1.PatientDTO.SimplePatientWithCollectionsDTO;
-import base.DTO.baza1.PatientOrderDTO.PatientOrderDTO;
 import base.DTO.baza1.CommentDTO;
+import base.DTO.baza1.OrdersDTO.PatientOrderDTO;
 import base.DTO.baza1.PatientDTO.SimplePatientDTO;
 import base.Services.baza1.PatientService;
 import base.Utils.Exceptions.EntityNotFoundException;

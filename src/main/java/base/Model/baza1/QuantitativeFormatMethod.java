@@ -10,10 +10,14 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import org.hibernate.envers.Audited;
+
+@Audited
 @Entity
-@DiscriminatorValue("NUMBER")
+@DiscriminatorValue("QUANTITATIVE_ANALYTE_RESULT")
 public class QuantitativeFormatMethod extends Method {
 
 
@@ -38,16 +42,18 @@ public class QuantitativeFormatMethod extends Method {
 	@Basic
 	private BigDecimal sensitivity;
 	
-	@Column(length=255)
-	@Size(min=2, max=255)
+	@Column(length=36)
+	@Size(min=1, max=36)
+	@Pattern(regexp = "^([#0]*|([#0]{1,3}){1,1}([,]+[#0]{3,3})*)([.][#0]+)?$")
 	private String decimalFormat;
 	
 	@Enumerated(EnumType.STRING)
 	private RoundingMode roundingMode;
 	
+	public QuantitativeFormatMethod() {}
+	
 	public QuantitativeFormatMethod(@NotNull Analyte analyte, @NotNull LaboratoryTest laboratoryTest) {
 		super(analyte, laboratoryTest);
-		// TODO Auto-generated constructor stub
 	}
 
 	public String getUnits() {
@@ -59,6 +65,7 @@ public class QuantitativeFormatMethod extends Method {
 	}
 
 	public BigDecimal getLimitOfDetection() {
+		System.out.println(limitOfDetection.scale());
 		return limitOfDetection;
 	}
 
@@ -97,5 +104,4 @@ public class QuantitativeFormatMethod extends Method {
 	public void setRoundingMode(RoundingMode roundingMode) {
 		this.roundingMode = roundingMode;
 	}
-	
 }

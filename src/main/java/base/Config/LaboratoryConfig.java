@@ -95,7 +95,6 @@ public class LaboratoryConfig {
     public PlatformTransactionManager hibernateTransactionManager(@Qualifier("laboratoryEntityManagerFactory") EntityManagerFactory emf) {
     	 JpaTransactionManager transactionManager = new JpaTransactionManager();
          transactionManager.setEntityManagerFactory(emf);
-
          return transactionManager;
      }
 	

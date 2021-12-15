@@ -7,6 +7,9 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.envers.Audited;
+
+@Audited
 @Entity
 @DiscriminatorValue("QUALITATIVE_ANALYTE_RESULT")
 public class QualitativeFormatMethod extends Method {
@@ -19,6 +22,12 @@ public class QualitativeFormatMethod extends Method {
 	@ElementCollection
 	private List<String> resultTemplates;
 	
+	
+	
+	public QualitativeFormatMethod() {
+		super();
+	}
+
 	public QualitativeFormatMethod(@NotNull Analyte analyte, @NotNull LaboratoryTest laboratoryTest) {
 		super(analyte, laboratoryTest);
 	}

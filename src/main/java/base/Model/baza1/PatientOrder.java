@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
+
 import org.hibernate.envers.Audited;
 
 @Entity
@@ -24,10 +25,6 @@ public class PatientOrder extends AbstractOrder<OrderResult> {
 	 */
 	private static final long serialVersionUID = 1L;
 
-
-	@Basic
-	@PastOrPresent
-	private LocalDate orderDate;
 
 	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -45,6 +42,11 @@ public class PatientOrder extends AbstractOrder<OrderResult> {
 			mappedBy = "order"
 			)
 	private Set<OrderResult> labTestOrders = new HashSet<>();
+
+
+	@Basic
+	@PastOrPresent
+	private LocalDate orderDate;
 	
 	protected PatientOrder() {
 		

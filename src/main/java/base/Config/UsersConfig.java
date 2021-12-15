@@ -125,7 +125,8 @@ public class UsersConfig {
 		pooledDataSource.setUser("root");
 		pooledDataSource.setPassword("Lolita41bobo!");
 		pooledDataSource.setJdbcUrl("jdbc:mysql://vifon41.hopto.org:3306/default_schema");
-		pooledDataSource.setMaxPoolSize(2);
+		pooledDataSource.setMaxPoolSize(5);
+		pooledDataSource.setMinPoolSize(2);
 		pooledDataSource.setMaxIdleTime(10);
         return pooledDataSource;
     }

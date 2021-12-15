@@ -84,5 +84,6 @@ public abstract class AbstractAnalyteResult<T, M extends Method> extends Abstrac
 		this.resultType = resultType;
 	}
 	
-	
+	public abstract T transformData(T data);
+
 }

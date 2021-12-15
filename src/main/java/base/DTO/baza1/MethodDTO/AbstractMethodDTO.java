@@ -2,20 +2,32 @@ package base.DTO.baza1.MethodDTO;
 
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+
 import base.DTO.baza1.ActiveObjectDTO;
 import base.DTO.baza1.AnalyteDTO;
 import base.DTO.baza1.LaboratoryTestDTO.LaboratoryTestDTO;
 
-public class AbstractMethodDTO extends ActiveObjectDTO {
+@JsonTypeInfo(
+		  use = JsonTypeInfo.Id.NAME, 
+		  include = JsonTypeInfo.As.PROPERTY, 
+		  property = "type")
+		@JsonSubTypes({ 
+		  @Type(value = QuantitativeFormatMethodDTO.class, name = "quantitative"), 
+		  @Type(value = QualitativeFormatMethodDTO.class, name = "qualitative") 
+		})
+public abstract class AbstractMethodDTO extends ActiveObjectDTO {
 
 	@Size(min=2, max=180)
 	private String analyticalMethodType;
 	
 	private Boolean printable;
 	
-	private AnalyteDTO analyteDTO;
+	private AnalyteDTO analyte;
 
-	private LaboratoryTestDTO laboratoryTestDTO;
+	//private LaboratoryTestDTO laboratoryTest;
 
 	public String getAnalyticalMethodType() {
 		return analyticalMethodType;
@@ -33,20 +45,19 @@ public class AbstractMethodDTO extends ActiveObjectDTO {
 		this.printable = printable;
 	}
 
-	public AnalyteDTO getAnalyteDTO() {
-		return analyteDTO;
+	public AnalyteDTO getAnalyte() {
+		return analyte;
 	}
 
-	public void setAnalyteDTO(AnalyteDTO analyteDTO) {
-		this.analyteDTO = analyteDTO;
+	public void setAnalyte(AnalyteDTO analyte) {
+		this.analyte = analyte;
 	}
 
-	public LaboratoryTestDTO getLaboratoryTestDTO() {
-		return laboratoryTestDTO;
+	/*public LaboratoryTestDTO getLaboratoryTest() {
+		return laboratoryTest;
 	}
 
-	public void setLaboratoryTestDTO(LaboratoryTestDTO laboratoryTestDTO) {
-		this.laboratoryTestDTO = laboratoryTestDTO;
-	}
-	
+	public void setLaboratoryTest(LaboratoryTestDTO laboratoryTest) {
+		this.laboratoryTest = laboratoryTest;
+	}*/	
 }

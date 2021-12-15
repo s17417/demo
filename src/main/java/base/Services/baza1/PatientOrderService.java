@@ -17,7 +17,8 @@ import org.springframework.data.jpa.convert.QueryByExamplePredicateBuilder;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import base.DTO.baza1.PatientOrderDTO.PatientOrderDTO;
+
+import base.DTO.baza1.OrdersDTO.PatientOrderDTO;
 import base.Model.baza1.Patient;
 import base.Model.baza1.PatientOrder;
 import base.Repository.Baza1Repository.PatientOrderRepository;
@@ -80,7 +81,7 @@ public class PatientOrderService {
 		patient.setSurname(surname);
 		patient.setPersonalIdentificationNumber(personalIdentificationNumber);
 		var patientOrder = new PatientOrder(patient);
-		patientOrder.setOrderIdentification(orderIdentification);
+		patientOrder.setOrderIdentificationCode(orderIdentification);
 		var patientOrderExample = Example.of(patientOrder, patientOrderMatcher);
 		return 
 				patientOrderRepository

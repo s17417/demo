@@ -20,8 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sun.istack.NotNull;
 
 import base.DTO.baza1.CommentDTO;
+import base.DTO.baza1.OrdersDTO.PatientOrderDTO;
 import base.DTO.baza1.PatientDTO.SimplePatientWithCollectionsDTO;
-import base.DTO.baza1.PatientOrderDTO.PatientOrderDTO;
 import base.DTO.baza1.PatientDTO.SimplePatientDTO;
 import base.Model.baza1.Patient;
 import base.Repository.Baza1Repository.PatientRepository;

@@ -1,5 +1,6 @@
 package base.Model.baza1;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -28,7 +29,12 @@ public abstract class AbstractOrder<T> extends AbstractAuditableObject<String> {
 	@Size(min=4, max=128)
 	@Pattern(regexp = "[a-zA-Z0-9]+")
 	@Column(nullable = false, updatable = false, length = 128, unique = true)
-	private String orderIdentification;
+	private String orderIdentificationCode;
+
+
+	
+	
+	//private 
 	
 	abstract protected T createLabTestOrder(LaboratoryTest laboratoryTest);
 	
@@ -36,12 +42,12 @@ public abstract class AbstractOrder<T> extends AbstractAuditableObject<String> {
 	
 	abstract public Set<T> getLabTestOrders();
 
-	public String getOrderIdentification() {
-		return orderIdentification;
+	public String getOrderIdentificationCode() {
+		return orderIdentificationCode;
 	}
 
-	public void setOrderIdentification(String orderIdentification) {
-		this.orderIdentification = orderIdentification;
+	public void setOrderIdentificationCode(String orderIdentificationCode) {
+		this.orderIdentificationCode = orderIdentificationCode;
 	}
 
 }

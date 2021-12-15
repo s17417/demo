@@ -1,4 +1,4 @@
-package base.DTO.baza1.PatientOrderDTO;
+package base.DTO.baza1.OrdersDTO;
 
 import java.time.LocalDate;
 

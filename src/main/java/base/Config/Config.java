@@ -1,14 +1,19 @@
 package base.Config;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
 import org.modelmapper.Condition;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.Provider;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -20,6 +25,7 @@ import base.DTO.baza1.AddressDTO;
 import base.DTO.baza1.CommentDTO;
 import base.Model.baza1.Address;
 import base.Model.baza1.PatientComment;
+import base.Utils.Exceptions.EntityNotFoundException;
 
 
 @Configuration
@@ -74,8 +80,16 @@ public class Config {
 				.collect(Collectors.toList());
 	}
 	
+	@Bean
+	public Converter<BigDecimal,BigDecimal> stripTraillingZeroConverter(){
+		return conv -> {
+		var scale = conv.getSource().stripTrailingZeros().scale();
+		return scale > 0 ? conv.getSource().stripTrailingZeros() : 
+			 conv.getSource().setScale(0);
+		};
+	}
 	
-	 
+	
 	@SuppressWarnings("unchecked")
 	@Bean
 	public <X,T extends Collection<X>, R extends Collection<X>> Converter<T,R> collectionTypeConverter(){
@@ -87,5 +101,20 @@ public class Config {
 	@Bean
 	public Condition<String, String> stringNotNullCondition(){
 		return condition -> condition.getSource()!=null;
+	}	
+	
+	@Bean
+	public <T> Provider<T> laboratoryEntityProvider(@Autowired @Qualifier("laboratoryEntityManagerFactory") EntityManager entityManager) throws EntityNotFoundException {
+		return p -> {
+			try {
+				return Optional.ofNullable(
+						entityManager
+						.find(p.getRequestedType(), p.getSource().toString()))
+						.orElseThrow(() -> new EntityNotFoundException(p.getRequestedType()));
+			}
+			finally {
+				entityManager.close();
+				}
+		};
 	}
 }

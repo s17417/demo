@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import javax.validation.constraints.Digits;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 public class QuantitativeFormatMethodDTO extends AbstractMethodDTO {
@@ -20,7 +21,8 @@ public class QuantitativeFormatMethodDTO extends AbstractMethodDTO {
 	@Digits(fraction = 18, integer = 18)
 	private BigDecimal sensitivity;
 	
-	@Size(min=2, max=255)
+	@Size(min=1, max=36)
+	@Pattern(regexp = "^([#0]*|([#0]{1,3}){1,1}([,]+[#0]{3,3})*)([.][#0]+)?$")
 	private String decimalFormat;
 	
 	private RoundingMode roundingMode;

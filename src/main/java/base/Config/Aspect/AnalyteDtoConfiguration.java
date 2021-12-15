@@ -1,12 +1,21 @@
 package base.Config.Aspect;
 
+import org.aspectj.lang.annotation.Aspect;
 import org.modelmapper.ModelMapper;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 
+import base.DTO.AuditableObjectDTO;
 import base.DTO.baza1.ActiveObjectDTO;
 import base.DTO.baza1.AnalyteDTO;
 import base.Model.AbstractPersistentClasses.AbstractActiveObject;
+import base.Model.AbstractPersistentClasses.AbstractAuditableObject;
 import base.Model.baza1.Analyte;
 
+
+@Component
+@Aspect
+@Order(0)
 public class AnalyteDtoConfiguration implements IDtoConfigurtion {
 
 	@Override
@@ -21,7 +30,7 @@ public class AnalyteDtoConfiguration implements IDtoConfigurtion {
 			map.map(AnalyteDTO::getName, Analyte::setName);
 			map.map(AnalyteDTO::getDescription, Analyte::setDescription);
 		})
-		.includeBase(ActiveObjectDTO.class, AbstractActiveObject.class);
+		.includeBase(AuditableObjectDTO.class, AbstractAuditableObject.class);
 
 	}
 

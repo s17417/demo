@@ -7,8 +7,8 @@ import org.springframework.stereotype.Repository;
 import base.Model.baza1.Patient;
 
 @Repository
-//@Transactional("laboratoryTransactionManager")
 public interface PatientRepository extends JpaRepository<Patient, String>, JpaSpecificationExecutor<Patient> {
 	public Patient findByName(String name);
 	
+
 }

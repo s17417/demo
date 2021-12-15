@@ -3,8 +3,10 @@ package base.Model.baza1;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
+import org.hibernate.envers.Audited;
+
 @Entity
-//@Audited
+@Audited
 public class TextAnalyteResult extends AbstractAnalyteResult<String,QualitativeFormatMethod> {
 
 	/**
@@ -31,6 +33,12 @@ public class TextAnalyteResult extends AbstractAnalyteResult<String,QualitativeF
 	@Override
 	public void setResult(String result) {
 		this.result=result;
+	}
+
+	@Override
+	public String transformData(String data) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

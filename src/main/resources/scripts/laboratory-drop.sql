@@ -131,6 +131,14 @@
        drop 
        foreign key FKhivinq2u3s7y9ewfebcck2nnn;
 
+    alter table QualitativeFormatMethod_resultTemplates 
+       drop 
+       foreign key FKsvkk12kvdypx9kp69qba8emk4;
+
+    alter table QualitativeFormatMethod_resultTemplates_AUD 
+       drop 
+       foreign key FKnq8dn9dr2hxa3d70rf59tkicg;
+
     drop table if exists AbstractAnalyteResult;
 
     drop table if exists AbstractAnalyteResult_AUD;
@@ -192,5 +200,9 @@
     drop table if exists PhisicianOrderingUnit;
 
     drop table if exists PhisicianOrderingUnit_AUD;
+
+    drop table if exists QualitativeFormatMethod_resultTemplates;
+
+    drop table if exists QualitativeFormatMethod_resultTemplates_AUD;
 
     drop table if exists REVINFO;

@@ -24,6 +24,10 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.envers.Audited;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import base.Model.AbstractPersistentClasses.AbstractActiveObject;
 
 @Audited
@@ -32,6 +36,7 @@ import base.Model.AbstractPersistentClasses.AbstractActiveObject;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name="resultType", 
 discriminatorType = DiscriminatorType.STRING)
+
 public abstract class Method extends AbstractActiveObject<String> {
 
 	/**
@@ -49,13 +54,13 @@ public abstract class Method extends AbstractActiveObject<String> {
 	private Boolean printable;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(nullable=false, updatable=false)
+	@Column(nullable=false, updatable=false, insertable=false)
 	private ResultType resultType;
 	
 	@NotNull
 	@ManyToOne(
 			cascade = {CascadeType.PERSIST,CascadeType.MERGE},
-			fetch = FetchType.EAGER
+			fetch = FetchType.LAZY
 			)
 	@JoinColumn(nullable=false)
 	private Analyte analyte;
@@ -100,7 +105,7 @@ public abstract class Method extends AbstractActiveObject<String> {
 		return analyte;
 	}
 
-	protected void setAnalyte(Analyte analyte) {
+	public void setAnalyte(Analyte analyte) {
 		if (analyte ==null) return;
 		this.analyte = analyte;
 		analyte.getMethods().add(this);
@@ -110,7 +115,7 @@ public abstract class Method extends AbstractActiveObject<String> {
 		return laboratoryTest;
 	}
 
-	protected void setLaboratoryTest(LaboratoryTest laboratoryTest) {
+	public void setLaboratoryTest(LaboratoryTest laboratoryTest) {
 		if (laboratoryTest==null) return;
 		this.laboratoryTest = laboratoryTest;
 		this.laboratoryTest.getMethods().add(this);
@@ -132,7 +137,13 @@ public abstract class Method extends AbstractActiveObject<String> {
 	public void setPrintable(Boolean printable) {
 		this.printable = printable;
 	}
-	
-	//public abstract R transformData(S data);
+
+	public String getAnalyticalMethodType() {
+		return analyticalMethodType;
+	}
+
+	public void setAnalyticalMethodType(String analyticalMethodType) {
+		this.analyticalMethodType = analyticalMethodType;
+	}
 	
 }

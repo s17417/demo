@@ -1,11 +1,17 @@
-package base.DTO.baza1.PatientOrderDTO;
+package base.DTO.baza1.OrdersDTO;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+
 import base.DTO.AuditableObjectDTO;
 import base.DTO.DTOObjectConstans;
+import base.DTO.baza1.MethodDTO.QualitativeFormatMethodDTO;
+import base.DTO.baza1.MethodDTO.QuantitativeFormatMethodDTO;
 
 public class AbstractOrderDTO extends AuditableObjectDTO {
 

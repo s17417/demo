@@ -6,7 +6,6 @@ import java.util.List;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,10 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import base.DTO.DTOObjectConstans;
-import base.DTO.baza1.PatientDTO.SimplePatientWithCollectionsDTO;
-import base.DTO.baza1.PatientOrderDTO.PatientOrderDTO;
+import base.DTO.baza1.OrdersDTO.PatientOrderDTO;
 import base.Services.baza1.PatientOrderService;
-import base.Services.baza1.PatientService;
 import base.Utils.Exceptions.EntityNotFoundException;
 
 @Validated
@@ -33,9 +30,12 @@ import base.Utils.Exceptions.EntityNotFoundException;
 @RequestMapping(value="/lab/patientOrders")
 public class PatientOrderController {
 
-	@Autowired
-	PatientOrderService patientOrderService;
+	private PatientOrderService patientOrderService;
 	
+	public PatientOrderController(PatientOrderService patientOrderService) {
+		this.patientOrderService = patientOrderService;
+	}
+
 	@PostMapping(
 			value= "/",
 			produces=MediaType.APPLICATION_JSON_VALUE,
@@ -63,7 +63,7 @@ public class PatientOrderController {
 	public ResponseEntity<PatientOrderDTO> updatePatientOrder(
 			@NotNull @PathVariable String id,
 			@Validated(DTOObjectConstans.Create.class) @RequestBody PatientOrderDTO patientOrderDTO
-			){
+			) throws EntityNotFoundException {
 		var patientOrder = patientOrderService.updatePatientOrder(id, patientOrderDTO);
 		
 		return ResponseEntity.ok()
