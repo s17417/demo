@@ -2,6 +2,7 @@ package base.DTO.baza1.PatientDTO;
 
 import java.util.List;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
 import base.DTO.baza1.AddressDTO;
@@ -13,7 +14,7 @@ public class SimplePatientWithCollectionsDTO extends SimplePatientDTO {
 	private List<String> phoneNumbers;
 	
 	@Size(max=2)
-	private List<AddressDTO> addresses;
+	private List<@Valid AddressDTO> addresses;
 
 	public List<String> getPhoneNumbers() {
 		return phoneNumbers;

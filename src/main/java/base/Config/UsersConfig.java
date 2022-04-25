@@ -58,7 +58,7 @@ public class UsersConfig {
 	@Lazy
 	public TenantRepository tenantRepo;
 	
-	@EventListener
+	/*@EventListener
     public void appReady(ApplicationReadyEvent event) {
 		if (usersRepo.findByEmail("tomasz")==null) {
 		Users user = new Users();
@@ -84,13 +84,13 @@ public class UsersConfig {
        // tenant.setDatabasePassword(IdGenerator.getId().toString());
         UsersTenantRole usr = new UsersTenantRole(user,tenant,Role.SPECIFIC_DATABASE_TECHNICHAN);
         //UsersTenantRole usr1 = new UsersTenantRole(user,tenant,Role.APP_ADMIN);
-        usrRepo.saveAll(Arrays.asList(usr/*,usr1*/));
+        //usrRepo.saveAll(Arrays.asList(usr));
         usersRepo.save(user2);
         
         System.out.println(usrRepo.findByUsersEmailAndTenantName("1@1.pl", "default_schema1"));
         System.out.println(usrRepo.findByUsersEmailAndTenantName("tomasz.polawski@gmail.com", "default_schema1"));
 		}
-    }
+    }*/
 	
 	@Bean(name="usersEntityManagerFactory")
 	@Primary
@@ -127,7 +127,7 @@ public class UsersConfig {
 		pooledDataSource.setJdbcUrl("jdbc:mysql://vifon41.hopto.org:3306/default_schema");
 		pooledDataSource.setMaxPoolSize(5);
 		pooledDataSource.setMinPoolSize(2);
-		pooledDataSource.setMaxIdleTime(10);
+		pooledDataSource.setMaxIdleTime(100);
         return pooledDataSource;
     }
 
@@ -163,7 +163,7 @@ public class UsersConfig {
         
         
         //properties.setProperty("javax.persistence.schema-generation.scripts.create-target", "drop.sql");
-        properties.setProperty("hibernate.hbm2ddl.auto", "create-drop");//create-drop
+        properties.setProperty("hibernate.hbm2ddl.auto", "none");//create-drop
         properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL8Dialect");
         properties.setProperty("hibernate.temp.use_jdbc_metadata_defaults", "false");
 
@@ -173,8 +173,8 @@ public class UsersConfig {
         //properties.setProperty("javax.persistence.schema-generation.scripts.create-target", "users-create.sql");
         //properties.setProperty("javax.persistence.schema-generation.scripts.drop-target", "users-drop.sql");
         
-        properties.put(Environment.FORMAT_SQL, true);
-	    properties.put(Environment.SHOW_SQL, true);
+        //properties.put(Environment.FORMAT_SQL, true);
+	   // properties.put(Environment.SHOW_SQL, true);
 	    //properties.put(Environment.cac, properties)
 	    properties.put(Environment.USE_QUERY_CACHE, true);
 	    properties.setProperty("hibernate.cache.region.factory_class","org.hibernate.cache.ehcache.EhCacheRegionFactory");

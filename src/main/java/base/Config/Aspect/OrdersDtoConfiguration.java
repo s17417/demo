@@ -1,16 +1,20 @@
 package base.Config.Aspect;
 
 import org.aspectj.lang.annotation.Aspect;
+import org.modelmapper.Condition;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.Provider;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import base.DTO.AuditableObjectDTO;
 import base.DTO.baza1.OrdersDTO.AbstractOrderDTO;
 import base.DTO.baza1.OrdersDTO.LabQualityControlDTO;
+import base.DTO.baza1.OrdersDTO.ListPatientOrderDTO;
 import base.DTO.baza1.OrdersDTO.PatientOrderDTO;
+import base.DTO.baza1.PatientDTO.ListPatientDTO;
 import base.Model.AbstractPersistentClasses.AbstractAuditableObject;
 import base.Model.baza1.AbstractOrder;
 import base.Model.baza1.LabQualityControl;
@@ -26,19 +30,23 @@ import base.Utils.Exceptions.EntityNotFoundException;
 @Order(0)
 public class OrdersDtoConfiguration implements IDtoConfigurtion {
 	
-	Converter<String,String> stripConverter;
+	private Condition<Object, Object> objectNotNullCondition;
 	
-	Provider<Patient> patientProvider;
+	private Converter<String,String> stripConverter;
 	
-	Provider<Phisician> phisicianProvider;
+	private Provider<Patient> patientProvider;
 	
-	Provider<OrderingUnit> orderingUnitProvider;
+	private Provider<Phisician> phisicianProvider;
+	
+	private Provider<OrderingUnit> orderingUnitProvider;
 	
 	public OrdersDtoConfiguration(
+			Condition<Object, Object> objectNotNullCondition,
 			Converter<String,String> stripConverter,
 			Provider<Patient> patientProvider,
 			Provider<Phisician> phisicianProvider,
 			Provider<OrderingUnit> orderingUnitProvider) {
+		this.objectNotNullCondition=objectNotNullCondition;
 		this.stripConverter = stripConverter;
 		this.patientProvider = patientProvider;
 		this.phisicianProvider = phisicianProvider;
@@ -60,15 +68,18 @@ public class OrdersDtoConfiguration implements IDtoConfigurtion {
 		.implicitMappings()
 		.includeBase(AbstractOrder.class, AbstractOrderDTO.class);
 		
+		mapper.createTypeMap(PatientOrder.class, ListPatientOrderDTO.class)
+		.implicitMappings();
+		
 		mapper.createTypeMap(AbstractOrderDTO.class, AbstractOrder.class)
-		.addMapping(AbstractOrderDTO::getOrderIdentification, AbstractOrder<OrderResult>::setOrderIdentificationCode);
+		.addMapping(AbstractOrderDTO::getOrderIdentificationCode, AbstractOrder<OrderResult>::setOrderIdentificationCode);
 		
 		mapper.createTypeMap(PatientOrderDTO.class, PatientOrder.class)
 		.addMappings( map ->{
 			map.map(PatientOrderDTO::getOrderDate, PatientOrder::setOrderDate);
-			map.with(patientProvider).map(src -> src.getPatient().getId(),PatientOrder::setPatient);
-			map.with(phisicianProvider).map(src -> src.getPhisician().getId(),PatientOrder::setPhisician);
-			map.with(orderingUnitProvider).map(src -> src.getOrderingUnit().getId(),PatientOrder::setOrderingUnit);
+			map.when(objectNotNullCondition).with(patientProvider).map(src -> src.getPatient().getId(),PatientOrder::setPatient);
+			map.when(objectNotNullCondition).with(phisicianProvider).map(src -> src.getPhisician().getId(),PatientOrder::setPhisician);
+			map.when(objectNotNullCondition).with(orderingUnitProvider).map(src -> src.getOrderingUnit().getId(),PatientOrder::setOrderingUnit);
 			
 		}).includeBase(AbstractOrderDTO.class, AbstractOrder.class); 
 		

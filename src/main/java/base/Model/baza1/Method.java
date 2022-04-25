@@ -17,26 +17,23 @@ import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DiscriminatorOptions;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.envers.Audited;
-
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import base.Model.AbstractPersistentClasses.AbstractActiveObject;
 
 @Audited
 @Entity
-@SQLDelete(sql = "UPDATE METHOD SET ISACTIVE = false WHERE id = ?")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorOptions(force = true)
 @DiscriminatorColumn(name="resultType", 
 discriminatorType = DiscriminatorType.STRING)
-
 public abstract class Method extends AbstractActiveObject<String> {
 
 	/**
@@ -44,7 +41,8 @@ public abstract class Method extends AbstractActiveObject<String> {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	@Column(length=180)
+	@NotBlank
+	@Column(length=180, nullable=false)
 	@Size(min=2, max=180)
 	private String analyticalMethodType;
 	
@@ -54,7 +52,7 @@ public abstract class Method extends AbstractActiveObject<String> {
 	private Boolean printable;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(nullable=false, updatable=false, insertable=false)
+	@Column(name ="resultType",nullable=false, updatable=false, insertable=false)
 	private ResultType resultType;
 	
 	@NotNull
@@ -75,9 +73,8 @@ public abstract class Method extends AbstractActiveObject<String> {
 	
 	@OneToMany(
 			cascade = {
-					CascadeType.MERGE,
-					CascadeType.PERSIST,
-					CascadeType.REMOVE
+					//CascadeType.MERGE,
+					//CascadeType.PERSIST
 					},
 			fetch = FetchType.LAZY, mappedBy = "method"
 			)
@@ -125,7 +122,7 @@ public abstract class Method extends AbstractActiveObject<String> {
 		return analyteResults;
 	}
 
-	protected void setAnalyteResults(Set<AbstractAnalyteResult<?,?>> analyteResults) {
+	protected <N,J extends Method> void setAnalyteResults(Set<AbstractAnalyteResult<N,J>> analyteResults) {
 		this.analyteResults.clear();
 		this.analyteResults.addAll(analyteResults);
 	}
@@ -146,4 +143,6 @@ public abstract class Method extends AbstractActiveObject<String> {
 		this.analyticalMethodType = analyticalMethodType;
 	}
 	
+	/*protected abstract <X extends AbstractAnalyteResult<?, ?>> X create(LabTestOrder<?> laboratoryTest);
+	*/
 }

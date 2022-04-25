@@ -40,7 +40,6 @@ public class OrderingUnit extends AbstractAuditableObject<String> {
 	@Embedded
 	private Address address;
 	
-	//@RestResource(path = "orderingUnitPhisicians", rel = "phisicians")
 	@ManyToMany(cascade = {
 			CascadeType.PERSIST,
 			CascadeType.MERGE
@@ -51,11 +50,11 @@ public class OrderingUnit extends AbstractAuditableObject<String> {
 	)
 	private Set<@Valid Phisician> phisicians = new HashSet<>();
 	
-	@OneToMany(
+	/*@OneToMany(
 			cascade = {CascadeType.MERGE, CascadeType.PERSIST},
 			mappedBy = "orderingUnit"
 			)
-	private Set<PatientOrder> patientOrders = new HashSet<>();
+	private Set<PatientOrder> patientOrders = new HashSet<>();*/
 	
 	
 	
@@ -109,14 +108,14 @@ public class OrderingUnit extends AbstractAuditableObject<String> {
 		phisician.getOrderingUnits().remove(this);
 	}
 
-	public Set<PatientOrder> getPatientOrders() {
+	/*public Set<PatientOrder> getPatientOrders() {
 		return patientOrders;
 	}
 
 	protected void setPatientOrders(Set<PatientOrder> patientOrders) {
 		this.patientOrders.clear();
 		this.patientOrders.addAll(patientOrders);
-	}
+	}*/
 	
 	public void addPatientOrder(PatientOrder patientOrder) {
 		patientOrder.setOrderingUnit(this);
@@ -125,5 +124,13 @@ public class OrderingUnit extends AbstractAuditableObject<String> {
 	public void removePatientORder(PatientOrder patientOrder) {
 		patientOrder.setPatient(null);
 	}
+
+	@Override
+	public String toString() {
+		return "OrderingUnit [shortName=" + shortName + ", name=" + name + ", address=" + address + ", phisicians="
+				+ phisicians + "]";
+	}
+	
+	
 
 }

@@ -42,8 +42,8 @@ public class PersistentAuditableDtoConfiguration implements IDtoConfigurtion {
 	@Autowired @Qualifier ("stripConverter")
 	Converter<String,String> stripConverter;
 	
-	@Autowired @Qualifier ("stringNotNullCondition")
-	Condition<String,String> stringNotNullCondition;
+	@Autowired @Qualifier ("objectNotNullCondition")
+	Condition<Object,Object> stringNotNullCondition;
 	
 	
 	@Override

@@ -3,6 +3,9 @@ package base.DTO.baza;
 import java.time.LocalDateTime;
 
 import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -18,6 +21,7 @@ import base.DTO.DTOObjectConstans;
 import base.DTO.PersistenceObjectDTO;
 import base.DTO.DTOObjectConstans.Create;
 import base.DTO.DTOObjectConstans.Update;
+import base.Model.baza.AdminRole;
 
 public class UserDTO extends PersistenceObjectDTO {
 	
@@ -44,6 +48,8 @@ public class UserDTO extends PersistenceObjectDTO {
 	@Email
 	@Null(groups = DTOObjectConstans.Update.class)
 	private String email;
+	
+	private AdminRole personalRole;
 	
 	private LocalDateTime creationTimeStamp;
 	
@@ -110,6 +116,14 @@ public class UserDTO extends PersistenceObjectDTO {
 	public String toString() {
 		return "UserDTO [Id=" + getId() + ", firstname=" + firstname + ", surname=" + surname + ", password=" + password
 				+ ", email=" + email + "]";
+	}
+
+	public AdminRole getPersonalRole() {
+		return personalRole;
+	}
+
+	public void setPersonalRole(AdminRole personalRole) {
+		this.personalRole = personalRole;
 	}
 
 	

@@ -7,7 +7,8 @@ import org.springframework.stereotype.Component;
 
 import base.DTO.AuditableObjectDTO;
 import base.DTO.baza1.ActiveObjectDTO;
-import base.DTO.baza1.AnalyteDTO;
+import base.DTO.baza1.AnalyteDTO.AnalyteDTO;
+import base.DTO.baza1.AnalyteDTO.ListAnalyteDTO;
 import base.Model.AbstractPersistentClasses.AbstractActiveObject;
 import base.Model.AbstractPersistentClasses.AbstractAuditableObject;
 import base.Model.baza1.Analyte;
@@ -23,6 +24,9 @@ public class AnalyteDtoConfiguration implements IDtoConfigurtion {
 		mapper.createTypeMap(Analyte.class, AnalyteDTO.class)
 		.implicitMappings()
 		.includeBase(AbstractActiveObject.class, ActiveObjectDTO.class);
+		
+		mapper.createTypeMap(Analyte.class, ListAnalyteDTO.class)
+		.implicitMappings();
 		
 		mapper.createTypeMap(AnalyteDTO.class, Analyte.class)
 		.addMappings(map -> {

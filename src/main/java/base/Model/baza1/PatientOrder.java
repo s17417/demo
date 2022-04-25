@@ -14,11 +14,13 @@ import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.envers.Audited;
 
 @Entity
 @Audited
-public class PatientOrder extends AbstractOrder<OrderResult> {
+public class PatientOrder extends AbstractOrder<PatientSample> {
 
 	/**
 	 * 
@@ -37,11 +39,17 @@ public class PatientOrder extends AbstractOrder<OrderResult> {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Phisician phisician;
 
+	/*@OneToMany(
+			cascade = {CascadeType.PERSIST, CascadeType.MERGE,CascadeType.REMOVE},
+			mappedBy = "order"
+			)
+	private Set<OrderResult> labTestOrders = new HashSet<>();*/
+	
 	@OneToMany(
 			cascade = {CascadeType.PERSIST, CascadeType.MERGE,CascadeType.REMOVE},
 			mappedBy = "order"
 			)
-	private Set<OrderResult> labTestOrders = new HashSet<>();
+	private Set<PatientSample> patientSamples = new HashSet<>();
 
 
 	@Basic
@@ -85,19 +93,9 @@ public class PatientOrder extends AbstractOrder<OrderResult> {
 	public OrderingUnit getOrderingUnit() {
 		return orderingUnit;
 	}
-
+	
 	public void setOrderingUnit(OrderingUnit orderingUnit) {
-		if (orderingUnit==null) {
-			if (this.orderingUnit!=null)
-				this.orderingUnit.getPatientOrders().remove(this);
-			this.orderingUnit=null;
-		}
-		if (orderingUnit!=null) {
-			if (this.orderingUnit!=null)
-				this.orderingUnit.getPatientOrders().remove(this);
-			this.orderingUnit=orderingUnit;
-			orderingUnit.getPatientOrders().add(this);
-		}
+		this.orderingUnit=orderingUnit;
 	}
 
 	public Phisician getPhisician() {
@@ -105,23 +103,15 @@ public class PatientOrder extends AbstractOrder<OrderResult> {
 	}
 
 	public void setPhisician(Phisician phisician) {
-		if (phisician==null) {
-			if (this.phisician!=null)
-				this.phisician.getPatientOrders().remove(this);
-			this.phisician=null;
-		}
-		if (phisician!=null) {
-			if (this.phisician!=null)
-				this.phisician.getPatientOrders().remove(this);
-			this.phisician=phisician;
-			phisician.getPatientOrders().add(this);
-		}
-	}
-
+		this.phisician=phisician;
+	}	
+	
+	/*@Override
 	public Set<OrderResult> getLabTestOrders() {
 		return labTestOrders;
 	}
 
+	@Override
 	protected void setLabTestOrders(Set<OrderResult> labTestOrders) {
 		this.labTestOrders.clear();
 		this.labTestOrders.addAll(labTestOrders);
@@ -130,10 +120,42 @@ public class PatientOrder extends AbstractOrder<OrderResult> {
 	@Override
 	protected OrderResult createLabTestOrder(LaboratoryTest laboratoryTest) {
 		return new OrderResult(laboratoryTest, this);
-	}
+	}*/
 	
-	public OrderResult addMethodResult(LaboratoryTest laboratoryTest) {
-		return createLabTestOrder(laboratoryTest);
+	@Override
+	protected void setSamples(@NotNull Set<PatientSample> patientSamples) {
+		this.patientSamples.clear();
+		this.patientSamples.addAll(patientSamples);
+		
 	}
+
+	@Override
+	public Set<PatientSample> getSamples() {
+		return patientSamples;
+	}
+
+	@Override
+	protected PatientSample createSample(PatientSample sample) {
+		return new PatientSample(this);
+	}
+
+	@Override
+	public String toString() {
+		return "PatientOrder [patient=" + patient + ", orderingUnit=" + orderingUnit + ", phisician=" + phisician
+				+ ", patientSamples=" + patientSamples + ", orderDate=" + orderDate + ", getOrderIdentificationCode()="
+				+ getOrderIdentificationCode() + ", getCretionTimeStamp()=" + getCretionTimeStamp()
+				+ ", getUpdateTimeStamp()=" + getUpdateTimeStamp() + ", getCreatedBy()=" + getCreatedBy()
+				+ ", getLastModifiedBy()=" + getLastModifiedBy() + ", getId()=" + getId() + ", getVersionTimestamp()="
+				+ getVersionTimestamp() + ", hashCode()=" + hashCode() + ", getClass()=" + getClass() + ", toString()="
+				+ super.toString() + "]";
+	}
+
+	
+	
+	
+
+	/*public OrderResult addMethodResult(LaboratoryTest laboratoryTest) {
+		return createLabTestOrder(laboratoryTest);
+	}*/
 	
 }

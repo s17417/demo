@@ -8,6 +8,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -15,6 +17,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLUpdate;
 import org.hibernate.envers.Audited;
 
 import base.Model.AbstractPersistentClasses.AbstractActiveObject;
@@ -22,6 +25,7 @@ import base.Model.AbstractPersistentClasses.AbstractActiveObject;
 @Audited
 @Entity
 @SQLDelete(sql = "UPDATE LABORATORYTEST SET ISACTIVE = false WHERE id = ?")
+//@SQLUpdate(sql="INSERT INTO LaboratoryTestHistory values (id, updateTimeStamp)")
 public class LaboratoryTest extends AbstractActiveObject<String> /*AbstractAuditableObject<String>*/ {
 
 	/**
@@ -41,9 +45,16 @@ public class LaboratoryTest extends AbstractActiveObject<String> /*AbstractAudit
 	@Size(min=2, max=30)
 	private String shortName;
 	
+	@NotNull
+	@JoinColumn(nullable = false)
+	@ManyToOne(fetch = FetchType.EAGER)
+	private SpecimentType specimentType;
+	
 	@Column(length=255)
 	@Size(min=2, max=255)
 	private String description;
+	
+	
 	
 	@OneToMany(
 			cascade = {
@@ -82,6 +93,16 @@ public class LaboratoryTest extends AbstractActiveObject<String> /*AbstractAudit
 	public void setShortName(String shortName) {
 		this.shortName = shortName;
 	}
+	
+	
+
+	public SpecimentType getSpecimentType() {
+		return specimentType;
+	}
+
+	public void setSpecimentType(SpecimentType specimentType) {
+		this.specimentType = specimentType;
+	}
 
 	public String getDescription() {
 		return description;
@@ -100,16 +121,24 @@ public class LaboratoryTest extends AbstractActiveObject<String> /*AbstractAudit
 		this.labTestOrder.addAll(labTestOrder);
 	}
 	
-	public OrderResult addPatientMethodResult(@NotNull @Valid PatientOrder patientOrder) {
-		return patientOrder.addMethodResult(this);	
+	public OrderResult addPatientMethodResult(@NotNull @Valid PatientSample patientSample) {
+		return patientSample.addMethodResult(this);	
 	}
 	
-	public LabQualityControlResult addControlMethodResult(@NotNull @Valid LabQualityControl labQualityControl, @Valid LabQualityControlResult parentTargetValue) {
+	/*public LabQualityControlResult addControlMethodResult(@NotNull @Valid LabQualityControl labQualityControl, @Valid LabQualityControlResult parentTargetValue) {
 		return labQualityControl.addMethodControlResult(this, parentTargetValue);
 	}
 	
 	public LabQualityControlResult addControlMethodTargetValue(@NotNull @Valid LabQualityControl labQualityControl) {
 		return labQualityControl.addMethodControlTargetValue(this);
+	}*/
+	
+	public LabQualityControlResult addControlMethodResult(@NotNull @Valid ControlSample controlSample, @Valid LabQualityControlResult parentTargetValue) {
+		return controlSample.addMethodControlResult(this, parentTargetValue);
+	}
+	
+	public LabQualityControlResult addControlMethodTargetValue(@NotNull @Valid ControlSample controlSample) {
+		return controlSample.addMethodControlTargetValue(this);
 	}
 
 	public Set<Method> getMethods() {

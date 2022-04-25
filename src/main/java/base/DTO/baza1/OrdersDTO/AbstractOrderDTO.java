@@ -18,14 +18,14 @@ public class AbstractOrderDTO extends AuditableObjectDTO {
 	@NotBlank(groups = {DTOObjectConstans.Create.class, /*DTOObjectConstans.Update.class*/})
 	@Size(min=4, max=128)
 	@Pattern(regexp = "[a-zA-Z0-9]+")
-	private String orderIdentification;
+	private String orderIdentificationCode;
 
-	public String getOrderIdentification() {
-		return orderIdentification;
+	public String getOrderIdentificationCode() {
+		return orderIdentificationCode;
 	}
 
-	public void setOrderIdentification(String orderIdentification) {
-		this.orderIdentification = orderIdentification;
+	public void setOrderIdentificationCode(String orderIdentificationCode) {
+		this.orderIdentificationCode = orderIdentificationCode;
 	}
 
 }

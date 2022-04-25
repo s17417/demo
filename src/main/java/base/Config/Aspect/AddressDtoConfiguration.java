@@ -25,6 +25,14 @@ public class AddressDtoConfiguration implements IDtoConfigurtion {
 			map.map(AddressDTO::getPostalCode, Address::setPostalCode);
 		});
 		
+		mapper.createTypeMap(AddressDTO.class, Address.class).addMappings(map -> {
+			map.map(AddressDTO::getCountry, Address::setCountry);
+			map.map(AddressDTO::getState, Address::setState);
+			map.map(AddressDTO::getCity, Address::setCity);
+			map.map(AddressDTO::getStreet, Address::setStreet);
+			map.map(AddressDTO::getPostalCode, Address::setPostalCode);
+		});
+		
 	}
 
 }

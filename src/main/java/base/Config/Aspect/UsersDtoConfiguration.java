@@ -35,8 +35,8 @@ public class UsersDtoConfiguration implements IDtoConfigurtion {
 	@Autowired @Qualifier ("stripConverter")
 	Converter<String,String> stripConverter;
 	
-	@Autowired @Qualifier ("stringNotNullCondition")
-	Condition<String,String> stringNotNullCondition;
+	@Autowired @Qualifier ("objectNotNullCondition")
+	Condition<Object,Object> stringNotNullCondition;
 
 	@Override
 	public void modelMapperConfiguration(ModelMapper mapper) {
@@ -48,6 +48,7 @@ public class UsersDtoConfiguration implements IDtoConfigurtion {
 			map.map(Users::getSurname, UserDTO::setSurname);
 			map.map(Users::getCreationTimeStamp, UserDTO::setCreationTimeStamp);
 			map.map(Users::getUpdateTimeStamp, UserDTO::setUpdateTimeStamp);
+			map.map(Users::getPersonalRole, UserDTO::setPersonalRole);
 			}
 		)
 		.includeBase(AbstractPersistentObject.class, PersistenceObjectDTO.class);

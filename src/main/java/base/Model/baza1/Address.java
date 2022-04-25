@@ -1,12 +1,14 @@
 package base.Model.baza1;
 
 import java.io.Serializable;
+
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 @Embeddable
-public class Address implements Serializable /*extends AbstractPersistentObject*/ {
+public class Address implements Serializable {
 
 	/**
 	 * 
@@ -15,22 +17,27 @@ public class Address implements Serializable /*extends AbstractPersistentObject*
 
 	@Pattern(regexp = "^[a-zA-Z0-9]([\\w]|[ -_.]){0,98}[a-zA-Z0-9]$")
 	@Size(min=2, max=100)
+	@Column(length=100)
 	private String country;
 	
 	@Pattern(regexp = "^[a-zA-Z0-9]([\\w]|[ -_.]){0,98}[a-zA-Z0-9]$")
 	@Size(min=2, max=100)
+	@Column(length=100)
 	private String state;
 	
 	@Pattern(regexp = "^[a-zA-Z0-9]([\\w]|[ -_.]){0,98}[a-zA-Z0-9]$")
 	@Size(min=2, max=100)
+	@Column(length=100)
 	private String city;
 	
 	@Pattern(regexp = "^[a-zA-Z0-9]([\\w]|[ -_.]){0,98}[a-zA-Z0-9]$")
 	@Size(min=2, max=100)
+	@Column(length=100)
 	private String street;
 	
 	@Pattern(regexp = "^[a-zA-Z0-9]([\\w]|[ -_.]){0,98}[a-zA-Z0-9]$")
 	@Size(min=2, max=15)
+	@Column(length=15)
 	private String postalCode;
 	
 	public Address() {

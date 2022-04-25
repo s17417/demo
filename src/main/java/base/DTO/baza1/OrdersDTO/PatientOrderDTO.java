@@ -13,6 +13,7 @@ import base.DTO.AuditableObjectDTO;
 import base.DTO.DTOObjectConstans;
 import base.DTO.baza1.OrderingUnitDTO.OrderingUnitDTO;
 import base.DTO.baza1.PatientDTO.SimplePatientDTO;
+import base.DTO.baza1.PatientSampleDTO.SimplePatientSampleDTO;
 import base.DTO.baza1.PhisicianDTO.PhisicianDTO;
 
 public class PatientOrderDTO extends AbstractOrderDTO {
@@ -60,5 +61,6 @@ public class PatientOrderDTO extends AbstractOrderDTO {
 	public void setPhisician(PhisicianDTO phisician) {
 		this.phisician = phisician;
 	}
+	
 
 }

@@ -29,8 +29,8 @@ public class TenantDtoConfiguration implements IDtoConfigurtion {
 	@Autowired @Qualifier ("stripConverter")
 	Converter<String,String> stripConverter;
 	
-	@Autowired @Qualifier ("stringNotNullCondition")
-	Condition<String,String> stringNotNullCondition;
+	@Autowired @Qualifier ("objectNotNullCondition")
+	Condition<Object,Object> stringNotNullCondition;
 
 	@Override
 	public void modelMapperConfiguration(ModelMapper mapper) {

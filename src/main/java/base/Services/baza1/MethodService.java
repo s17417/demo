@@ -85,13 +85,16 @@ public class MethodService {
 		return  modelMapper.map(method, AbstractMethodDTO.class);
 	}
 	
-	@Transactional(value = "laboratoryTransactionManager")
+	//@Transactional(value = "laboratoryTransactionManager")
 	public void deleteById(@NotNull String laboratoryTestId, @NotNull String methodId){
-		var laboratoryTest = laboratoryTestRepository
+		/*var laboratoryTest = laboratoryTestRepository
 				.findById(laboratoryTestId)
 				.orElseThrow(() -> new EntityNotFoundException(LaboratoryTest.class));
-		laboratoryTest.getMethods()
-		.removeIf(obj -> obj.getId().contentEquals(methodId));
+		if(laboratoryTest.getMethods().stream().anyMatch(obj -> obj.getId().contentEquals(methodId)))
+				//.removeIf(obj -> obj.getId()
+				//.contentEquals(methodId));*/
+			methodRepository.deleteById(methodId);
+		
 	}
 
 }

@@ -48,12 +48,12 @@ public class Phisician extends AbstractAuditableObject<String> {
 	@ManyToMany(mappedBy="phisicians")
 	private Set<OrderingUnit> orderingUnits = new HashSet<>();
 	
-	@OneToMany(
+	/*@OneToMany(
 			cascade = {CascadeType.MERGE, CascadeType.PERSIST},
 			mappedBy = "phisician",
 			orphanRemoval = false
 			)
-	private Set<PatientOrder> patientOrders = new HashSet<>(); 
+	private Set<PatientOrder> patientOrders = new HashSet<>(); */
 
 	
 	
@@ -90,14 +90,14 @@ public class Phisician extends AbstractAuditableObject<String> {
 		this.orderingUnits.addAll(orderingUnits);
 	}
 
-	public Set<PatientOrder> getPatientOrders() {
+	/*public Set<PatientOrder> getPatientOrders() {
 		return patientOrders;
 	}
 
 	protected void setPatientOrders(Set<PatientOrder> patientOrders) {
 		this.patientOrders.clear();
 		this.patientOrders.addAll(patientOrders);
-	}
+	}*/
 	
 	public void addPatientOrder(PatientOrder patientOrder) {
 		patientOrder.setPhisician(this);	

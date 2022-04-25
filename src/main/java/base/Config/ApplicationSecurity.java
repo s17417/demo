@@ -1,5 +1,8 @@
 package base.Config;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +23,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
 import base.Model.baza.Role;
 import base.Repository.BazaRepository.UsersRepository;
@@ -61,6 +68,8 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 	@Autowired
 	JwtAuthenticationFilter  jwtAuthenticationFilter;
 	
+	
+	
     @Override
     public void configure(HttpSecurity web) throws Exception {
     	
@@ -98,6 +107,25 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
     	//return new BCryptPasswordEncoder();
 		return NoOpPasswordEncoder.getInstance();
     	
+    }
+    
+    
+    
+    @Bean
+    public CorsFilter corsFilter() {
+        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        final CorsConfiguration config = new CorsConfiguration();
+        //config.setAllowCredentials(true);
+        // Don't do this in production, use a proper list  of allowed origins
+        config.setAllowedOriginPatterns(Collections.singletonList("*"));
+        //config.setAllowedOrigins(Collections.singletonList("*"));
+        config.setAllowedHeaders(Arrays.asList("Origin", "Content-Type", "Accept","Authorization"));
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "OPTIONS", "DELETE", "PATCH"));
+        //config.setAllowedMethods(Arrays.asList("*"));
+
+        config.setExposedHeaders(Arrays.asList("Authorization"));
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
     }
     
 	@Override

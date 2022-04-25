@@ -16,5 +16,6 @@ public interface UsersRepository extends JpaRepository<Users, String> {
 	@Query("SELECT u FROM Users u LEFT JOIN FETCH u.usersTenantRole utr LEFT JOIN FETCH utr.tenant WHERE u.email=:email")
 	@QueryHints({@QueryHint(name = "org.hibernate.cacheRegion", value ="UsersQueryCache"), @QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value ="true") })
 	public Users findByEmail (@Param("email") String email);
-
+	
+	
 }

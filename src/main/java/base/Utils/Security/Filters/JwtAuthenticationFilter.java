@@ -23,6 +23,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -30,7 +31,6 @@ import base.DTO.MyUser;
 import base.Utils.Jwt.IJWTUtil;
 import base.Utils.Security.JwtAuthenticationToken;
 import io.jsonwebtoken.JwtException;
-
 
 @Component
 //@Order(0)

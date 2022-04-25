@@ -46,6 +46,7 @@ public class PatientDtoConfiguration implements IDtoConfigurtion {
 		.implicitMappings();
 		
 		mapper.createTypeMap(SimplePatientDTO.class, Patient.class).addMappings(map -> {
+			map.map(SimplePatientDTO::getGender, Patient::setGender);
 			map.using(firstLetterUpperCaseConverter).map(SimplePatientDTO::getName, Patient::setName);
 			map.using(firstLetterUpperCaseConverter).map(SimplePatientDTO::getSurname, Patient::setSurname);
 			map.map(SimplePatientDTO::getDateOfBirth, Patient::setDateOfBirth);

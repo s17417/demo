@@ -13,12 +13,20 @@ import org.hibernate.envers.Audited;
 
 @Audited
 @Entity
-public class OrderResult extends LabTestOrder<PatientOrder> {
+public class OrderResult extends LabTestOrder<PatientSample> {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	/*@NotNull
+	@ManyToOne(
+			fetch = FetchType.LAZY,
+			cascade = {CascadeType.PERSIST, CascadeType.MERGE}
+			)
+	@JoinColumn(nullable = false)
+	private PatientOrder order;*/
 	
 	@NotNull
 	@ManyToOne(
@@ -26,30 +34,46 @@ public class OrderResult extends LabTestOrder<PatientOrder> {
 			cascade = {CascadeType.PERSIST, CascadeType.MERGE}
 			)
 	@JoinColumn(nullable = false)
-	private PatientOrder order;
+	private PatientSample patientSample;
 
 	public OrderResult() {
 		super();
 	}
 
-	public OrderResult(LaboratoryTest laboratoryTest, PatientOrder patientOrder) {
+	public OrderResult(LaboratoryTest laboratoryTest, /*PatientOrder patientOrder*/ PatientSample patientSample) {
 		super(laboratoryTest);
-		setOrder(patientOrder);
+		setSample(patientSample);
 	}
 
-	public PatientOrder getOrder() {
+	
+	@Override
+	public void setSample(@NotNull @Valid PatientSample patientSample) {
+		if (patientSample == null) return;
+		this.patientSample = patientSample;
+		patientSample.getLabTestOrders().add(this);
+		
+	}
+
+	@Override
+	public PatientSample getSample() {
+		return patientSample;
+	}
+	
+	
+	/*public PatientOrder getOrder() {
 		return order;
 	}
 
-	protected void setOrder(@NotNull @Valid PatientOrder order) {
+	public void setOrder(@NotNull @Valid PatientOrder order) {
 		if (order == null) return;
 		this.order = order;
 		order.getLabTestOrders().add(this);
 		
-	}
-	
-	
+	}*/
+
 	
 }
+
+	
 
 

@@ -7,5 +7,7 @@ import base.Model.baza1.OrderingUnit;
 
 @Repository
 public interface OrderingUnitRepository extends JpaRepository<OrderingUnit, String> {
+	
+	
 
 }

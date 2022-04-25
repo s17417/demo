@@ -3,6 +3,8 @@ package base.Controllers.baza1;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -19,8 +21,13 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import base.DTO.DTOObjectConstans;
 import base.DTO.baza1.OrderingUnitDTO.OrderingUnitDTO;
+import base.DTO.baza1.OrdersDTO.ListPatientOrderDTO;
 import base.DTO.baza1.PhisicianDTO.PhisicianDTO;
 import base.Services.baza1.OrderingUnitService;
+import base.Services.baza1.OrderingUnitService.SortConstantsOrderingUnit;
+import base.Services.baza1.PatientOrderService;
+import base.Services.baza1.PatientOrderService.SortConstants;
+import base.Services.baza1.PhisicianService.SortConstantsPhisician;
 import base.Utils.Exceptions.EntityNotFoundException;
 
 @Validated
@@ -30,6 +37,8 @@ public class OrderingUnitController {
 
 	@Autowired
 	private OrderingUnitService orderingUnitService;
+	@Autowired
+	private PatientOrderService patientOrderService;
 	
 	@PostMapping(
 			value= "/",
@@ -82,21 +91,58 @@ public class OrderingUnitController {
 			value= "/",
 			produces=MediaType.APPLICATION_JSON_VALUE
 			)
-	public ResponseEntity<List<OrderingUnitDTO>> getOrderingUnitsByExample(
+	public ResponseEntity<Page<OrderingUnitDTO>> getOrderingUnitsByExample(
 			@RequestParam(required = false) String shortName,
 			@RequestParam(required = false) String name,
 			@RequestParam(required = false) String country,
 			@RequestParam(required = false) String city,
-			@RequestParam(required = false) String street
+			@RequestParam(required = false) String street,
+			@RequestParam(required = true, defaultValue = "0") Integer pageNumber,
+			@RequestParam(required = true, defaultValue = "25") Integer pageSize,
+			@RequestParam(required = true, defaultValue = "SURNAME") SortConstantsOrderingUnit sortField,
+			@RequestParam(required = true, defaultValue = "ASC") Direction direction
 			){
-		var orderingUnits = orderingUnitService.getOrderingUnitByExample(shortName, name, country, city, street);
+		var orderingUnits = orderingUnitService.getOrderingUnitByExample(
+				shortName, 
+				name, 
+				country, 
+				city, 
+				street,
+				pageNumber, 
+				pageSize, 
+				sortField, 
+				direction
+				);
 		return ResponseEntity
 				.ok(orderingUnits);
 	}
 	
+	@GetMapping(
+			value= "/{orderingUnitId}/patientOrders",
+			produces=MediaType.APPLICATION_JSON_VALUE
+			)
+	public ResponseEntity<Page<ListPatientOrderDTO>> getOrderingUnitPatientOrders(
+			@PathVariable String orderingUnitId,
+			@RequestParam(required = true, defaultValue = "0") Integer pageNumber,
+			@RequestParam(required = true, defaultValue = "25") Integer pageSize,
+			@RequestParam(required = true, defaultValue = "CREATION_DATE") SortConstants sortField,
+			@RequestParam(required = true, defaultValue = "DESC") Direction direction
+			) throws EntityNotFoundException{
+		var orders = patientOrderService.findAllOrderingUnitAndPatientOrders(
+				orderingUnitId,
+				null,
+				pageNumber,
+				pageSize,
+				sortField,
+				direction
+				);
+		return ResponseEntity
+				.ok(orders);
+	}
+	
 
 	@GetMapping(
-			value= "/{orderingUnitId}/phisicians}",
+			value= "/{orderingUnitId}/phisicians",
 			produces=MediaType.APPLICATION_JSON_VALUE
 			)
 	public ResponseEntity<List<PhisicianDTO>> getOrderingUnitPhisicians(

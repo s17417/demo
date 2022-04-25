@@ -1,6 +1,7 @@
 package base.Controllers;
 
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
@@ -60,6 +61,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 	
 	@ExceptionHandler({NullPointerException.class})
 	protected ResponseEntity<Object> handleNullPointerException(NullPointerException ex, WebRequest request){
+		ex.printStackTrace();
 		var headers = new HttpHeaders();
 		Map<Integer, String> errors = new HashMap<>();
 		headers.setContentType(MediaType.APPLICATION_JSON);
@@ -72,6 +74,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 	@ExceptionHandler({IllegalArgumentException.class})
 	protected ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex, WebRequest request){
 		var headers = new HttpHeaders();
+		ex.printStackTrace();
 		Map<Integer, String> errors = new HashMap<>();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		errors.put(HttpStatus.UNPROCESSABLE_ENTITY.value(), ex.getMessage());
@@ -129,6 +132,17 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 		return handleExceptionInternal(ex, convertToJson(body), headers, status, request);		
 	}
 	
+	
+	@ExceptionHandler(SQLIntegrityConstraintViolationException.class)
+	protected ResponseEntity<Object> handleSQLIntegrityConstraintViolationException(SQLIntegrityConstraintViolationException ex, WebRequest request) {
+		var headers = new HttpHeaders();
+		Map<Integer, String> errors = new HashMap<>();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		
+		errors.put(ex.getErrorCode(), ex.getMessage());
+		var body=createResponse(request, errors, HttpStatus.UNPROCESSABLE_ENTITY, ex);
+		return handleExceptionInternal(ex, convertToJson(body), headers, HttpStatus.UNPROCESSABLE_ENTITY, request);
+	}
 	
 	@ExceptionHandler(SQLException.class)
 	protected ResponseEntity<Object> handleSQLException(SQLException ex, WebRequest request) {

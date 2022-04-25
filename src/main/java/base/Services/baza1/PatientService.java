@@ -12,6 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.convert.QueryByExamplePredicateBuilder;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -24,7 +28,10 @@ import base.DTO.baza1.OrdersDTO.PatientOrderDTO;
 import base.DTO.baza1.PatientDTO.SimplePatientWithCollectionsDTO;
 import base.DTO.baza1.PatientDTO.SimplePatientDTO;
 import base.Model.baza1.Patient;
+import base.Model.baza1.PatientComment;
+import base.Repository.Baza1Repository.CommentRepository;
 import base.Repository.Baza1Repository.PatientRepository;
+import base.Services.baza1.PatientOrderService.SortConstants;
 import base.Utils.Exceptions.EntityNotFoundException;
 
 
@@ -36,7 +43,27 @@ public class PatientService {
 	private PatientRepository patientRepository;
 	
 	@Autowired
+	private CommentRepository patientCommentRepository;
+	
+	@Autowired
 	private ModelMapper modelMapper;
+	
+	public enum SortConstantsPatient{
+		NAME("name"),
+		SURNAME("surname"),
+		PERSONAL_ID("personalIdentificationNumber"),
+		CREATION_DATE("cretionTimeStamp"),
+		BIRTHDATE("dateOfBirth");
+		
+		private String value;
+		
+		SortConstantsPatient(String value) {
+			this.value=value;
+		}
+		public String getValue() {
+			return this.value;
+		}
+	}
 	
 	private final ExampleMatcher patientMatcher = ExampleMatcher
 			.matching()
@@ -68,22 +95,28 @@ public class PatientService {
 		return modelMapper.map(patient, SimplePatientWithCollectionsDTO.class);	
 	}
 	
-	public List<SimplePatientDTO> findPatientsByExample(
+	public Page<SimplePatientDTO> findPatientsByExample(
 			String name,
 			String surname,
 			LocalDate dateOfBirthFrom,
 			LocalDate dateOfBirthTo,
-			String personalIdentificationNumber){
+			String personalIdentificationNumber,
+			@NotNull Integer pageNumber,
+			@NotNull Integer pageSize,
+			@NotNull SortConstantsPatient sortField,
+			@NotNull Direction direction){
 		var patient = new Patient();
 		patient.setName(name);
 		patient.setSurname(surname);
 		patient.setPersonalIdentificationNumber(personalIdentificationNumber);
-		return patientRepository
-				.findAll(this.getSpecificationDatesExample(dateOfBirthFrom, dateOfBirthTo, Example.of(patient, patientMatcher)))
-				.stream()
-				.map(obj -> modelMapper.map(obj, SimplePatientDTO.class))
-				.collect(Collectors.toList());
-	}
+		var page = PageRequest.of(
+				pageNumber,
+				pageSize,
+				Sort.by(direction,sortField.getValue())
+				);
+		return patientRepository.findAll(getSpecificationDatesExample(dateOfBirthFrom, dateOfBirthTo, Example.of(patient, patientMatcher)), page)
+				.map(obj -> modelMapper.map(obj, SimplePatientDTO.class));
+	};
 	
 	@Transactional(value = "laboratoryTransactionManager", readOnly = true)
 	public List<CommentDTO> getPatientComments(@NotNull String patientId) throws EntityNotFoundException{
@@ -97,23 +130,15 @@ public class PatientService {
 	}
 	
 	@Transactional("laboratoryTransactionManager")
-	public void addPatientComments(@NotNull String patientId, @NotNull List<String> comments) throws EntityNotFoundException {
+	public CommentDTO addPatientComments(@NotNull String patientId, @NotNull CommentDTO comment) throws EntityNotFoundException {
 		var patient = patientRepository.findById(patientId).orElseThrow(() -> new EntityNotFoundException(Patient.class));
-		comments
+		var com = patient.addComment(comment.getComment());
+		//patientRepository.saveAndFlush(patient);
+		return modelMapper.map(patientCommentRepository.saveAndFlush(com),CommentDTO.class);
+		/*comments
 		.stream()
-		.map(comment -> patient.addComment(comment))
-		.collect(Collectors.toList());
-	}
-	
-	@Transactional("laboratoryTransactionManager")
-	public List<PatientOrderDTO> getPatientPatientOrders(@NotNull String patientId) throws EntityNotFoundException{
-		return patientRepository
-				.findById(patientId)
-				.orElseThrow(() -> new EntityNotFoundException(Patient.class))
-				.getPatientOrders()
-				.stream()
-				.map(obj -> modelMapper.map(obj, PatientOrderDTO.class))
-				.collect(Collectors.toList());
+		.map(comment -> patient.addComment(comment.getComment()))
+		.collect(Collectors.toList());*/
 	}
 	
 	public Specification<Patient> getSpecificationDatesExample(

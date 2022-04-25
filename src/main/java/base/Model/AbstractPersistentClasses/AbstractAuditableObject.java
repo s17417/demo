@@ -14,6 +14,9 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import base.Model.baza1.LaboratoryTest;
+import base.Model.baza1.OrderResult;
+
 @Audited
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)

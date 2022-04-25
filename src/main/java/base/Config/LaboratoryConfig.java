@@ -16,13 +16,13 @@ import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
 import base.Repository.Baza1Repository.PatientRepository;
 import base.Utils.Multitenancy.DataSourceBasedMultiTenantConnectionProviderImpl;
 
@@ -116,8 +116,10 @@ public class LaboratoryConfig {
 	        properties.put(Environment.FORMAT_SQL, true);
 	        properties.put(Environment.SHOW_SQL, true);
 		    properties.put(Environment.CONNECTION_HANDLING, PhysicalConnectionHandlingMode.DELAYED_ACQUISITION_AND_RELEASE_AFTER_TRANSACTION);
-		    properties.put(Environment.POOL_SIZE, 15);
-		    //properties.put(Environment.USE_QUERY_CACHE,  Boolean.TRUE.toString());
+		    //properties.put(Environment.POOL_SIZE, 15);
+		    properties.put(Environment.USE_QUERY_CACHE,  true);
+		    properties.setProperty("hibernate.cache.region.factory_class","org.hibernate.cache.ehcache.EhCacheRegionFactory");
+
 
 		    //properties.put(Environment.AUTOCOMMIT, true);
 

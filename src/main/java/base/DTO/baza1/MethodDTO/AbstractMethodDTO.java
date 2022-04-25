@@ -1,5 +1,7 @@
 package base.DTO.baza1.MethodDTO;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -7,8 +9,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 
 import base.DTO.baza1.ActiveObjectDTO;
-import base.DTO.baza1.AnalyteDTO;
-import base.DTO.baza1.LaboratoryTestDTO.LaboratoryTestDTO;
+import base.DTO.baza1.AnalyteDTO.AnalyteDTO;
 
 @JsonTypeInfo(
 		  use = JsonTypeInfo.Id.NAME, 
@@ -25,6 +26,7 @@ public abstract class AbstractMethodDTO extends ActiveObjectDTO {
 	
 	private Boolean printable;
 	
+	@NotNull
 	private AnalyteDTO analyte;
 
 	//private LaboratoryTestDTO laboratoryTest;
@@ -52,6 +54,9 @@ public abstract class AbstractMethodDTO extends ActiveObjectDTO {
 	public void setAnalyte(AnalyteDTO analyte) {
 		this.analyte = analyte;
 	}
+
+	
+	
 
 	/*public LaboratoryTestDTO getLaboratoryTest() {
 		return laboratoryTest;

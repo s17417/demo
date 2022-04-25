@@ -22,7 +22,7 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 
 @Entity
 @Audited
-public class LabQualityControl extends AbstractOrder<LabQualityControlResult> {
+public class LabQualityControl extends AbstractOrder<ControlSample/*LabQualityControlResult*/> {
 
 	/**
 	 * 
@@ -49,17 +49,46 @@ public class LabQualityControl extends AbstractOrder<LabQualityControlResult> {
 	@Column(length=255)
 	private String description;
 	
+	/*@OneToMany(
+			cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
+			mappedBy = "order"
+			)
+	private Set<LabQualityControlResult> labTestOrders = new HashSet<>();*/
+	
 	@OneToMany(
 			cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
 			mappedBy = "order"
 			)
-	private Set<LabQualityControlResult> labTestOrders = new HashSet<>();
+	private Set<ControlSample> controlSamples = new HashSet<>();
 	
 	public LabQualityControl() {
 		super();
 	}
+	
+	
+	
+	
+	@Override
+	protected void setSamples(@NotNull Set<ControlSample> patientSamples) {
+		this.controlSamples.clear();
+		this.controlSamples.addAll(controlSamples);
+		
+	}
 
-	public Set<LabQualityControlResult> getLabTestOrders() {
+	@Override
+	public Set<ControlSample> getSamples() {
+		return controlSamples;
+	}
+
+	@Override
+	protected ControlSample createSample(ControlSample sample) {
+		return new ControlSample(this);
+	}
+	
+	
+	
+
+	/*public Set<LabQualityControlResult> getLabTestOrders() {
 		return labTestOrders;
 	}
 
@@ -84,7 +113,10 @@ public class LabQualityControl extends AbstractOrder<LabQualityControlResult> {
 		var lab=createLabTestOrder(laboratoryTest);
 		lab.setTargetValue(true);
 		return lab;
-	}
+	}*/
+
+
+
 
 	public String getName() {
 		return name;

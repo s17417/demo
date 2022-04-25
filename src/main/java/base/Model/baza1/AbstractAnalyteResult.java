@@ -4,13 +4,16 @@ package base.Model.baza1;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 
+import org.hibernate.annotations.DiscriminatorOptions;
 import org.hibernate.envers.Audited;
 
 import base.Model.AbstractPersistentClasses.AbstractAuditableObject;
@@ -18,7 +21,9 @@ import base.Model.AbstractPersistentClasses.AbstractAuditableObject;
 @Entity
 @Audited
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "resultType")
+//@DiscriminatorOptions(force = true)
+@DiscriminatorColumn(name = "resultType",
+discriminatorType = DiscriminatorType.STRING)
 public abstract class AbstractAnalyteResult<T, M extends Method> extends AbstractAuditableObject<String> {
 	
 	/**
@@ -26,16 +31,15 @@ public abstract class AbstractAnalyteResult<T, M extends Method> extends Abstrac
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	@Enumerated
+	@Enumerated(EnumType.STRING)
 	@Column(name="resultType", insertable=false, nullable=false, updatable=false)
 	private ResultType resultType;
-	//private IResultTypeAssociationCreator resultType;
 	
 	@ManyToOne(
 			cascade = {CascadeType.MERGE, CascadeType.PERSIST},
-			fetch = FetchType.EAGER
+			fetch = FetchType.LAZY
 			)
-	private  M method;
+	private  Method method;
 	
 	@ManyToOne(
 			cascade = {CascadeType.MERGE, CascadeType.PERSIST},
@@ -44,11 +48,11 @@ public abstract class AbstractAnalyteResult<T, M extends Method> extends Abstrac
 	private LabTestOrder<?> labTestOrder;
 	
 	
-	protected AbstractAnalyteResult() {
+	public AbstractAnalyteResult() {
 		super();
 	}
 	
-	protected AbstractAnalyteResult(LabTestOrder<?> labTestOrder, M method) {
+	public AbstractAnalyteResult(LabTestOrder<?> labTestOrder, M method) {
 		super();
 		this.setLabTestOrder(labTestOrder);
 		this.setMethod(method);
@@ -58,11 +62,11 @@ public abstract class AbstractAnalyteResult<T, M extends Method> extends Abstrac
 	
 	abstract public void setResult(T result);
 
-	public M getMethod() {
+	public Method getMethod() {
 		return method;
 	}
 
-	protected  void  setMethod(M method) {
+	protected void  setMethod(Method method) {
 		this.method = method;
 		method.getAnalyteResults().add(this);
 	}

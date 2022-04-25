@@ -11,7 +11,11 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +26,7 @@ import base.Model.baza1.OrderingUnit;
 import base.Model.baza1.Phisician;
 import base.Repository.Baza1Repository.OrderingUnitRepository;
 import base.Repository.Baza1Repository.PhisicianRepository;
+import base.Services.baza1.PhisicianService.SortConstantsPhisician;
 import base.Utils.Exceptions.EntityNotFoundException;
 
 @Service
@@ -35,6 +40,24 @@ public class OrderingUnitService {
 	
 	@Autowired
 	private PhisicianRepository phisicianRepository;
+	
+	public enum SortConstantsOrderingUnit{
+		SHORTNAME("shortName"),
+		NAME("name"),
+		COUNTRY("country"),
+		CITY("city"),
+		STREET("street"),
+		CREATION_DATE("cretionTimeStamp");
+		
+		private String value;
+		
+		SortConstantsOrderingUnit(String value) {
+			this.value=value;
+		}
+		public String getValue() {
+			return this.value;
+		}
+	}
 	
 	private ExampleMatcher exampleMatcher = ExampleMatcher
 			.matching()
@@ -66,12 +89,16 @@ public class OrderingUnitService {
 				);	
 	}
 	
-	public List<OrderingUnitDTO> getOrderingUnitByExample(
+	public Page<OrderingUnitDTO> getOrderingUnitByExample(
 			String shortName,
 			String name,
 			String country,
 			String city,
-			String street
+			String street,
+			@NotNull Integer pageNumber,
+			@NotNull Integer pageSize,
+			@NotNull SortConstantsOrderingUnit sortField,
+			@NotNull Direction direction
 			) {	
 		var orderingUnit = new OrderingUnit();
 		orderingUnit.setShortName(shortName);
@@ -81,12 +108,14 @@ public class OrderingUnitService {
 		address.setCountry(country);
 		address.setCity(city);
 		address.setStreet(street);
-		
+		var page = PageRequest.of(
+				pageNumber,
+				pageSize,
+				Sort.by(direction,sortField.getValue())
+				);
 		orderingUnit.setAddress(address);
-		return orderingUnitRepository.findAll(Example.of(orderingUnit, exampleMatcher))
-				.stream()
-				.map(obj -> modelMapper.map(obj, OrderingUnitDTO.class))
-				.collect(Collectors.toList());
+		return orderingUnitRepository.findAll(Example.of(orderingUnit, exampleMatcher),page)
+				.map(obj -> modelMapper.map(obj, OrderingUnitDTO.class));
 	}
 
 	@Transactional(value = "laboratoryTransactionManager", readOnly = true)

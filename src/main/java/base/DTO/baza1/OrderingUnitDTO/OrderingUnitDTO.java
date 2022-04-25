@@ -12,13 +12,11 @@ import base.Model.baza1.Address;
 public class OrderingUnitDTO extends AuditableObjectDTO {
 
 	@NotBlank(groups = {DTOObjectConstans.Create.class,DTOObjectConstans.Update.class})
-	@Column(length=30)
-	@Size(min=2, max=60)
+	@Size(min=2, max=30)
 	private String shortName;
 	
 	@NotBlank(groups = {DTOObjectConstans.Create.class,DTOObjectConstans.Update.class})
-	@Column(length=255)
-	@Size(min=2, max=60)
+	@Size(min=2, max=255)
 	private String name;
 	
 	@Embedded

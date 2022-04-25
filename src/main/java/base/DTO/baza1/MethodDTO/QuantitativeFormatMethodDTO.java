@@ -2,10 +2,14 @@ package base.DTO.baza1.MethodDTO;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.List;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+
+import base.DTO.baza1.RefferentialRangeDTO;
 
 public class QuantitativeFormatMethodDTO extends AbstractMethodDTO {
 
@@ -26,6 +30,8 @@ public class QuantitativeFormatMethodDTO extends AbstractMethodDTO {
 	private String decimalFormat;
 	
 	private RoundingMode roundingMode;
+	
+	private List<@Valid RefferentialRangeDTO> refferentialRanges;
 
 	public String getUnits() {
 		return units;
@@ -74,5 +80,15 @@ public class QuantitativeFormatMethodDTO extends AbstractMethodDTO {
 	public void setRoundingMode(RoundingMode roundingMode) {
 		this.roundingMode = roundingMode;
 	}
+
+	public List<RefferentialRangeDTO> getRefferentialRanges() {
+		return refferentialRanges;
+	}
+
+	public void setRefferentialRanges(List<RefferentialRangeDTO> refferentialRanges) {
+		this.refferentialRanges = refferentialRanges;
+	}
+	
+	
 	
 }

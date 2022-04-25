@@ -11,6 +11,10 @@
        drop 
        foreign key FK4hvlsimcjwtf3swdrlquu868k;
 
+    alter table AbstractOrder_AUD 
+       drop 
+       foreign key FKp5iurhe3l1huersgl4xhd0k82;
+
     alter table Analyte_AUD 
        drop 
        foreign key FK4k2vc25sg3d5ol920sigottvi;
@@ -19,13 +23,17 @@
        drop 
        foreign key FKbbqpm2hy4c1t9qh27ocqnc8ki;
 
+    alter table LabQualityControl 
+       drop 
+       foreign key FK6bfgd24ei1djon6txiukomg60;
+
     alter table LabQualityControl_AUD 
        drop 
-       foreign key FKjbkxxjanb8hwowdhfxxe2qdo0;
+       foreign key FK5vn58bjbwrlnaw2wq3hivf23x;
 
     alter table LabQualityControlResult 
        drop 
-       foreign key FKosxu1hwxe77e9lmmcpx6sb673;
+       foreign key FKhc7spogtqlcdu14vv19ih4tqv;
 
     alter table LabQualityControlResult 
        drop 
@@ -65,7 +73,7 @@
 
     alter table OrderResult 
        drop 
-       foreign key FK9nup2ja6phkloufiqb3plae9h;
+       foreign key FKf7w0xssqiu7vy91uvk42qvumk;
 
     alter table OrderResult 
        drop 
@@ -111,9 +119,13 @@
        drop 
        foreign key FK237kjypkrgluokjk0ou66efur;
 
+    alter table PatientOrder 
+       drop 
+       foreign key FKgcc7dp56rsy3fdovglmx2tlno;
+
     alter table PatientOrder_AUD 
        drop 
-       foreign key FKi7morp0fgm7cd579deey8oxw0;
+       foreign key FK570w5utmawcgcvrg7xp3fkjfd;
 
     alter table Phisician_AUD 
        drop 
@@ -139,9 +151,25 @@
        drop 
        foreign key FKnq8dn9dr2hxa3d70rf59tkicg;
 
+    alter table Sample 
+       drop 
+       foreign key FK5urc15yfju1sedjs71hx3vwhx;
+
+    alter table Sample 
+       drop 
+       foreign key FKru88e978gj24srmr5bhe11ci7;
+
+    alter table Sample_AUD 
+       drop 
+       foreign key FK7c3l5hxfww0tdps18v0amndd1;
+
     drop table if exists AbstractAnalyteResult;
 
     drop table if exists AbstractAnalyteResult_AUD;
+
+    drop table if exists AbstractOrder;
+
+    drop table if exists AbstractOrder_AUD;
 
     drop table if exists Analyte;
 
@@ -206,3 +234,7 @@
     drop table if exists QualitativeFormatMethod_resultTemplates_AUD;
 
     drop table if exists REVINFO;
+
+    drop table if exists Sample;
+
+    drop table if exists Sample_AUD;

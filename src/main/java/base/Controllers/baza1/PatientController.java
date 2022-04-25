@@ -1,15 +1,22 @@
 package base.Controllers.baza1;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,11 +30,16 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import base.DTO.DTOObjectConstans;
 import base.DTO.baza1.PatientDTO.SimplePatientWithCollectionsDTO;
 import base.DTO.baza1.CommentDTO;
+import base.DTO.baza1.OrdersDTO.ListPatientOrderDTO;
 import base.DTO.baza1.OrdersDTO.PatientOrderDTO;
 import base.DTO.baza1.PatientDTO.SimplePatientDTO;
 import base.Services.baza1.PatientService;
+import base.Services.baza1.PatientOrderService;
+import base.Services.baza1.PatientOrderService.SortConstants;
+import base.Services.baza1.PatientService.SortConstantsPatient;
 import base.Utils.Exceptions.EntityNotFoundException;
 
+@CrossOrigin
 @Validated
 @RestController
 @RequestMapping(value="/lab/patients")
@@ -35,6 +47,9 @@ public class PatientController {
 
 	@Autowired
 	PatientService patientService;
+	
+	@Autowired
+	PatientOrderService patientOrderService;
 	
 	@PostMapping(
 			value= "/",
@@ -78,14 +93,19 @@ public class PatientController {
 			value= "/",
 			produces=MediaType.APPLICATION_JSON_VALUE
 			)
-	public ResponseEntity<List<SimplePatientDTO>> getPatientsByExample(
-			@RequestParam(required = false) String name,
-			@RequestParam(required = false) String surname,
+	public ResponseEntity<Page<SimplePatientDTO>> getPatientsByExample(
+			@RequestParam(required = false) @Size(min=3, max=60) String name,
+			@RequestParam(required = false) @Size(min=3, max=120) String surname,
 			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dateOfBirthFrom,
 			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dateOfBirthTo,
-			@RequestParam(required = false) String personalIdentificationNumber
+			@RequestParam(required = false) String personalIdentificationNumber,
+			@RequestParam(required = true, defaultValue = "0") Integer pageNumber,
+			@RequestParam(required = true, defaultValue = "50") Integer pageSize,
+			@RequestParam(required = true, defaultValue = "CREATION_DATE") SortConstantsPatient sortField,
+			@RequestParam(required = true, defaultValue = "DESC") Direction direction
+			
 			){
-		var patients = patientService.findPatientsByExample(name, surname, dateOfBirthFrom, dateOfBirthTo, personalIdentificationNumber);		
+		var patients = patientService.findPatientsByExample(name, surname, dateOfBirthFrom, dateOfBirthTo, personalIdentificationNumber,pageNumber,pageSize, sortField,direction);		
 		return  ResponseEntity
 				.ok(patients);
 	}
@@ -117,26 +137,41 @@ public class PatientController {
 			produces=MediaType.APPLICATION_JSON_VALUE,
 			consumes=MediaType.APPLICATION_JSON_VALUE
 			)
-	public ResponseEntity<Void> createPatientComment(@PathVariable String patientId, @NotBlank List<String> patientComment) throws EntityNotFoundException{
-		patientService.addPatientComments(patientId, patientComment);
+	public ResponseEntity<CommentDTO> createPatientComment(@PathVariable String patientId,@RequestBody @NotNull @Validated CommentDTO patientComment) throws EntityNotFoundException{
+		var comment=patientService.addPatientComments(patientId, patientComment);
+		
 		return ResponseEntity
 				.created(
 						ServletUriComponentsBuilder
 						.fromCurrentRequest()
 						.path("/{id}")
 						.build(patientId))
-				.build();		
+				.body(comment);
 	}
+	
+
 	
 	@GetMapping(
 			value= "/{patientId}/patientOrders",
 			produces=MediaType.APPLICATION_JSON_VALUE
 			)
-	public ResponseEntity<List<PatientOrderDTO>>  getPatientOrders (@PathVariable String patientId) throws EntityNotFoundException{
-		var patientOrders = patientService.getPatientPatientOrders(patientId);
+	public ResponseEntity<Page<ListPatientOrderDTO>>  getPatientOrders(
+			@PathVariable String patientId,
+			@RequestParam(required = true, defaultValue = "0") Integer pageNumber,
+			@RequestParam(required = true, defaultValue = "25") Integer pageSize,
+			@RequestParam(required = true, defaultValue = "CREATION_DATE") SortConstants sortField,
+			@RequestParam(required = true, defaultValue = "DESC") Direction direction
+			) throws EntityNotFoundException{
+		var orders = patientOrderService.findAllOrderingUnitAndPatientOrders(
+				null,
+				patientId,
+				pageNumber,
+				pageSize,
+				sortField,
+				direction
+				);
 		return ResponseEntity
-				.ok(patientOrders);
-	
+				.ok(orders);
 	}
 
 }

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import base.DTO.DTOObjectConstans;
 import base.DTO.baza.UserDTO;
+import base.DTO.baza.UserSignedTenantDTO;
 import base.DTO.baza.UserTenantRoleDTO;
 import base.Services.baza.UserService;
 import base.Services.baza.UserTenantService;
@@ -88,6 +89,14 @@ public class UsersController {
 	public @ResponseBody ResponseEntity<String> activateAccount(@PathVariable String token) {
 		userService.activateUser(token);
 		return new ResponseEntity<String>("User activated",HttpStatus.OK);
+	}
+	
+	@GetMapping(
+			value="/getTenant",
+			produces=MediaType.APPLICATION_JSON_VALUE
+			)
+	public ResponseEntity<UserSignedTenantDTO> getUserSignedTenant() {
+		return ResponseEntity.ok(userTenantService.getUserTenant());
 	}
 	
 	@PutMapping(

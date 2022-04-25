@@ -8,6 +8,7 @@ import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -17,6 +18,9 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Pattern;
@@ -28,6 +32,14 @@ import base.Model.AbstractPersistentClasses.AbstractAuditableObject;
 
 @Entity
 @Audited
+@Table(
+		   uniqueConstraints = {
+		      @UniqueConstraint(
+		          columnNames = {"personalIdentificationNumber"},
+		          name="personalIdentificationNumber"
+		      )
+		   }
+		)
 public class Patient extends AbstractAuditableObject<String> {
 	
 
@@ -50,8 +62,9 @@ public class Patient extends AbstractAuditableObject<String> {
 	private String surname;
 	
 	@Basic
-	@Column(length = 30, unique=true)
+	@Column(length = 30)
 	@Size(max=30)
+	
 	private String personalIdentificationNumber;
 	
 	@Basic
@@ -70,16 +83,17 @@ public class Patient extends AbstractAuditableObject<String> {
 	
 	@NotAudited
 	@ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(joinColumns = @JoinColumn(name = "Patient_Id"))
 	@OrderColumn
 	@Size(max=2)
-	private List<Address> addresses = new ArrayList<>();
+	private List<@Valid Address> addresses = new ArrayList<>();
 	
 	//@Audited(targetAuditMode = RelationTargetAuditMode.AUDITED, )
 	
 	@OneToMany(
 			orphanRemoval = true,
 			cascade = {CascadeType.REMOVE,CascadeType.PERSIST, CascadeType.MERGE},
-			fetch = FetchType.EAGER
+			fetch = FetchType.LAZY
 			)
 	@JoinColumn(name = "Patient_Id", nullable = false, updatable = false)
 	private List<PatientComment> comments = new ArrayList<>();
@@ -173,7 +187,7 @@ public class Patient extends AbstractAuditableObject<String> {
 		return "Patient [getName()=" + getName() + ", getSurname()=" + getSurname()
 				+ ", getPersonalIdentificationNumber()=" + getPersonalIdentificationNumber() + ", getDateOfBirth()="
 				+ getDateOfBirth() + ", getGender()=" + getGender() + ", getComments()=" + getComments()
-				+ ", getPatientOrders()=" + getPatientOrders() + ", getId()=" + getId() + "]";
+				+ ", getId()=" + getId() + "]";
 	}
 	
 }

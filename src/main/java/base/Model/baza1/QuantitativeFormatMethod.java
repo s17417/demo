@@ -2,22 +2,33 @@ package base.Model.baza1;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Basic;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OrderColumn;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.SQLDelete;
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 @Audited
 @Entity
 @DiscriminatorValue("QUANTITATIVE_ANALYTE_RESULT")
+@SQLDelete(sql = "UPDATE Method SET isActive=false WHERE id=? AND versionTimestamp=?")
 public class QuantitativeFormatMethod extends Method {
 
 
@@ -50,6 +61,12 @@ public class QuantitativeFormatMethod extends Method {
 	@Enumerated(EnumType.STRING)
 	private RoundingMode roundingMode;
 	
+	@NotAudited
+	@ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(joinColumns = @JoinColumn(name = "QuantitativeFormatMethod_Id"))
+	@OrderColumn
+	private List<@Valid RefferentialRange> refferentialRanges = new ArrayList<>();
+	
 	public QuantitativeFormatMethod() {}
 	
 	public QuantitativeFormatMethod(@NotNull Analyte analyte, @NotNull LaboratoryTest laboratoryTest) {
@@ -65,7 +82,6 @@ public class QuantitativeFormatMethod extends Method {
 	}
 
 	public BigDecimal getLimitOfDetection() {
-		System.out.println(limitOfDetection.scale());
 		return limitOfDetection;
 	}
 
@@ -104,4 +120,19 @@ public class QuantitativeFormatMethod extends Method {
 	public void setRoundingMode(RoundingMode roundingMode) {
 		this.roundingMode = roundingMode;
 	}
+
+	public List<RefferentialRange> getRefferentialRanges() {
+		return refferentialRanges;
+	}
+
+	public void setRefferentialRanges(List<RefferentialRange> refferentialRanges) {
+		this.refferentialRanges = refferentialRanges;
+	}
+
+	/*@Override
+	protected <X extends AbstractAnalyteResult<?, ?>> X create(LabTestOrder<?> laboratoryTest) {
+		return (X) new QuantitativeAnalyteResult(laboratoryTest, this);
+	}*/
+
+	
 }

@@ -3,6 +3,7 @@ package base.Model.baza1;
 public enum Gender {
 	
 	MALE,
-	FEMALE
+	FEMALE,
+	UNDEFINED
 
 }

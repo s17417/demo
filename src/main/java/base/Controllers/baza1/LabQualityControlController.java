@@ -3,6 +3,9 @@ package base.Controllers.baza1;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -18,6 +21,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import base.DTO.baza1.OrdersDTO.LabQualityControlDTO;
 import base.Services.baza1.LabQualityControlService;
+import base.Services.baza1.LabQualityControlService.SortConstants;
 import base.Utils.Exceptions.EntityNotFoundException;
 
 @Validated
@@ -51,7 +55,7 @@ public class LabQualityControlController {
 	}
 	
 	@PutMapping(
-			value= "/",
+			value= "/{id}",
 			produces=MediaType.APPLICATION_JSON_VALUE,
 			consumes=MediaType.APPLICATION_JSON_VALUE
 			)
@@ -74,15 +78,24 @@ public class LabQualityControlController {
 			value= "/",
 			produces=MediaType.APPLICATION_JSON_VALUE
 			)
-	public ResponseEntity<List<LabQualityControlDTO>> getByExample(
+	public ResponseEntity<Page<LabQualityControlDTO>> getByExample(
 			@RequestParam(required = false) String name,
 			@RequestParam(required = false) String externalIdentificationCode,
-			@RequestParam(required = false) String orderIdentification
+			@RequestParam(required = false) String orderIdentification,
+			@RequestParam(required = true, defaultValue = "0") Integer pageNumber,
+			@RequestParam(required = true, defaultValue = "25") Integer pageSize,
+			@RequestParam(required = true, defaultValue = "CREATION_DATE") SortConstants sortField,
+			@RequestParam(required = true, defaultValue = "DESC") Direction direction
 			){
+		
 		var labQualityControls = labQualityControlService.findByExample(
 				name,
 				externalIdentificationCode,
-				orderIdentification);
+				orderIdentification,
+				pageNumber,
+				pageSize,
+				sortField,
+				direction);
 		return ResponseEntity
 				.ok(labQualityControls);
 	}

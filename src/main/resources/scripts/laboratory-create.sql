@@ -25,11 +25,35 @@
         updateTimeStamp datetime(6),
         labTestOrder_Id varchar(60),
         method_Id varchar(60),
+        TextResult varchar(255),
+        NumberResult decimal(36,18),
+        primary key (Id, REV)
+    ) engine=InnoDB;
+
+    create table AbstractOrder (
+       Id varchar(60) not null,
+        versionTimestamp datetime(6),
+        createdBy varchar(60),
+        cretionTimeStamp datetime(6),
+        lastModifiedBy varchar(60),
+        updateTimeStamp datetime(6),
+        orderIdentificationCode varchar(128) not null,
+        primary key (Id)
+    ) engine=InnoDB;
+
+    create table AbstractOrder_AUD (
+       Id varchar(60) not null,
+        REV integer not null,
+        REVTYPE tinyint,
+        createdBy varchar(60),
+        cretionTimeStamp datetime(6),
+        lastModifiedBy varchar(60),
+        updateTimeStamp datetime(6),
+        orderIdentificationCode varchar(128),
         primary key (Id, REV)
     ) engine=InnoDB;
 
     create table Analyte (
-    
        Id varchar(60) not null,
         versionTimestamp datetime(6),
         createdBy varchar(60),
@@ -88,32 +112,30 @@
     ) engine=InnoDB;
 
     create table LabQualityControl (
-       Id varchar(60) not null,
-        versionTimestamp datetime(6),
-        createdBy varchar(60),
-        cretionTimeStamp datetime(6),
-        lastModifiedBy varchar(60),
-        updateTimeStamp datetime(6),
-        orderIdentification varchar(128) not null,
+       description varchar(255),
+        expirationDate datetime(6),
+        externalIdentificationCode varchar(60),
+        name varchar(60) not null,
+        reportingDeadLine datetime(6),
+        Id varchar(60) not null,
         primary key (Id)
     ) engine=InnoDB;
 
     create table LabQualityControl_AUD (
        Id varchar(60) not null,
         REV integer not null,
-        REVTYPE tinyint,
-        createdBy varchar(60),
-        cretionTimeStamp datetime(6),
-        lastModifiedBy varchar(60),
-        updateTimeStamp datetime(6),
-        orderIdentification varchar(128),
+        description varchar(255),
+        expirationDate datetime(6),
+        externalIdentificationCode varchar(60),
+        name varchar(60),
+        reportingDeadLine datetime(6),
         primary key (Id, REV)
     ) engine=InnoDB;
 
     create table LabQualityControlResult (
        targetValue bit not null,
         Id varchar(60) not null,
-        order_Id varchar(60) not null,
+        controlSample_Id varchar(60) not null,
         parentTargetValue_Id varchar(60),
         primary key (Id),
         check ((targetValue=TRUE AND parentTargetValue_Id=NULL) OR (targetValue=FALSE))
@@ -123,7 +145,7 @@
        Id varchar(60) not null,
         REV integer not null,
         targetValue bit,
-        order_Id varchar(60),
+        controlSample_Id varchar(60),
         parentTargetValue_Id varchar(60),
         primary key (Id, REV)
     ) engine=InnoDB;
@@ -135,6 +157,10 @@
         cretionTimeStamp datetime(6),
         lastModifiedBy varchar(60),
         updateTimeStamp datetime(6),
+        collectionDate datetime(6),
+        labTestOrderStatus varchar(255) not null,
+        resultDescription varchar(512),
+        tatMode varchar(255) not null,
         laboratoryTest_Id varchar(60) not null,
         primary key (Id)
     ) engine=InnoDB;
@@ -147,6 +173,10 @@
         cretionTimeStamp datetime(6),
         lastModifiedBy varchar(60),
         updateTimeStamp datetime(6),
+        collectionDate datetime(6),
+        labTestOrderStatus varchar(255),
+        resultDescription varchar(512),
+        tatMode varchar(255),
         laboratoryTest_Id varchar(60),
         primary key (Id, REV)
     ) engine=InnoDB;
@@ -162,7 +192,7 @@
         isActive bit not null,
         analyticalMethodType varchar(180),
         printable bit default true,
-        decimalFormat varchar(255),
+        decimalFormat varchar(36),
         limitOfDetection decimal(36,18),
         limitOfQuantification decimal(36,18),
         roundingMode varchar(255),
@@ -187,7 +217,7 @@
         printable bit,
         analyte_Id varchar(60),
         laboratoryTest_Id varchar(60),
-        decimalFormat varchar(255),
+        decimalFormat varchar(36),
         limitOfDetection decimal(36,18),
         limitOfQuantification decimal(36,18),
         roundingMode varchar(255),
@@ -233,14 +263,14 @@
 
     create table OrderResult (
        Id varchar(60) not null,
-        order_Id varchar(60) not null,
+        patientSample_Id varchar(60) not null,
         primary key (Id)
     ) engine=InnoDB;
 
     create table OrderResult_AUD (
        Id varchar(60) not null,
         REV integer not null,
-        order_Id varchar(60),
+        patientSample_Id varchar(60),
         primary key (Id, REV)
     ) engine=InnoDB;
 
@@ -321,14 +351,8 @@
     ) engine=InnoDB;
 
     create table PatientOrder (
-       Id varchar(60) not null,
-        versionTimestamp datetime(6),
-        createdBy varchar(60),
-        cretionTimeStamp datetime(6),
-        lastModifiedBy varchar(60),
-        updateTimeStamp datetime(6),
-        orderIdentification varchar(128) not null,
-        orderDate date,
+       orderDate date,
+        Id varchar(60) not null,
         orderingUnit_Id varchar(60),
         patient_Id varchar(60) not null,
         phisician_Id varchar(60),
@@ -338,12 +362,6 @@
     create table PatientOrder_AUD (
        Id varchar(60) not null,
         REV integer not null,
-        REVTYPE tinyint,
-        createdBy varchar(60),
-        cretionTimeStamp datetime(6),
-        lastModifiedBy varchar(60),
-        updateTimeStamp datetime(6),
-        orderIdentification varchar(128),
         orderDate date,
         orderingUnit_Id varchar(60),
         patient_Id varchar(60),
@@ -411,23 +429,53 @@
         primary key (REV)
     ) engine=InnoDB;
 
+    create table Sample (
+       sampleType varchar(31) not null,
+        Id varchar(60) not null,
+        versionTimestamp datetime(6),
+        createdBy varchar(60),
+        cretionTimeStamp datetime(6),
+        lastModifiedBy varchar(60),
+        updateTimeStamp datetime(6),
+        sampleId varchar(60) not null,
+        labQualityControl_Id varchar(60) not null,
+        patientOrder_Id varchar(60) not null,
+        primary key (Id),
+        check ((sampleType='PATIENT' AND patientOrder_Id IS NOT NULL AND labQualityControl_Id IS NULL) OR (sampleType='CONTROL' AND labQualityControl_Id IS NOT NULL AND patientOrder_Id IS NULL))
+    ) engine=InnoDB;
+
+    create table Sample_AUD (
+       Id varchar(60) not null,
+        REV integer not null,
+        sampleType varchar(31) not null,
+        REVTYPE tinyint,
+        createdBy varchar(60),
+        cretionTimeStamp datetime(6),
+        lastModifiedBy varchar(60),
+        updateTimeStamp datetime(6),
+        sampleId varchar(255),
+        patientOrder_Id varchar(60),
+        labQualityControl_Id varchar(60),
+        primary key (Id, REV)
+    ) engine=InnoDB;
+
+    alter table AbstractOrder 
+       add constraint UK_8mc8121is13twuiqwxy15k3g4 unique (orderIdentificationCode);
+
     alter table Analyte 
        add constraint UK_47x69sl7aoei6c0giwnca5qxt unique (shortName);
 
     alter table LaboratoryTest 
        add constraint UK_fiqfkklxeqombys4ekliflm47 unique (shortName);
 
-    alter table LabQualityControl 
-       add constraint UK_trlsvlwdwm9wn8sa2mw4ra7ib unique (orderIdentification);
-
     alter table Patient 
        add constraint UK_9sy3r8nt1bq8e84mqsj7omfth unique (personalIdentificationNumber);
 
-    alter table PatientOrder 
-       add constraint UK_9erha28i1dowgkb2p0jaj68fc unique (orderIdentification);
-
     alter table Phisician 
        add constraint UK_hhhsqecp80pow3qrj66fnkmd7 unique (personalIdentificationNumber);
+
+    alter table Sample 
+       add constraint UK_7y5oe0qpo05a5pbgjechxalre unique (sampleId);
 
     alter table AbstractAnalyteResult 
        add constraint FK8bmge3b9exphdy4b6h2w3t2in 
@@ -444,6 +492,11 @@
        foreign key (REV) 
        references REVINFO (REV);
 
+    alter table AbstractOrder_AUD 
+       add constraint FKp5iurhe3l1huersgl4xhd0k82 
+       foreign key (REV) 
+       references REVINFO (REV);
+
     alter table Analyte_AUD 
        add constraint FK4k2vc25sg3d5ol920sigottvi 
        foreign key (REV) 
@@ -454,15 +507,20 @@
        foreign key (REV) 
        references REVINFO (REV);
 
+    alter table LabQualityControl 
+       add constraint FK6bfgd24ei1djon6txiukomg60 
+       foreign key (Id) 
+       references AbstractOrder (Id);
+
     alter table LabQualityControl_AUD 
-       add constraint FKjbkxxjanb8hwowdhfxxe2qdo0 
-       foreign key (REV) 
-       references REVINFO (REV);
+       add constraint FK5vn58bjbwrlnaw2wq3hivf23x 
+       foreign key (Id, REV) 
+       references AbstractOrder_AUD (Id, REV);
 
     alter table LabQualityControlResult 
-       add constraint FKosxu1hwxe77e9lmmcpx6sb673 
-       foreign key (order_Id) 
-       references LabQualityControl (Id);
+       add constraint FKhc7spogtqlcdu14vv19ih4tqv 
+       foreign key (controlSample_Id) 
+       references Sample (Id);
 
     alter table LabQualityControlResult 
        add constraint FKg6nvhcqnejdi35pqkye2ghnqr 
@@ -510,9 +568,9 @@
        references REVINFO (REV);
 
     alter table OrderResult 
-       add constraint FK9nup2ja6phkloufiqb3plae9h 
-       foreign key (order_Id) 
-       references PatientOrder (Id);
+       add constraint FKf7w0xssqiu7vy91uvk42qvumk 
+       foreign key (patientSample_Id) 
+       references Sample (Id);
 
     alter table OrderResult 
        add constraint FK98ggq6oq25sv2cmppgr4oc5ty 
@@ -569,10 +627,15 @@
        foreign key (phisician_Id) 
        references Phisician (Id);
 
+    alter table PatientOrder 
+       add constraint FKgcc7dp56rsy3fdovglmx2tlno 
+       foreign key (Id) 
+       references AbstractOrder (Id);
+
     alter table PatientOrder_AUD 
-       add constraint FKi7morp0fgm7cd579deey8oxw0 
-       foreign key (REV) 
-       references REVINFO (REV);
+       add constraint FK570w5utmawcgcvrg7xp3fkjfd 
+       foreign key (Id, REV) 
+       references AbstractOrder_AUD (Id, REV);
 
     alter table Phisician_AUD 
        add constraint FKcj5euetw0smq0n0yfdylh4x84 
@@ -601,5 +664,20 @@
 
     alter table QualitativeFormatMethod_resultTemplates_AUD 
        add constraint FKnq8dn9dr2hxa3d70rf59tkicg 
+       foreign key (REV) 
+       references REVINFO (REV);
+
+    alter table Sample 
+       add constraint FK5urc15yfju1sedjs71hx3vwhx 
+       foreign key (labQualityControl_Id) 
+       references LabQualityControl (Id);
+
+    alter table Sample 
+       add constraint FKru88e978gj24srmr5bhe11ci7 
+       foreign key (patientOrder_Id) 
+       references PatientOrder (Id);
+
+    alter table Sample_AUD 
+       add constraint FK7c3l5hxfww0tdps18v0amndd1 
        foreign key (REV) 
        references REVINFO (REV);

@@ -17,14 +17,17 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.CollectionFactory;
 import org.springframework.web.context.request.RequestContextListener;
 
 import base.DTO.DTOObjectConstans;
 import base.DTO.baza1.AddressDTO;
 import base.DTO.baza1.CommentDTO;
+import base.DTO.baza1.RefferentialRangeDTO;
 import base.Model.baza1.Address;
 import base.Model.baza1.PatientComment;
+import base.Model.baza1.RefferentialRange;
 import base.Utils.Exceptions.EntityNotFoundException;
 
 
@@ -68,7 +71,15 @@ public class Config {
 	public Converter <List<AddressDTO>,List<Address>> adressDtoListToEntityConverter(@Autowired @Lazy ModelMapper modelMapper){
 		return mapper -> mapper.getSource()
 				.stream()
-				.map(obj -> modelMapper.getTypeMap(AddressDTO.class, Address.class, DTOObjectConstans.CREATE.name()).map(obj))
+				.map(obj -> modelMapper.getTypeMap(AddressDTO.class, Address.class).map(obj))
+				.collect(Collectors.toList());
+	}
+	
+	@Bean
+	public Converter <List<RefferentialRangeDTO>,List<RefferentialRange>> refferentialRangesDtoListToEntityConverter(@Autowired @Lazy ModelMapper modelMapper){
+		return mapper -> mapper.getSource()
+				.stream()
+				.map(obj -> modelMapper.getTypeMap(RefferentialRangeDTO.class, RefferentialRange.class).map(obj))
 				.collect(Collectors.toList());
 	}
 	
@@ -83,6 +94,7 @@ public class Config {
 	@Bean
 	public Converter<BigDecimal,BigDecimal> stripTraillingZeroConverter(){
 		return conv -> {
+			if (conv.getSource()==null) return conv.getSource();
 		var scale = conv.getSource().stripTrailingZeros().scale();
 		return scale > 0 ? conv.getSource().stripTrailingZeros() : 
 			 conv.getSource().setScale(0);
@@ -99,11 +111,12 @@ public class Config {
 	};
 	
 	@Bean
-	public Condition<String, String> stringNotNullCondition(){
+	public Condition<Object, Object> objectNotNullCondition(){
 		return condition -> condition.getSource()!=null;
 	}	
 	
 	@Bean
+	@Primary
 	public <T> Provider<T> laboratoryEntityProvider(@Autowired @Qualifier("laboratoryEntityManagerFactory") EntityManager entityManager) throws EntityNotFoundException {
 		return p -> {
 			try {
@@ -111,6 +124,19 @@ public class Config {
 						entityManager
 						.find(p.getRequestedType(), p.getSource().toString()))
 						.orElseThrow(() -> new EntityNotFoundException(p.getRequestedType()));
+			}
+			finally {
+				entityManager.close();
+				}
+		};
+	}
+	
+	@Bean
+	public <T> Provider<T> laboratoryReferenceProvider(@Autowired @Qualifier("laboratoryEntityManagerFactory") EntityManager entityManager) {
+		return p -> {
+			try {
+				return	entityManager
+						.getReference(p.getRequestedType(), p.getSource().toString());
 			}
 			finally {
 				entityManager.close();

@@ -1,7 +1,9 @@
-package base.DTO.baza1;
+package base.DTO.baza1.AnalyteDTO;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+
+import base.DTO.baza1.ActiveObjectDTO;
 
 public class AnalyteDTO extends ActiveObjectDTO {
 

@@ -20,12 +20,12 @@ public class LabQualityControlDTO extends AbstractOrderDTO {
 	@Size(min=2, max=60)
 	private String externalIdentificationCode;
 	
-	@JsonDeserialize(using = LocalDateTimeDeserializer.class) 
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm")
+	//@JsonDeserialize(using = LocalDateTimeDeserializer.class) 
+	//@JsonFormat(pattern="yyyy-MM-dd HH:mm")
 	private LocalDateTime expirationDate;
 	
-	@JsonDeserialize(using = LocalDateTimeDeserializer.class) 
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm")
+	//@JsonDeserialize(using = LocalDateTimeDeserializer.class) 
+	//@JsonFormat(pattern="yyyy-MM-dd HH:mm")
 	private LocalDateTime reportingDeadLine;
 	
 	@Size(min=2, max=255)

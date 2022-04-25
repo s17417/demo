@@ -5,7 +5,8 @@ import javax.validation.groups.Default;
 public enum DTOObjectConstans {
 	
 	CREATE,
-	UPDATE;
+	UPDATE,
+	GET;
 
 	
 

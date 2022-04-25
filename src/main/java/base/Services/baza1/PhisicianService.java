@@ -10,7 +10,11 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +38,22 @@ public class PhisicianService {
 	
 	@Autowired
 	private OrderingUnitRepository orderingUnitRepository;
+	
+	public enum SortConstantsPhisician{
+		NAME("name"),
+		SURNAME("surname"),
+		PERSONAL_ID("personalIdentificationNumber"),
+		CREATION_DATE("cretionTimeStamp");
+		
+		private String value;
+		
+		SortConstantsPhisician(String value) {
+			this.value=value;
+		}
+		public String getValue() {
+			return this.value;
+		}
+	}
 	
 	private ExampleMatcher phisicianMatcher = ExampleMatcher
 			.matching()
@@ -64,20 +84,27 @@ public class PhisicianService {
 				);
 	}
 	
-	public List<PhisicianDTO> getPhisicianByExample(
+	public Page<PhisicianDTO> getPhisicianByExample(
 			String name,
 			String surname,
-			String personalIdentificationNumber
+			String personalIdentificationNumber,
+			@NotNull Integer pageNumber,
+			@NotNull Integer pageSize,
+			@NotNull SortConstantsPhisician sortField,
+			@NotNull Direction direction
 			) {
 		var phisician = new Phisician();
 		phisician.setName(name);
 		phisician.setSurname(surname);
 		phisician.setPersonalIdentificationNumber(personalIdentificationNumber);
+		var page = PageRequest.of(
+				pageNumber,
+				pageSize,
+				Sort.by(direction,sortField.getValue())
+				);
 		return phisicianRepository
-				.findAll(Example.of(phisician, phisicianMatcher))
-				.stream()
-				.map(obj -> modelMapper.map(obj, PhisicianDTO.class))
-				.collect(Collectors.toList());
+				.findAll(Example.of(phisician, phisicianMatcher), page)
+				.map(obj -> modelMapper.map(obj, PhisicianDTO.class));
 	}
 
 	

@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.catalina.User;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -11,12 +12,17 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import base.DTO.DTOObjectConstans;
+import base.DTO.baza.UserSignedTenantDTO;
 import base.DTO.baza.UserTenantRoleDTO;
 import base.Model.baza.Role;
+import base.Model.baza.Tenant;
+import base.Model.baza.Users;
 import base.Model.baza.UsersTenantRole;
 import base.Repository.BazaRepository.TenantRepository;
 import base.Repository.BazaRepository.UsersRepository;
 import base.Repository.BazaRepository.UsersTenantRoleRepository;
+import base.Utils.Exceptions.EntityNotFoundException;
+import base.Utils.Exceptions.RelationNotFoundException;
 import base.Utils.Security.JwtAuthenticationToken;
 
 @Component
@@ -39,7 +45,7 @@ public class UserTenantService {
 		var tenantName = ((JwtAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getTenant();
 		var tenant = tenantRepository.findByName(tenantName);
 		if (tenant==null)
-			throw new NullPointerException("tenant: "+tenantName+" doesn't exists");
+			throw new EntityNotFoundException(Tenant.class);
 	
 		var list=usersTenantRoleRepository.findByTenant(tenant);
 		return list
@@ -52,11 +58,20 @@ public class UserTenantService {
 		var userName=((JwtAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getName();
 		var user = userRepository.findByEmail(userName);
 		if (user == null)
-			throw new NullPointerException("user: "+userName+" doesn't exists");
+			throw new EntityNotFoundException(Users.class);
 		return user.getUsersTenantRole()
 				.stream()
 				.map(e -> modelMapper.getTypeMap(UsersTenantRole.class, UserTenantRoleDTO.class).map(e))
 				.collect(Collectors.toList());
+	}
+	
+	public UserSignedTenantDTO getUserTenant() {
+		var user=((JwtAuthenticationToken)SecurityContextHolder.getContext().getAuthentication());		
+		System.out.println(user.getName()+", "+user.getTenant());
+		if (user == null) throw new EntityNotFoundException(Users.class);
+		var userTenantRole = usersTenantRoleRepository.findByUsersEmailAndTenantName(user.getName(), user.getTenant());
+		if (userTenantRole.isEmpty()) throw new RelationNotFoundException(Users.class, Tenant.class);
+		return modelMapper.map(userTenantRole.get(0), UserSignedTenantDTO.class);
 	}
 	
 	

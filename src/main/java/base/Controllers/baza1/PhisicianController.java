@@ -3,9 +3,12 @@ package base.Controllers.baza1;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,8 +22,10 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import base.DTO.DTOObjectConstans;
 import base.DTO.baza1.PhisicianDTO.PhisicianDTO;
 import base.Services.baza1.PhisicianService;
+import base.Services.baza1.PhisicianService.SortConstantsPhisician;
 import base.Utils.Exceptions.EntityNotFoundException;
 
+@CrossOrigin
 @Validated
 @RestController
 @RequestMapping(value="/lab/phisicians")
@@ -70,12 +75,24 @@ public class PhisicianController {
 			value= "/",
 			produces=MediaType.APPLICATION_JSON_VALUE
 			)
-	public ResponseEntity<List<PhisicianDTO>> getPhisiciansByExample(
+	public ResponseEntity<Page<PhisicianDTO>> getPhisiciansByExample(
 			@RequestParam(required = false) String name,
 			@RequestParam(required = false) String surname,
-			@RequestParam(required = false) String personalIdentificationNumber
+			@RequestParam(required = false) String personalIdentificationNumber,
+			@RequestParam(required = true, defaultValue = "0") Integer pageNumber,
+			@RequestParam(required = true, defaultValue = "25") Integer pageSize,
+			@RequestParam(required = true, defaultValue = "SURNAME") SortConstantsPhisician sortField,
+			@RequestParam(required = true, defaultValue = "ASC") Direction direction
 			){
-		var phisicians = phisicianService.getPhisicianByExample(name, surname, personalIdentificationNumber);
+		var phisicians = phisicianService.getPhisicianByExample(
+				name,
+				surname,
+				personalIdentificationNumber,
+				pageNumber,
+				pageSize,
+				sortField,
+				direction
+				);
 		return ResponseEntity
 				.ok(phisicians);
 	}
@@ -92,7 +109,7 @@ public class PhisicianController {
 	}
 	
 	@PutMapping(
-			value= "/{phisicianId}/orderingUnits{orderingUnitId}"
+			value= "/{phisicianId}/orderingUnits/{orderingUnitId}"
 			)
 	public ResponseEntity<Void> addPhisicianOderingUnits(
 			@PathVariable String phisicianId,
@@ -108,7 +125,7 @@ public class PhisicianController {
 	}
 	
 	@DeleteMapping(
-			value= "/{phisicianId}/orderingUnits{orderingUnitId}"
+			value= "/{phisicianId}/orderingUnits/{orderingUnitId}"
 			)
 	public ResponseEntity<Void> removePhisicianOrderingUnits(
 			@PathVariable String phisicianId,

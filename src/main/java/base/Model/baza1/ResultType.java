@@ -1,6 +1,7 @@
 package base.Model.baza1;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 import java.util.Optional;
 
 public enum ResultType implements IResultTypeAssociationCreator {
@@ -21,9 +22,17 @@ public enum ResultType implements IResultTypeAssociationCreator {
 	@Override
 	public Optional<AbstractAnalyteResult<?,?>> createAnalyteResult(LabTestOrder<?> labTestOrder, Method method) {
 		try {
+			Arrays.stream(method.getResultType().getValue().getConstructors())
+			.forEach(obj -> {
+				System.out.println(obj.getParameterCount());
+				System.out.print(Arrays.asList(obj.getParameters()));
+			}
+			);
+		
+			
 			return Optional.ofNullable(
 					(AbstractAnalyteResult<?,?>) method.getResultType().getValue()
-					.getConstructor(LabTestOrder.class, Method.class)
+					.getConstructor(LabTestOrder.class, method.getClass())
 					.newInstance(labTestOrder, method)
 					);
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
