@@ -50,7 +50,7 @@ public class SpecimentTypeController {
 	}
 	
 	@PutMapping(
-			value= "/{patientSampleId}",
+			value= "/{specimentTypeId}",
 			produces=MediaType.APPLICATION_JSON_VALUE,
 			consumes=MediaType.APPLICATION_JSON_VALUE
 			)
@@ -84,7 +84,7 @@ public class SpecimentTypeController {
 	}	
 	
 	@DeleteMapping(
-			value= "/{patientSampleId}",
+			value= "/{specimentTypeId}",
 			produces=MediaType.APPLICATION_JSON_VALUE
 			)
 	public ResponseEntity<Void> delete(@PathVariable String specimentTypeId){

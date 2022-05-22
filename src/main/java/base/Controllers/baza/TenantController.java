@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -79,12 +81,14 @@ public class TenantController {
 	@PostMapping(value="/invite", produces=MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody ResponseEntity<Object> inviteUser(@NotBlank @Email @RequestParam String email) throws InvalidKeyException, NullPointerException {
 		tenantAuthorizationService.inviteUser(email);
-		return null;
+		return ResponseEntity.created(null).build();
 		
 	}
 	
+	
+	
 	@GetMapping(
-			value="/getUsers",
+			value="/users",
 			produces = MediaType.APPLICATION_JSON_VALUE
 			)
 	public @ResponseBody ResponseEntity<Object> getUsers(){
@@ -105,6 +109,16 @@ public class TenantController {
 			)
 	public @ResponseBody ResponseEntity<Object> getAdminRoles(){
 		return new ResponseEntity<Object>(userTenantService.getAdminRoles(), HttpStatus.OK);
+	}
+	
+	@DeleteMapping(
+			value="/users/{userTenantRoleId}"
+			)
+	public @ResponseBody ResponseEntity<Object> deleteUserTenant(
+			@PathVariable String userTenantRoleId
+			){
+		userTenantService.deleteUserTenant(userTenantRoleId);
+		return new ResponseEntity<Object>(HttpStatus.NO_CONTENT);
 	}
 
 }

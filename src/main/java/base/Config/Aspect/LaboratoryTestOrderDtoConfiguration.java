@@ -16,21 +16,32 @@ import org.springframework.stereotype.Component;
 
 import base.DTO.AuditableObjectDTO;
 import base.DTO.DTOObjectConstans;
+import base.DTO.PersistenceObjectDTO;
 import base.DTO.baza1.AnalyteResultDTO.AbstractAnalyteResultDTO;
 import base.DTO.baza1.AnalyteResultDTO.QuantitativeAnalyteResultDTO;
 import base.DTO.baza1.MethodDTO.QuantitativeFormatMethodDTO;
+import base.DTO.baza1.OrdersDTO.LabQualityControlDTO;
 import base.DTO.baza1.OrdersDTO.ListPatientOrderDTO;
 import base.DTO.baza1.OrdersDTO.PatientOrderDTO;
+import base.DTO.baza1.PatientSampleDTO.ControlSampleDTO;
 import base.DTO.baza1.PatientSampleDTO.PatientSampleDTO;
+import base.DTO.baza1.PatientSampleDTO.SimpleControlSampleDTO;
 import base.DTO.baza1.PatientSampleDTO.SimplePatientSampleDTO;
 import base.DTO.baza1.PatientSampleDTO.SpecimentTypeDTO;
+import base.DTO.baza1.labTestOrderDTO.LabQualityControlResultWithListDTO;
+import base.DTO.baza1.labTestOrderDTO.LabQualityControlResultDTO;
 import base.DTO.baza1.labTestOrderDTO.LabTestOrderDTO;
 import base.DTO.baza1.labTestOrderDTO.ListOrderResultDTO;
 import base.DTO.baza1.labTestOrderDTO.OrderResultDTO;
 import base.DTO.baza1.labTestOrderDTO.OrderResultWithResultListDTO;
+import base.DTO.baza1.labTestOrderDTO.SimpleLabQualityControlResultDTO;
 import base.DTO.baza1.labTestOrderDTO.SimpleOrderResultDTO;
 import base.Model.AbstractPersistentClasses.AbstractAuditableObject;
+import base.Model.AbstractPersistentClasses.AbstractPersistentObject;
 import base.Model.baza1.AbstractAnalyteResult;
+import base.Model.baza1.ControlSample;
+import base.Model.baza1.LabQualityControl;
+import base.Model.baza1.LabQualityControlResult;
 import base.Model.baza1.LabTestOrder;
 import base.Model.baza1.LaboratoryTest;
 import base.Model.baza1.OrderResult;
@@ -96,6 +107,7 @@ public class LaboratoryTestOrderDtoConfiguration implements IDtoConfigurtion {
 		
 		mapper.createTypeMap(OrderResult.class, ListOrderResultDTO.class)
 		.addMappings(map -> {
+			map.map(OrderResult::getState, ListOrderResultDTO::setLabTestOrderStatus);
 			map.<ListPatientOrderDTO>map(src -> src.getSample().getOrder(), (dest, v) -> dest.setOrder(v));
 		})
 		.implicitMappings();
@@ -110,8 +122,6 @@ public class LaboratoryTestOrderDtoConfiguration implements IDtoConfigurtion {
 			map.map(OrderResultWithResultListDTO::getResultDescription, OrderResult::setResultDescription);
 			
 		});
-		
-
 		mapper.createTypeMap(LabTestOrderDTO.class, LabTestOrder.class, DTOObjectConstans.CREATE.name())
 		.addMappings( map ->{
 			map.with(laboratoryTestProvider).map(src -> src.getLaboratoryTest().getId(), LabTestOrder<?>::setLaboratoryTest);
@@ -148,6 +158,42 @@ public class LaboratoryTestOrderDtoConfiguration implements IDtoConfigurtion {
 		.includeBase(SimpleOrderResultDTO.class, OrderResult.class);
 		
 		
+		mapper.createTypeMap(LabQualityControlResult.class, SimpleLabQualityControlResultDTO.class)
+		.includeBase(LabTestOrder.class, LabTestOrderDTO.class)
+		.implicitMappings();
+		
+		mapper.createTypeMap(SimpleLabQualityControlResultDTO.class, LabQualityControlResult.class, DTOObjectConstans.CREATE.name())
+		.includeBase(LabTestOrderDTO.class, LabTestOrder.class);
+		
+		mapper.createTypeMap(SimpleLabQualityControlResultDTO.class, LabQualityControlResult.class, DTOObjectConstans.UPDATE.name())
+		.includeBase(LabTestOrderDTO.class, LabTestOrder.class);
+		
+		
+		
+		mapper.createTypeMap(LabQualityControlResult.class, LabQualityControlResultDTO.class)
+		.includeBase(LabQualityControlResult.class, SimpleLabQualityControlResultDTO.class)
+		.implicitMappings();
+		
+		mapper.createTypeMap(LabQualityControlResultDTO.class, LabQualityControlResult.class, DTOObjectConstans.UPDATE.name())
+		.includeBase(SimpleLabQualityControlResultDTO.class, LabQualityControlResult.class);
+		
+		
+		
+		
+		mapper.createTypeMap(LabQualityControlResult.class, LabQualityControlResultWithListDTO.class)
+		.<LabQualityControlDTO>addMapping(src -> src.getSample().getOrder(), (dest, v) -> dest.setOrder(v))
+		.includeBase(LabQualityControlResult.class, LabQualityControlResultDTO.class)
+		.implicitMappings();
+		
+		mapper.createTypeMap(LabQualityControlResultWithListDTO.class, LabQualityControlResult.class)
+		.addMappings(map -> {
+			map.map(LabQualityControlResultWithListDTO::getResultDescription, LabQualityControlResult::setResultDescription);
+			
+		});
+		
+		
+		
+		
 		mapper.createTypeMap(SimplePatientSampleDTO.class, PatientSample.class)
 		.addMappings(map -> {
 			map
@@ -161,6 +207,20 @@ public class LaboratoryTestOrderDtoConfiguration implements IDtoConfigurtion {
 		.implicitMappings();
 		mapper.createTypeMap(PatientSample.class, PatientSampleDTO.class).implicitMappings();
 		
+		mapper.createTypeMap(SimpleControlSampleDTO.class, ControlSample.class)
+		.addMappings(map -> {
+			map
+			.with(specimentTypeProvider)
+			.map(src -> src.getSpecimentType().getId(), ControlSample::setSpecimentType);
+			map.map(SimpleControlSampleDTO::getCollectionDate, ControlSample::setCollectionDate);
+			map.map(SimpleControlSampleDTO::getSampleId, ControlSample::setSampleId);
+		});
+		
+		mapper.createTypeMap(ControlSample.class, SimpleControlSampleDTO.class)
+		.implicitMappings();
+		
+		mapper.createTypeMap(ControlSample.class, ControlSampleDTO.class).implicitMappings();
+		
 		mapper.createTypeMap(SpecimentTypeDTO.class, SpecimentType.class)
 		.addMappings(map -> {
 			map.map(SpecimentTypeDTO::getSpeciment, SpecimentType::setSpeciment);
@@ -168,6 +228,12 @@ public class LaboratoryTestOrderDtoConfiguration implements IDtoConfigurtion {
 		
 		mapper.createTypeMap(SpecimentType.class, SpecimentTypeDTO.class)
 		.implicitMappings();
+		
+		
+		
+		
+		
+		
 		
 	}
 	

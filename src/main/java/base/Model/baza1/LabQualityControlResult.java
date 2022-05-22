@@ -1,5 +1,10 @@
 package base.Model.baza1;
 
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -113,6 +118,41 @@ public class LabQualityControlResult extends LabTestOrder</*LabQualityControl*/ 
 
 	public void setParentTargetValue(LabQualityControlResult parentTargetValue) {
 		this.parentTargetValue = parentTargetValue;
+	}
+	
+	@Override
+	public Set<? extends AbstractAnalyteResult<?, ?>> createAnalyteResults() {
+			if (targetValue!=true)
+				return this.getLaboratoryTest()==null ? new HashSet<>() :
+					this.getLaboratoryTest().getMethods()
+					.stream()
+					.filter(m-> m.getIsActive())
+					.map(obj ->obj.createAnalyteResult(this))
+					.filter(Optional::isPresent)
+					.map( obj -> obj.get())
+					.collect(Collectors.toSet());
+			else
+				return this.getLaboratoryTest()==null ? new HashSet<>() :
+					this.getLaboratoryTest().getMethods()
+					.stream()
+					.filter(m-> m.getIsActive())
+					.map(obj ->obj.creatControlTargetResult(this))
+					.filter(Optional::isPresent)
+					.map( obj -> obj.get())
+					.collect(Collectors.toSet());
+	}
+	
+	public static LabQualityControlResult createTargetLabQualityControlResult(@NotNull @Valid LaboratoryTest laboratoryTest, @NotNull @Valid ControlSample controlSample) {
+		var target = new LabQualityControlResult(laboratoryTest, controlSample);
+		target.setTargetValue(true);
+			laboratoryTest.getMethods()
+			.stream()
+			.filter(m-> m.getIsActive())
+			.map(obj ->obj.creatControlTargetResult(target))
+			.filter(Optional::isPresent)
+			.map( obj -> obj.get())
+			.collect(Collectors.toSet());
+		return target;
 	}
 	
 }

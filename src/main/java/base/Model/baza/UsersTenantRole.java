@@ -36,6 +36,7 @@ public class UsersTenantRole extends AbstractAuditableObject<String> {
 	@ManyToOne(fetch=FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
 	private Tenant tenant;
 	
+	@NotNull
 	@Enumerated(EnumType.STRING)
 	@Column(length=50)
 	private Role role;

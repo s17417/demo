@@ -54,10 +54,10 @@ public class UserService {
 	@Autowired
 	private IJWTUtil jwtToken;
 	
-	@Value("${server.address}")
+	@Value("${serverFront.address}")
 	private InetAddress serverAdress;
 	
-	@Value("${server.port}")
+	@Value("${serverFront.port}")
 	private String serverPort;
 	
 	@Autowired
@@ -84,8 +84,9 @@ public class UserService {
 			if (invitations.getTenant().isEmpty()) invitationRepo.delete(invitations);
 		}
 
-		String text = "For account click to attached link: "+serverAdress.getHostAddress()+":"+serverPort+"/users/activate?token="+jwtToken.generateEmailActivationToken(savedUser);
-		if (userRepo.findById(savedUser.getId()).isPresent())emailSender.sendEmailTo("tomasz.polawski@gmail.com", "probs", text);
+		String text = "For account click to attached link: "+serverAdress.getHostAddress()+":"+serverPort+"/activateAccount/?token="+jwtToken.generateEmailActivationToken(savedUser);
+		if (userRepo.findById(savedUser.getId()).isPresent())
+			emailSender.sendEmailTo(savedUser.getEmail(), "Laboratorium-Aktywacja-Konta", text);
 		
 		userDTO.setPassword(null);
 		modelMapper.getTypeMap(Users.class, UserDTO.class).map(savedUser,userDTO);
@@ -143,6 +144,8 @@ public class UserService {
 			throw ex;
 		}
 	}
+	
+	
 	
 	
 

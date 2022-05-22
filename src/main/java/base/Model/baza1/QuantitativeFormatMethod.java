@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
@@ -129,10 +130,17 @@ public class QuantitativeFormatMethod extends Method {
 		this.refferentialRanges = refferentialRanges;
 	}
 
-	/*@Override
-	protected <X extends AbstractAnalyteResult<?, ?>> X create(LabTestOrder<?> laboratoryTest) {
-		return (X) new QuantitativeAnalyteResult(laboratoryTest, this);
-	}*/
+	@Override
+	public  Optional<QuantitativeAnalyteResult> createAnalyteResult(LabTestOrder<?> labTestOrder) {
+		return Optional.ofNullable( new QuantitativeAnalyteResult(labTestOrder, this));
+	}
+
+	@Override
+	public  Optional<ControlTargetAnalyteResult> creatControlTargetResult(LabTestOrder<?> labTestOrder) {
+		return Optional.ofNullable(new ControlTargetAnalyteResult(labTestOrder, this));
+	}
+
+	
 
 	
 }

@@ -54,7 +54,6 @@ public abstract class LabTestOrder<T extends Sample<?,?> /*AbstractOrder<?>*/> e
 	private String resultDescription;
 	
 	@NotNull
-	@Valid
 	@ManyToOne(
 			cascade = {
 					CascadeType.MERGE,
@@ -131,12 +130,10 @@ public abstract class LabTestOrder<T extends Sample<?,?> /*AbstractOrder<?>*/> e
 		this.analyteResults.clear();
 		this.analyteResults.addAll(analyteResults);
 	}
+	
+	public abstract Set<? extends AbstractAnalyteResult<?,?>> createAnalyteResults();
 
-	public  Set<? extends AbstractAnalyteResult<?,?>> createAnalyteResults(){
-		/*return this.laboratoryTest==null ? new HashSet<>() :
-			this.laboratoryTest.getMethods()
-			.stream()
-			.map(obj -> obj.create(this)).collect(Collectors.toSet());*/
+	/*public  Set<? extends AbstractAnalyteResult<?,?>> createAnalyteResults(){
 		
 		return this.laboratoryTest==null ? new HashSet<>() :
 			this.laboratoryTest.getMethods()
@@ -146,7 +143,7 @@ public abstract class LabTestOrder<T extends Sample<?,?> /*AbstractOrder<?>*/> e
 			.filter(Optional::isPresent)
 			.map( obj -> obj.get())
 			.collect(Collectors.toSet());
-	}
+	}*/
 	
 	/*abstract public void setOrder(@NotNull @Valid T order);
 	

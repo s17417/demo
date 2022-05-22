@@ -92,7 +92,6 @@ public class TenantAuthorizationService {
 				invitation = new Invitation();
 				invitation.setEmail(email);	
 				}
-			tenant=tenantRepo.findByName("default_schema1");
 			tenant.addInvitation(invitation);
 			invitationRepo.save(invitation);
 		}

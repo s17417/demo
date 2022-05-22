@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import base.DTO.baza1.PatientSampleDTO.SpecimentTypeDTO;
 import base.Model.baza1.SpecimentType;
@@ -33,6 +34,7 @@ public class SpecimentTypeService {
 		return modelMapper.map(specimentTypeRepository.save(speciment), SpecimentTypeDTO.class);
 	}
 	
+	@Transactional(value = "laboratoryTransactionManager")
 	public void setActiveStatus(String specimentTypeId, Boolean isActive) {
 		specimentTypeRepository.activeStatus(specimentTypeId, isActive);
 	}

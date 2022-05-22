@@ -19,9 +19,17 @@
        drop 
        foreign key FK4k2vc25sg3d5ol920sigottvi;
 
+    alter table LaboratoryTest 
+       drop 
+       foreign key FKbtrkm84momkbq5lqc8b0gi2ay;
+
     alter table LaboratoryTest_AUD 
        drop 
        foreign key FKbbqpm2hy4c1t9qh27ocqnc8ki;
+
+    alter table LaboratoryTestHistory 
+       drop 
+       foreign key FK1iw9ydv52bxcevjjlwyhhrwm5;
 
     alter table LabQualityControl 
        drop 
@@ -151,17 +159,29 @@
        drop 
        foreign key FKnq8dn9dr2hxa3d70rf59tkicg;
 
+    alter table QuantitativeFormatMethod_refferentialRanges 
+       drop 
+       foreign key FKakkpqci9i3lrq4ql9vyxl03lh;
+
     alter table Sample 
        drop 
-       foreign key FK5urc15yfju1sedjs71hx3vwhx;
+       foreign key FKtcs6g9uujpbeq9eaui0n1qy7a;
 
     alter table Sample 
        drop 
        foreign key FKru88e978gj24srmr5bhe11ci7;
 
+    alter table Sample 
+       drop 
+       foreign key FK5urc15yfju1sedjs71hx3vwhx;
+
     alter table Sample_AUD 
        drop 
        foreign key FK7c3l5hxfww0tdps18v0amndd1;
+
+    alter table SpecimentType_AUD 
+       drop 
+       foreign key FK4jh9vuijlnqx2sftathnhptm0;
 
     drop table if exists AbstractAnalyteResult;
 
@@ -178,6 +198,8 @@
     drop table if exists LaboratoryTest;
 
     drop table if exists LaboratoryTest_AUD;
+
+    drop table if exists LaboratoryTestHistory;
 
     drop table if exists LabQualityControl;
 
@@ -233,8 +255,14 @@
 
     drop table if exists QualitativeFormatMethod_resultTemplates_AUD;
 
+    drop table if exists QuantitativeFormatMethod_refferentialRanges;
+
     drop table if exists REVINFO;
 
     drop table if exists Sample;
 
     drop table if exists Sample_AUD;
+
+    drop table if exists SpecimentType;
+
+    drop table if exists SpecimentType_AUD;

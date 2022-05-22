@@ -144,5 +144,4 @@ public class LaboratoryTestService {
 				.collect(Collectors.toList());
 	}
 
-
 }

@@ -10,6 +10,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
@@ -22,6 +24,7 @@ import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -78,21 +81,109 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
     	.httpBasic().disable()
     	
     	.addFilterAt(jwtAuthorizationFilter,BasicAuthenticationFilter.class)
-    	//.authorizeRequests((authz) -> authz.antMatchers("/users/create").authenticated())
     	.addFilterAfter(jwtAuthenticationFilter, JwtAuthorizationFilter.class)
     	.addFilterAfter(jwtTenantAuthenticationFilter, JwtAuthorizationFilter.class)
     	
-    	//.requestMatchers().antMatchers("/users/create").and()
-    	
     	.authorizeRequests(
+    			//USERS
     			auth -> auth
-    			//.antMatchers(HttpMethod.DELETE,"/phisicians/*").hasRole(Role.SPECIFIC_DATABASE_VISITOR.name())
-    			.antMatchers("/login/").permitAll()
-    	    	.antMatchers("/users/").permitAll()
-    	    	.antMatchers("/users/activate").permitAll()
+    	    	.antMatchers(
+    	    			"/users/*",
+    	    			"/users/getTenants",
+    	    			"/users/*/acceptInvitation",
+    	    			"/users/getTenant",
+    	    			"/users/activate/*"
+    	    			).permitAll()
+    	    	.antMatchers("/users/updateRole").hasRole(Role.SPECIFIC_DATABASE_ADMIN.name())
+    	    	.antMatchers(
+    	    			"/tenant/create",
+    	    			"/tenant/get"
+    	    			).permitAll()
+    	    	.antMatchers("/tenant/update","/tenant/delete","/tenant/users","/tenant/users/*").hasRole(Role.SPECIFIC_DATABASE_ADMIN.name())
+    	    	.antMatchers(HttpMethod.DELETE,"/tenant/users/*").hasRole(Role.SPECIFIC_DATABASE_ADMIN.name())
+    	    	.antMatchers("/users/**","/tenants/**").denyAll()
+    	    	
+    	    	//GET
+    	    	.antMatchers(HttpMethod.GET,
+    	    			"/lab/patients/**",
+    	    			"/lab/patientOrders/**",
+    	    			"/lab/laboratoryTests/all"
+    	    			)
+    	    	.hasRole(Role.SPECIFIC_DATABASE_VISITOR.name())
+    	    	
+    	    	.antMatchers(HttpMethod.GET, "/lab/**")
+    	    	.hasRole(Role.SPECIFIC_DATABASE_USER.name())
+    	    	
+    	    	//POST
+    	    	.antMatchers(HttpMethod.POST,
+    	    			"/lab/patients/**",
+    	    			"/lab/patientOrders/**",
+    	    			"/lab/phisicians/**",
+    	    			"/lab/orderingUnits/**",
+    	    			"/lab/specimentTypes/**"
+    	    			)
+    	    	.hasRole(Role.SPECIFIC_DATABASE_USER.name())
+    	    	
+    	    	.antMatchers(HttpMethod.POST,
+    	    			"/lab/labQualityControls/**"
+    	    			)
+    	    	.hasRole(Role.SPECIFIC_DATABASE_TECHNICIAN.name())
+    	    	
+    	    	//PUT
+    	    	.antMatchers(HttpMethod.PUT,
+    	    			"/lab/patients/**",
+    	    			"/lab/patientOrders/*",
+    	    			"/lab/patientOrders/*/patientSamples/*",
+    	    			"/lab/patientOrders/*/patientSamples/*/ordersResults/*",
+    	    			"/lab/phisicians/**",
+    	    			"/lab/orderingUnits/**",
+    	    			"/lab/specimentTypes/**"
+    	    			)
+    	    	.hasRole(Role.SPECIFIC_DATABASE_USER.name())
+    	    	
+    	    	.antMatchers(HttpMethod.PUT,
+    	    			"/lab/labQualityControls/*",
+    	    			"/lab/labQualityControls/*/controlSamples/*/controlResults/*",
+    	    			"/lab/labQualityControls/*/controlSamples/*/controlResults/*/cancel",
+    	    			"/lab/labQualityControls/*/controlSamples/*/controlResults/*/analyteResults/",
+    	    			"/lab/patientOrders/*/patientSamples/*/ordersResults/*/cancel",
+    	    			"/lab/patientOrders/*/patientSamples/*/ordersResults/*/analyteResults/"
+    	    			)
+    	    	.hasRole(Role.SPECIFIC_DATABASE_TECHNICIAN.name())
+    	    	
+    	    	.antMatchers(HttpMethod.PUT,
+    	    			"/lab/patientOrders/*/patientSamples/*/ordersResults/*/accept",
+    	    			"/lab/patientOrders/*/patientSamples/*/ordersResults/*/reject"
+    	    			)
+    	    	.hasRole(Role.SPECIFIC_DATABASE_SCIENTIST.name())
+    	    	
+    	    
+    	    	//DELETE
+    	    	.antMatchers(HttpMethod.DELETE,
+    	    			"/lab/orderingUnits/**"
+    	    			)
+    	    	.hasRole(Role.SPECIFIC_DATABASE_USER.name())
+    	    	
+    	    	
+    	    	.antMatchers(HttpMethod.DELETE,  "/lab/**")
+    	    	.hasRole(Role.SPECIFIC_DATABASE_ADMIN.name())
+    	    	.antMatchers(HttpMethod.PUT,  "/lab/**")
+    	    	.hasRole(Role.SPECIFIC_DATABASE_ADMIN.name())
+    	    	.antMatchers(HttpMethod.POST,  "/lab/**")
+    	    	.hasRole(Role.SPECIFIC_DATABASE_ADMIN.name())
+    	    	
+    	    	
+    	    	
+    	    	.antMatchers("/lab/**").denyAll()
+    	    	//hasRole(Role.SPECIFIC_DATABASE_USER.name())
+    	    	//.antMatchers(HttpMethod.DELETE, "/lab/*").hasRole(Role.SPECIFIC_DATABASE_USER.name())
+    	    	//.antMatchers(HttpMethod.GET, "/lab/*").hasRole(Role.SPECIFIC_DATABASE_USER.name())
     	    	)  	
-    	.authorizeRequests(
-    			auth -> auth.anyRequest().authenticated())
+    	/*.authorizeRequests(
+    			auth -> auth
+    			.anyRequest().authenticated()
+    			
+    			)*/
     	//.anyRequest()
     	//.authenticated()
     	//.antMatchers("/users/update").hasRole("BASIC_USER")
@@ -101,6 +192,8 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
     	.sessionManagement()
     	.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
+    
+    
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -145,4 +238,18 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 	public AuthenticationManager authenticationManagerBean() throws Exception {
 		return super.authenticationManagerBean();
 	}
+	
+	@Bean
+	public RoleHierarchy roleHierarchy() {
+	    RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
+	    String hierarchy = "ROLE_SPECIFIC_DATABASE_ADMIN > ROLE_SPECIFIC_DATABASE_SCIENTIST "
+	    		+ "\n ROLE_SPECIFIC_DATABASE_SCIENTIST > ROLE_SPECIFIC_DATABASE_TECHNICIAN "
+	    		+ "\n ROLE_SPECIFIC_DATABASE_TECHNICIAN > ROLE_SPECIFIC_DATABASE_USER "
+	    		+ "\n ROLE_SPECIFIC_DATABASE_USER > ROLE_SPECIFIC_DATABASE_VISITOR "
+	    		+ "\n ROLE_SPECIFIC_DATABASE_VISITOR > ROLE_SPECIFIC_DATABASE_INVITATION";
+	    roleHierarchy.setHierarchy(hierarchy);
+	    return roleHierarchy;
+	}
+	
+	
 }

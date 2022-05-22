@@ -10,6 +10,8 @@ public enum OrderStatus implements IStateTransformation<OrderStatus> {
 		@Override
 		public  boolean transform(OrderStatus newState) {
 			switch (newState){
+			case REJECTED:
+			break;
 			case PROCESSED:
 			break;
 			case CANCELLED:
@@ -93,6 +95,7 @@ public enum OrderStatus implements IStateTransformation<OrderStatus> {
 	static{
 			PENDING.status = Arrays.asList(
 						new OrderStatus[]{
+							OrderStatus.REJECTED,
 							OrderStatus.PROCESSED,
 							OrderStatus.CANCELLED
 						}

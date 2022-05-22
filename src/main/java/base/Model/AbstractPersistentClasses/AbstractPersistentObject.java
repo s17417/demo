@@ -60,11 +60,12 @@ public abstract class AbstractPersistentObject implements IPersistentObject, Ser
 		if (this == obj) {
 			return true;
 		}
+		
 		if (!(obj instanceof AbstractPersistentObject)) {
 			return false;
 		}
 		AbstractPersistentObject other = (AbstractPersistentObject) obj;
-		return Objects.equals(Id, other.Id);
+		return Objects.equals(this.getId(), other.getId());
 	}
 
 }

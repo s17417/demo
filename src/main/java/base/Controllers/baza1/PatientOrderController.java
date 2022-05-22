@@ -257,6 +257,46 @@ public class PatientOrderController {
 				.body(orderResult);
 	}
 	
+	@PutMapping(
+			value= "/{patientOrderId}/patientSamples/{patientSampleId}/ordersResults/{orderResultId}/accept",
+			produces=MediaType.APPLICATION_JSON_VALUE,
+			consumes=MediaType.APPLICATION_JSON_VALUE
+			)
+	public ResponseEntity<OrderResultDTO> acceptOrderResult(
+			@PathVariable String orderResultId,
+			@PathVariable String patientSampleId,			
+			@PathVariable String patientOrderId
+			) throws EntityNotFoundException {
+		var orderResult = orderResultService.acceptOrder(patientOrderId, patientSampleId, orderResultId);	
+		return ResponseEntity.ok()
+				.location(
+						ServletUriComponentsBuilder
+						.fromCurrentRequest()
+						.build()
+						.toUri())
+				.body(orderResult);
+	}
+	
+	@PutMapping(
+			value= "/{patientOrderId}/patientSamples/{patientSampleId}/ordersResults/{orderResultId}/reject",
+			produces=MediaType.APPLICATION_JSON_VALUE,
+			consumes=MediaType.APPLICATION_JSON_VALUE
+			)
+	public ResponseEntity<OrderResultDTO> rejectOrderResult(
+			@PathVariable String orderResultId,
+			@PathVariable String patientSampleId,			
+			@PathVariable String patientOrderId
+			) throws EntityNotFoundException {
+		var orderResult = orderResultService.rejectOrder(patientOrderId, patientSampleId, orderResultId);	
+		return ResponseEntity.ok()
+				.location(
+						ServletUriComponentsBuilder
+						.fromCurrentRequest()
+						.build()
+						.toUri())
+				.body(orderResult);
+	}
+	
 	@GetMapping(
 			value= "/{patientOrderId}/patientSamples/{patientSampleId}/ordersResults/{orderResultId}",
 			produces=MediaType.APPLICATION_JSON_VALUE
@@ -292,6 +332,7 @@ public class PatientOrderController {
 			@RequestParam(required = false) String surname,
 			@RequestParam(required = false) String personalIdentificationNumber,
 			@RequestParam(required = false) String orderIdentification,
+			@RequestParam(required = false) String laboratoryTest,
 			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") @PastOrPresent LocalDate fromBirthDate,
 			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") @PastOrPresent LocalDate toBirthDate,
 			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") @PastOrPresent LocalDate fromOrderDate,
@@ -309,6 +350,7 @@ public class PatientOrderController {
 				surname,
 				personalIdentificationNumber,
 				orderIdentification,
+				laboratoryTest,
 				fromBirthDate,
 				toBirthDate,
 				fromOrderDate,
@@ -325,7 +367,7 @@ public class PatientOrderController {
 				.ok(orderResult);
 	}
 	
-	@GetMapping(
+	/*@GetMapping(
 			value= "/{patientOrderId}/ordersResults/{orderResultId}/analyteResults/",
 			produces=MediaType.APPLICATION_JSON_VALUE
 			)
@@ -341,7 +383,7 @@ public class PatientOrderController {
 		};
 		return ResponseEntity
 				.ok(analyteResults);
-	}
+	}*/
 	
 	@GetMapping(
 			value= "/{patientOrderId}/patientSamples/{patientSampleId}/ordersResults/{orderResultId}/analyteResults/",
@@ -353,7 +395,7 @@ public class PatientOrderController {
 			@PathVariable String orderResultId
 			)throws EntityNotFoundException {
 		System.out.println("dlckmdslcnslkdncksdjncksjcnksn");
-		var analyteResults = analyteResultService.getAllWithOrder(patientOrderId, patientSampleId, orderResultId);
+		var analyteResults = analyteResultService.getAllWithPatientOrder(patientOrderId, patientSampleId, orderResultId);
 		System.out.println(analyteResults.getAnalyteResults());
 		return ResponseEntity
 				.ok(analyteResults);

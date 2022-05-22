@@ -9,7 +9,7 @@ import base.DTO.baza1.RefferentialRangeDTO;
 
 public class ListQuantitativeFormatMethodDTO extends ListMethodDTO {
 
-	private List<@Valid RefferentialRangeDTO> refferentialRangesDTO;
+	private List<@Valid RefferentialRangeDTO> refferentialRanges;
 	
 	private String units;
 
@@ -21,12 +21,12 @@ public class ListQuantitativeFormatMethodDTO extends ListMethodDTO {
 		this.units = units;
 	}
 
-	public List<RefferentialRangeDTO> getRefferentialRangesDTO() {
-		return refferentialRangesDTO;
+	public List<RefferentialRangeDTO> getRefferentialRanges() {
+		return refferentialRanges;
 	}
 
-	public void setRefferentialRangesDTO(List<RefferentialRangeDTO> refferentialRangesDTO) {
-		this.refferentialRangesDTO = refferentialRangesDTO;
+	public void setRefferentialRanges(List<RefferentialRangeDTO> refferentialRanges) {
+		this.refferentialRanges = refferentialRanges;
 	}
 
 }

@@ -1,6 +1,7 @@
 package base.Model.baza1;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.persistence.Basic;
@@ -34,7 +35,7 @@ import base.Model.AbstractPersistentClasses.AbstractActiveObject;
 @DiscriminatorOptions(force = true)
 @DiscriminatorColumn(name="resultType", 
 discriminatorType = DiscriminatorType.STRING)
-public abstract class Method extends AbstractActiveObject<String> {
+public abstract class Method extends AbstractActiveObject<String>{
 
 	/**
 	 * 
@@ -142,7 +143,13 @@ public abstract class Method extends AbstractActiveObject<String> {
 	public void setAnalyticalMethodType(String analyticalMethodType) {
 		this.analyticalMethodType = analyticalMethodType;
 	}
+
+
+	public abstract Optional<? extends AbstractAnalyteResult<?,?>> createAnalyteResult(LabTestOrder<?> labTestOrder);
 	
-	/*protected abstract <X extends AbstractAnalyteResult<?, ?>> X create(LabTestOrder<?> laboratoryTest);
-	*/
+	public abstract Optional<? extends AbstractAnalyteResult<?,?>> creatControlTargetResult(LabTestOrder<?> labTestOrder);
+	
+	
+	
+	
 }

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import base.Model.baza1.AbstractAnalyteResult;
+import base.Model.baza1.LabQualityControlResult;
 import base.Model.baza1.Method;
 import base.Model.baza1.OrderResult;
 
@@ -47,6 +48,18 @@ public interface AnalyteResultRepository extends JpaRepository<AbstractAnalyteRe
 			+ "AND ord.Id=:patientOrderId"
 			)
 	public Optional<OrderResult> findAnalyteResultsByPatientOrderIdAndOrderResultIdWithPatientOrder(String patientOrderId, String orderResultId);
+	
+	@Query("SELECT ore FROM LabQualityControlResult ore "
+			+ "JOIN FETCH ore.laboratoryTest lbt "
+			+ "JOIN FETCH ore.analyteResults ar "
+			+ "JOIN FETCH ar.method met "
+			+ "JOIN FETCH met.analyte an "
+			+ "JOIN FETCH ore.controlSample pt "
+			+ "JOIN FETCH pt.order ord "
+			+ "WHERE ore.Id=:controlResultId "
+			+ "AND ord.Id=:controlOrderId"
+			)
+	public Optional<LabQualityControlResult> findAnalyteResultsByControlOrderIdAndControlResultId(String controlOrderId, String controlResultId);
 	
 
 }

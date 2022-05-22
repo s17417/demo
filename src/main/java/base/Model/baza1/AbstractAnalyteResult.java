@@ -32,7 +32,7 @@ public abstract class AbstractAnalyteResult<T, M extends Method> extends Abstrac
 	private static final long serialVersionUID = 1L;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(name="resultType", insertable=false, nullable=false, updatable=false)
+	@Column(name="resultType", length = 45, insertable=false, nullable=false, updatable=false)
 	private ResultType resultType;
 	
 	@ManyToOne(

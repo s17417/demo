@@ -5,13 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.validation.constraints.NotNull;
 
-import org.hibernate.envers.AuditReader;
-import org.hibernate.envers.AuditReaderFactory;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -45,11 +42,12 @@ import base.Utils.Exceptions.EntityNotFoundException;
 public class OrderResultService {
 	
 	public enum SortConstants{
-		NAME("order.patient.name"),
-		SURNAME("order.patient.surname"),
-		PERSONAL_ID("order.patient.personalIdentificationNumber"),
-		ORDER_IDENTIFICATION("order.orderIdentification"),
-		ORDER_DATE("order.orderDate");
+		NAME("patientSample.order.patient.name"),
+		SURNAME("patientSample.order.patient.surname"),
+		PERSONAL_ID("patientSample.order.patient.personalIdentificationNumber"),
+		ORDER_IDENTIFICATION("patientSample.order.orderIdentificationCode"),
+		ORDER_DATE("patientSample.order.orderDate"),
+		CREATION_DATE("cretionTimeStamp");
 		
 		private String value;
 		
@@ -88,12 +86,20 @@ public class OrderResultService {
 			.withIgnoreNullValues()
 			.withIgnoreCase()
 			.withMatcher("tatMode", GenericPropertyMatchers.contains())
-			.withMatcher("labTestOrderStatus", GenericPropertyMatchers.contains())
+			.withMatcher("laboratoryTest.Id", GenericPropertyMatchers.exact())
 			.withMatcher("order.patient.name", GenericPropertyMatchers.contains())
 			.withMatcher("order.patient.surname", GenericPropertyMatchers.contains())
 			.withMatcher("order.patient.personalIdentificationNumber", GenericPropertyMatchers.exact())
 			.withMatcher("order.orderIdentificationCode", GenericPropertyMatchers.exact())
-			.withIgnorePaths("Id","order.Id","order.patient.Id","order.orderDate");
+			.withIgnorePaths(
+					"Id",
+					"labTestOrderStatus",
+					"laboratoryTest.isActive",
+					"patientSample.Id",
+					"patientSample.order.Id",
+					"patientSample.order.patient.Id",
+					"patientSample.order.orderDate"
+					);
 
 	@Transactional(value = "laboratoryTransactionManager")
 	public OrderResultDTO create(@NotNull String patientOrderId, @NotNull String patientSampleId, @NotNull SimpleOrderResultDTO orderResultDTO)throws EntityNotFoundException{
@@ -116,6 +122,26 @@ public class OrderResultService {
 				.findByIdAndOrder(patientOrderId, patientSampleId, orderResultId)
 				.orElseThrow(() -> new EntityNotFoundException(OrderResult.class));	
 		orderResult.setState(OrderStatus.CANCELLED);
+		return modelMapper
+				.map(orderResultRepository.saveAndFlush(orderResult), OrderResultDTO.class);
+	}
+	
+	@Transactional(value = "laboratoryTransactionManager")
+	public OrderResultDTO acceptOrder(@NotNull String patientOrderId,  @NotNull String patientSampleId, @NotNull String orderResultId) {
+		var orderResult = orderResultRepository
+				.findByIdAndOrder(patientOrderId, patientSampleId, orderResultId)
+				.orElseThrow(() -> new EntityNotFoundException(OrderResult.class));	
+		orderResult.setState(OrderStatus.ACCEPTED);
+		return modelMapper
+				.map(orderResultRepository.saveAndFlush(orderResult), OrderResultDTO.class);
+	}
+	
+	@Transactional(value = "laboratoryTransactionManager")
+	public OrderResultDTO rejectOrder(@NotNull String patientOrderId,  @NotNull String patientSampleId, @NotNull String orderResultId) {
+		var orderResult = orderResultRepository
+				.findByIdAndOrder(patientOrderId, patientSampleId, orderResultId)
+				.orElseThrow(() -> new EntityNotFoundException(OrderResult.class));	
+		orderResult.setState(OrderStatus.REJECTED);
 		return modelMapper
 				.map(orderResultRepository.saveAndFlush(orderResult), OrderResultDTO.class);
 	}
@@ -165,6 +191,7 @@ public class OrderResultService {
 			String surname, 
 			String personalIdentificationNumber, 
 			String orderIdentification,
+			String laboratoryTest,
 			LocalDate dateOfBirthFrom,
 			LocalDate dateOfBirthTo,
 			LocalDate fromOrderDate,
@@ -187,11 +214,19 @@ public class OrderResultService {
 		patientOrder.setOrderIdentificationCode(orderIdentification);
 		
 		var patientSample = new PatientSample(patientOrder);
+
+		
 		
 		var orderResult = new OrderResult();
+		if (laboratoryTest!=null) {
+			var labTest = new LaboratoryTest();
+			labTest.setId(laboratoryTest);
+			orderResult.setLaboratoryTest(labTest);
+		}
 		orderResult.setSample(patientSample);
 		orderResult.setTatMode(tatMode);
-		orderResult.setState(labTestOrderStatus);
+		
+		
 		
 		var page = PageRequest.of(
 				pageNumber,
@@ -205,6 +240,7 @@ public class OrderResultService {
 						dateOfBirthTo,
 						fromOrderDate,
 						toOrderDate,
+						labTestOrderStatus,
 						Example.of(orderResult, orderResultMatcher)),
 						page)
 				.map(obj -> modelMapper.map(obj, ListOrderResultDTO.class));
@@ -216,21 +252,33 @@ public class OrderResultService {
 			LocalDate dateOfBirthTo,
 			LocalDate orderDateFrom,
 			LocalDate orderDateTo,
+			OrderStatus labTestOrderStatus,
 			Example<OrderResult> exmpl){
 		return (root, query, builder) ->{
 			List<Predicate> predicates = new ArrayList<>();
-			if (dateOfBirthFrom!=null) predicates.add(builder.greaterThanOrEqualTo(root.join("sample").join("order").join("patient").get("dateOfBirth"), dateOfBirthFrom));
-			if (dateOfBirthTo!=null) predicates.add(builder.lessThanOrEqualTo(root.join("sample").join("order").join("patient").get("dateOfBirth"), dateOfBirthTo));
-			if (orderDateFrom!=null) predicates.add(builder.greaterThanOrEqualTo(root.join("sample").join("order").get("orderDate"), orderDateFrom));
-			if (orderDateTo!=null) predicates.add(builder.lessThanOrEqualTo(root.join("sample").join("order").get("orderDate"), orderDateTo));
-			predicates.add(QueryByExamplePredicateBuilder.getPredicate(root, builder, exmpl));
 			if (Long.class != query.getResultType()) {
-				root.fetch("laboratoryTest");
-				var order=root.fetch("sample").fetch("order");
-				order.fetch("patient");
-				order.fetch("orderingUnit", JoinType.LEFT);
-				//powinienenm dodac do wszystkich JoinType.LEFT inaczej bedzie wybierac sumarycznie wartosci nie null
-			}
+				root.getJoins().clear();
+				root.fetch("laboratoryTest", JoinType.LEFT);
+				var s=root.fetch("patientSample", JoinType.LEFT);
+				s.fetch("specimentType", JoinType.LEFT);
+				var o=s.fetch("order", JoinType.LEFT);
+				o.fetch("patient", JoinType.LEFT);
+				o.fetch("orderingUnit", JoinType.LEFT);
+				
+				}
+			if (dateOfBirthFrom!=null) predicates.add(builder.greaterThanOrEqualTo(root.get("patientSample.order.patient.dateOfBirth"), dateOfBirthFrom));
+			if (dateOfBirthTo!=null) predicates.add(builder.lessThanOrEqualTo(root.get("patientSample.order.patient.dateOfBirth"), dateOfBirthTo));
+			if (orderDateFrom!=null) predicates.add(builder.greaterThanOrEqualTo(root.get("patientSample.order.orderDate"), orderDateFrom));
+			if (orderDateTo!=null) predicates.add(builder.lessThanOrEqualTo(root.get("patientSample.order.orderDate"), orderDateTo));
+			if (orderDateTo!=null) predicates.add(builder.lessThanOrEqualTo(root.get("patientSample.order.orderDate"), orderDateTo));
+			if (labTestOrderStatus!=null) predicates.add(builder.equal(root.get("labTestOrderStatus"), labTestOrderStatus));
+	
+			
+			predicates.add(QueryByExamplePredicateBuilder.getPredicate(root, builder, exmpl));
+			//root.getJoins().stream().forEach(obj -> obj.));
+			
+			
+			
 			return builder.and(predicates.toArray(new Predicate[predicates.size()]));
 		};
 		

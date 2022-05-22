@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 import base.DTO.baza1.LaboratoryTestDTO.ListLaboratoryTestDTO;
 import base.DTO.baza1.OrdersDTO.ListPatientOrderDTO;
+import base.DTO.baza1.PatientSampleDTO.SimplePatientSampleDTO;
+import base.Model.baza1.OrderStatus;
 import base.Model.baza1.TatMode;
 
 public class ListOrderResultDTO {
@@ -22,7 +24,11 @@ public class ListOrderResultDTO {
 	
 	private ListLaboratoryTestDTO laboratoryTest;
 	
+	private SimplePatientSampleDTO sample;
+	
 	private ListPatientOrderDTO order;
+	
+	private OrderStatus labTestOrderStatus;
 
 	public String getId() {
 		return Id;
@@ -87,5 +93,25 @@ public class ListOrderResultDTO {
 	public void setOrder(ListPatientOrderDTO order) {
 		this.order = order;
 	}
+
+	public SimplePatientSampleDTO getSample() {
+		return sample;
+	}
+
+	public void setSample(SimplePatientSampleDTO sample) {
+		this.sample = sample;
+	}
+
+	public OrderStatus getLabTestOrderStatus() {
+		return labTestOrderStatus;
+	}
+
+	public void setLabTestOrderStatus(OrderStatus labTestOrderStatus) {
+		this.labTestOrderStatus = labTestOrderStatus;
+	}
+
+	
+	
+	
 
 }

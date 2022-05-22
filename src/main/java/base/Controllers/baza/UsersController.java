@@ -108,5 +108,16 @@ public class UsersController {
 		userTenantService.updateUserTenantRole(updateUserTenantRoleDTO);
 		return new ResponseEntity<Object>(updateUserTenantRoleDTO, HttpStatus.OK);
 	}
+	
+	@PutMapping(
+			value = "/userTenants/{userTenantId}/acceptInvitation",
+			produces = MediaType.APPLICATION_JSON_VALUE
+			)
+	public @ResponseBody  ResponseEntity<Object> acceptInvite(@PathVariable String userTenantId) {
+		
+		return new ResponseEntity<Object>(userTenantService.acceptInvitation(userTenantId), HttpStatus.OK);
+	}
+	
+	
 
 }

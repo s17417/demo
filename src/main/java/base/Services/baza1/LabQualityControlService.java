@@ -14,17 +14,22 @@ import org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import base.DTO.baza1.OrdersDTO.LabQualityControlDTO;
+import base.DTO.baza1.PatientSampleDTO.SimpleControlSampleDTO;
+import base.Model.baza1.ControlSample;
 import base.Model.baza1.LabQualityControl;
+import base.Repository.Baza1Repository.ControlSampleRepository;
 import base.Repository.Baza1Repository.LabQualityControlRepository;
-import base.Services.baza1.PatientOrderService.SortConstants;
 import base.Utils.Exceptions.EntityNotFoundException;
 
 @Service
 public class LabQualityControlService {
 	
 	private LabQualityControlRepository labQualityControlRepository;
+	
+	private ControlSampleRepository controlSampleRepository;
 	
 	private ModelMapper modelMapper;
 	
@@ -44,8 +49,11 @@ public class LabQualityControlService {
 		}
 	}
 	
-	public LabQualityControlService(LabQualityControlRepository labQualityControlRepository, ModelMapper modelMapper) {
+	
+	public LabQualityControlService(LabQualityControlRepository labQualityControlRepository,
+			ControlSampleRepository controlSampleRepository, ModelMapper modelMapper) {
 		this.labQualityControlRepository = labQualityControlRepository;
+		this.controlSampleRepository = controlSampleRepository;
 		this.modelMapper = modelMapper;
 	}
 
@@ -110,6 +118,30 @@ public class LabQualityControlService {
 	
 	public void delete(@NotNull String id) {
 		labQualityControlRepository.deleteById(id);
+	}
+	
+	@Transactional(value = "laboratoryTransactionManager")
+	public SimpleControlSampleDTO createSample(
+			@NotNull String controlOrderId,
+			@NotNull SimpleControlSampleDTO controlSampleDTO
+			) throws EntityNotFoundException {
+		var controlOrder = labQualityControlRepository
+				.findById(controlOrderId)
+				.orElseThrow(() -> new EntityNotFoundException(LabQualityControl.class));		
+		var controlSample = new ControlSample(controlOrder);
+		modelMapper.map(controlSampleDTO, controlSample);
+		controlSample = controlSampleRepository.saveAndFlush(controlSample);
+		return modelMapper.map(controlSample, SimpleControlSampleDTO.class);
+	}
+	
+	public List<SimpleControlSampleDTO> getSamples(
+			@NotNull String controlOrderId
+			) throws EntityNotFoundException {
+		var controlSamples = controlSampleRepository.findAllByOrderId(controlOrderId);
+		return controlSamples
+				.stream()
+				.map(obj -> modelMapper.map(obj, SimpleControlSampleDTO.class))
+				.collect(Collectors.toList());
 	}
 
 }

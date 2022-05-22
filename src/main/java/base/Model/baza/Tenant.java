@@ -56,7 +56,7 @@ public class Tenant extends AbstractAuditableObject<String> {
 			orphanRemoval = true)
 	private Set<UsersTenantRole> usersTenantRole=new HashSet<>();
 	
-	@ManyToMany
+	@ManyToMany(cascade = {CascadeType.REMOVE,CascadeType.PERSIST, CascadeType.MERGE})
 	@JoinTable(name = "TenantInvitation",
 			joinColumns = @JoinColumn(name= "tenantId"),
 			inverseJoinColumns = @JoinColumn(name="invitationId")

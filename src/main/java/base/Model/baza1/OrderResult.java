@@ -1,5 +1,10 @@
 package base.Model.baza1;
 
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -58,19 +63,23 @@ public class OrderResult extends LabTestOrder<PatientSample> {
 	public PatientSample getSample() {
 		return patientSample;
 	}
-	
-	
-	/*public PatientOrder getOrder() {
-		return order;
+
+	@Override
+	public Set<? extends AbstractAnalyteResult<?, ?>> createAnalyteResults() {
+			
+			return this.getLaboratoryTest()==null ? new HashSet<>() :
+				this.getLaboratoryTest().getMethods()
+				.stream()
+				.filter(m-> m.getIsActive())
+				.map(obj ->obj.createAnalyteResult(this))
+				.filter(Optional::isPresent)
+				.map( obj -> obj.get())
+				.collect(Collectors.toSet());
 	}
-
-	public void setOrder(@NotNull @Valid PatientOrder order) {
-		if (order == null) return;
-		this.order = order;
-		order.getLabTestOrders().add(this);
-		
-	}*/
-
+	
+	
+	
+	
 	
 }
 

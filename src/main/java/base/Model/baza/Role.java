@@ -26,7 +26,7 @@ public enum Role {
 	 * Basic tenant user, with basic rights to modify, add data.
 	 * No ability to sign result or delete data
 	 */
-	SPECIFIC_DATABASE_TECHNICHAN,
+	SPECIFIC_DATABASE_TECHNICIAN,
 	
 	/**
 	 * Basic tenant user, with basic rights to modify, add data.

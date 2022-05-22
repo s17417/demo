@@ -7,7 +7,9 @@ import java.util.Optional;
 public enum ResultType implements IResultTypeAssociationCreator {
 	
 	QUALITATIVE_ANALYTE_RESULT(TextAnalyteResult.class),
-	QUANTITATIVE_ANALYTE_RESULT(QuantitativeAnalyteResult.class);
+	QUANTITATIVE_ANALYTE_RESULT(QuantitativeAnalyteResult.class),
+	QUANTITATIVE_CONTROL_TARGET_ANALYTE_RESULT(null),
+	QUALITATIVE_CONTROL_TARGET_ANALYTE_RESULT(null);
 	
 	private Class<?> value;
 

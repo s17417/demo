@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import base.DTO.DTOObjectConstans;
+import base.DTO.baza.UpdateUserTenantRoleDTO;
 import base.DTO.baza.UserSignedTenantDTO;
 import base.DTO.baza.UserTenantRoleDTO;
 import base.Model.baza.Role;
@@ -79,28 +80,49 @@ public class UserTenantService {
 	public UserTenantRoleDTO updateUserTenantRole(UserTenantRoleDTO updateUserTenantRoleDTO) {
 		var tenantName=((JwtAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getTenant();
 		var tenant=tenantRepository.findByName(tenantName);
-		var userTenantRole = usersTenantRoleRepository.findById(updateUserTenantRoleDTO.getId());
+		var userTenantRole = usersTenantRoleRepository.findById(updateUserTenantRoleDTO.getId()).orElseThrow(() -> new EntityNotFoundException(UsersTenantRole.class));
 		
-		if (userTenantRole.isEmpty() || !tenant.getUsersTenantRole().contains(userTenantRole.get())) 
+		if (!tenant.getUsersTenantRole().contains(userTenantRole)) 
 			throw new IllegalArgumentException("Relation N/A or no such user");
 		
-		if (userTenantRole.get().getRole().equals(Role.SPECIFIC_DATABASE_ADMIN)&&!updateUserTenantRoleDTO.getRole().equals(Role.SPECIFIC_DATABASE_ADMIN.name()) ) {
+		if (userTenantRole.getRole().equals(Role.SPECIFIC_DATABASE_ADMIN)&&!updateUserTenantRoleDTO.getRole().equals(Role.SPECIFIC_DATABASE_ADMIN.name()) ) {
 		List<UsersTenantRole> admins = tenant.getUsersTenantRole()
 				.stream()
 				.filter(e -> e.getRole().equals(Role.SPECIFIC_DATABASE_ADMIN))
 				.collect(Collectors.toList());
-		if (admins.size()<2 && admins.contains(userTenantRole.get()))
+		if (admins.size()<2 && admins.contains(userTenantRole))
 			throw new IllegalArgumentException("There must be at least 1 Admin relation");
 		}
 		
-		modelMapper.getTypeMap(UserTenantRoleDTO.class, UsersTenantRole.class, DTOObjectConstans.UPDATE.name()).map(updateUserTenantRoleDTO, userTenantRole.get());	
+		modelMapper.getTypeMap(UserTenantRoleDTO.class, UsersTenantRole.class, DTOObjectConstans.UPDATE.name()).map(updateUserTenantRoleDTO, userTenantRole);	
 		//userTenantRole.get().setRole(Role.valueOf(Role.class, updateUserTenantRoleDTO.getRole()));
-		var updatedObject = usersTenantRoleRepository.saveAndFlush(userTenantRole.get());
-		System.out.println(updatedObject.getCreatedBy());
-		System.out.println(updatedObject.getLastModifiedBy());
+		var updatedObject = usersTenantRoleRepository.saveAndFlush(userTenantRole);
 
 		modelMapper.getTypeMap(UsersTenantRole.class, UserTenantRoleDTO.class).map(updatedObject,updateUserTenantRoleDTO);
 		return updateUserTenantRoleDTO;
+	}
+	
+	@Transactional
+	public UserTenantRoleDTO acceptInvitation(String userTenantId) throws RelationNotFoundException {
+		var userName=((JwtAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getName();
+		var user = userRepository.findByEmail(userName);
+		
+		
+		
+		var userTenantRole = usersTenantRoleRepository.findById(userTenantId).orElseThrow(() -> new RelationNotFoundException(Users.class,Tenant.class));
+		if (!user.getUsersTenantRole().contains(userTenantRole)) throw new RelationNotFoundException(Users.class,Tenant.class);
+		userTenantRole.setRole(Role.SPECIFIC_DATABASE_VISITOR);
+		return modelMapper.getTypeMap(UsersTenantRole.class, UserTenantRoleDTO.class).map(usersTenantRoleRepository.saveAndFlush(userTenantRole));	
+	}
+	
+	public void deleteUserTenant(String userTenantId) throws EntityNotFoundException{
+		var userName=((JwtAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getName();
+		var user = userRepository.findByEmail(userName);
+		var utr = usersTenantRoleRepository.findById(userTenantId).orElseThrow(() -> new EntityNotFoundException(UsersTenantRole.class));
+		
+		if (user.getUsersTenantRole().stream().anyMatch(obj -> obj.getTenant().equals(utr.getTenant()))) 
+			usersTenantRoleRepository.delete(utr);
+		else throw new IllegalArgumentException("Cant, remove itself or relation N/A");
 	}
 	
 	public List<Role> getRoles(){

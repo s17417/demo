@@ -27,6 +27,7 @@ import base.DTO.baza1.OrdersDTO.ListPatientOrderDTO;
 import base.DTO.baza1.OrdersDTO.PatientOrderDTO;
 import base.DTO.baza1.PatientSampleDTO.SimplePatientSampleDTO;
 import base.DTO.baza1.labTestOrderDTO.OrderResultWithResultListDTO;
+import base.Model.baza1.LaboratoryTest;
 import base.Model.baza1.OrderingUnit;
 import base.Model.baza1.Patient;
 import base.Model.baza1.PatientOrder;

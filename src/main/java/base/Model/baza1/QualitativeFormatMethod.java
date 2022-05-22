@@ -2,6 +2,7 @@ package base.Model.baza1;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.ElementCollection;
@@ -10,6 +11,8 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.envers.Audited;
+
+import base.DTO.baza1.AnalyteResultDTO.QualitativeAnalyteResultDTO;
 
 @Audited
 @Entity
@@ -44,11 +47,16 @@ public class QualitativeFormatMethod extends Method {
 		this.resultTemplates.addAll(resultTemplates);
 	}
 
-	/*@Override
-	protected <X extends AbstractAnalyteResult<?, ?>> X create(LabTestOrder<?> laboratoryTest) {
-		//AbstractAnalyteResult<?, Method<String>> g = 
-		return (X) new TextAnalyteResult(laboratoryTest,this);
-	}*/
+	@Override
+	public  Optional<TextAnalyteResult> createAnalyteResult(LabTestOrder<?> labTestOrder) {
+		return Optional.ofNullable(new TextAnalyteResult(labTestOrder, this));
+	}
+
+	@Override
+	public  Optional<ControlTextAnalyteResult> creatControlTargetResult(LabTestOrder<?> labTestOrder) {
+		return Optional.ofNullable(new ControlTextAnalyteResult(labTestOrder, this));
+	}
+
 
 	
 

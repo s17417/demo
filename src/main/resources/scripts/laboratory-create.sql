@@ -7,8 +7,11 @@
         cretionTimeStamp datetime(6),
         lastModifiedBy varchar(60),
         updateTimeStamp datetime(6),
-        NumberResult decimal(36,18),
         TextResult varchar(255),
+        NumberResult decimal(36,18),
+        lowerLimit decimal(19,2),
+        standardDeviation decimal(19,2),
+        upperLimit decimal(19,2),
         labTestOrder_Id varchar(60),
         method_Id varchar(60),
         primary key (Id)
@@ -25,8 +28,8 @@
         updateTimeStamp datetime(6),
         labTestOrder_Id varchar(60),
         method_Id varchar(60),
-        TextResult varchar(255),
         NumberResult decimal(36,18),
+        TextResult varchar(255),
         primary key (Id, REV)
     ) engine=InnoDB;
 
@@ -93,6 +96,7 @@
         description varchar(255),
         name varchar(180),
         shortName varchar(30),
+        specimentType_Id varchar(60) not null,
         primary key (Id)
     ) engine=InnoDB;
 
@@ -108,7 +112,18 @@
         description varchar(255),
         name varchar(180),
         shortName varchar(30),
+        specimentType_Id varchar(60),
         primary key (Id, REV)
+    ) engine=InnoDB;
+
+    create table LaboratoryTestHistory (
+       updateTimeStamp varchar(255) not null,
+        cretionTimeStamp datetime(6),
+        description varchar(255),
+        name varchar(180),
+        shortName varchar(30),
+        laboratoryTest_Id varchar(60) not null,
+        primary key (laboratoryTest_Id, updateTimeStamp)
     ) engine=InnoDB;
 
     create table LabQualityControl (
@@ -157,7 +172,6 @@
         cretionTimeStamp datetime(6),
         lastModifiedBy varchar(60),
         updateTimeStamp datetime(6),
-        collectionDate datetime(6),
         labTestOrderStatus varchar(255) not null,
         resultDescription varchar(512),
         tatMode varchar(255) not null,
@@ -173,7 +187,6 @@
         cretionTimeStamp datetime(6),
         lastModifiedBy varchar(60),
         updateTimeStamp datetime(6),
-        collectionDate datetime(6),
         labTestOrderStatus varchar(255),
         resultDescription varchar(512),
         tatMode varchar(255),
@@ -190,7 +203,7 @@
         lastModifiedBy varchar(60),
         updateTimeStamp datetime(6),
         isActive bit not null,
-        analyticalMethodType varchar(180),
+        analyticalMethodType varchar(180) not null,
         printable bit default true,
         decimalFormat varchar(36),
         limitOfDetection decimal(36,18),
@@ -233,11 +246,11 @@
         cretionTimeStamp datetime(6),
         lastModifiedBy varchar(60),
         updateTimeStamp datetime(6),
-        city varchar(255),
-        country varchar(255),
-        postalCode varchar(255),
-        state varchar(255),
-        street varchar(255),
+        city varchar(100),
+        country varchar(100),
+        postalCode varchar(15),
+        state varchar(100),
+        street varchar(100),
         name varchar(255),
         shortName varchar(30),
         primary key (Id)
@@ -251,11 +264,11 @@
         cretionTimeStamp datetime(6),
         lastModifiedBy varchar(60),
         updateTimeStamp datetime(6),
-        city varchar(255),
-        country varchar(255),
-        postalCode varchar(255),
-        state varchar(255),
-        street varchar(255),
+        city varchar(100),
+        country varchar(100),
+        postalCode varchar(15),
+        state varchar(100),
+        street varchar(100),
         name varchar(255),
         shortName varchar(30),
         primary key (Id, REV)
@@ -338,7 +351,7 @@
         cretionTimeStamp datetime(6),
         lastModifiedBy varchar(60),
         updateTimeStamp datetime(6),
-        comment varchar(255),
+        comment varchar(4096),
         Patient_Id varchar(60) not null,
         primary key (Id)
     ) engine=InnoDB;
@@ -423,6 +436,17 @@
         primary key (REV, QualitativeFormatMethod_Id, resultTemplates)
     ) engine=InnoDB;
 
+    create table QuantitativeFormatMethod_refferentialRanges (
+       QuantitativeFormatMethod_Id varchar(60) not null,
+        fromAge bigint,
+        gender integer,
+        toAge bigint,
+        valueFrom decimal(19,2),
+        valueTo decimal(19,2),
+        refferentialRanges_ORDER integer not null,
+        primary key (QuantitativeFormatMethod_Id, refferentialRanges_ORDER)
+    ) engine=InnoDB;
+
     create table REVINFO (
        REV integer not null auto_increment,
         REVTSTMP bigint,
@@ -437,9 +461,11 @@
         cretionTimeStamp datetime(6),
         lastModifiedBy varchar(60),
         updateTimeStamp datetime(6),
+        collectionDate datetime(6),
         sampleId varchar(60) not null,
-        labQualityControl_Id varchar(60) not null,
-        patientOrder_Id varchar(60) not null,
+        specimentType_Id varchar(60) not null,
+        patientOrder_Id varchar(60),
+        labQualityControl_Id varchar(60),
         primary key (Id),
         check ((sampleType='PATIENT' AND patientOrder_Id IS NOT NULL AND labQualityControl_Id IS NULL) OR (sampleType='CONTROL' AND labQualityControl_Id IS NOT NULL AND patientOrder_Id IS NULL))
     ) engine=InnoDB;
@@ -453,9 +479,28 @@
         cretionTimeStamp datetime(6),
         lastModifiedBy varchar(60),
         updateTimeStamp datetime(6),
+        collectionDate datetime(6),
         sampleId varchar(255),
-        patientOrder_Id varchar(60),
+        specimentType_Id varchar(60),
         labQualityControl_Id varchar(60),
+        patientOrder_Id varchar(60),
+        primary key (Id, REV)
+    ) engine=InnoDB;
+
+    create table SpecimentType (
+       Id varchar(60) not null,
+        versionTimestamp datetime(6),
+        isActive bit not null,
+        speciment varchar(60) not null,
+        primary key (Id)
+    ) engine=InnoDB;
+
+    create table SpecimentType_AUD (
+       Id varchar(60) not null,
+        REV integer not null,
+        REVTYPE tinyint,
+        isActive bit,
+        speciment varchar(60),
         primary key (Id, REV)
     ) engine=InnoDB;
 
@@ -469,7 +514,7 @@
        add constraint UK_fiqfkklxeqombys4ekliflm47 unique (shortName);
 
     alter table Patient 
-       add constraint UK_9sy3r8nt1bq8e84mqsj7omfth unique (personalIdentificationNumber);
+       add constraint personalIdentificationNumber unique (personalIdentificationNumber);
 
     alter table Phisician 
        add constraint UK_hhhsqecp80pow3qrj66fnkmd7 unique (personalIdentificationNumber);
@@ -502,10 +547,20 @@
        foreign key (REV) 
        references REVINFO (REV);
 
+    alter table LaboratoryTest 
+       add constraint FKbtrkm84momkbq5lqc8b0gi2ay 
+       foreign key (specimentType_Id) 
+       references SpecimentType (Id);
+
     alter table LaboratoryTest_AUD 
        add constraint FKbbqpm2hy4c1t9qh27ocqnc8ki 
        foreign key (REV) 
        references REVINFO (REV);
+
+    alter table LaboratoryTestHistory 
+       add constraint FK1iw9ydv52bxcevjjlwyhhrwm5 
+       foreign key (laboratoryTest_Id) 
+       references LaboratoryTest (Id);
 
     alter table LabQualityControl 
        add constraint FK6bfgd24ei1djon6txiukomg60 
@@ -667,17 +722,32 @@
        foreign key (REV) 
        references REVINFO (REV);
 
+    alter table QuantitativeFormatMethod_refferentialRanges 
+       add constraint FKakkpqci9i3lrq4ql9vyxl03lh 
+       foreign key (QuantitativeFormatMethod_Id) 
+       references Method (Id);
+
     alter table Sample 
-       add constraint FK5urc15yfju1sedjs71hx3vwhx 
-       foreign key (labQualityControl_Id) 
-       references LabQualityControl (Id);
+       add constraint FKtcs6g9uujpbeq9eaui0n1qy7a 
+       foreign key (specimentType_Id) 
+       references SpecimentType (Id);
 
     alter table Sample 
        add constraint FKru88e978gj24srmr5bhe11ci7 
        foreign key (patientOrder_Id) 
        references PatientOrder (Id);
 
+    alter table Sample 
+       add constraint FK5urc15yfju1sedjs71hx3vwhx 
+       foreign key (labQualityControl_Id) 
+       references LabQualityControl (Id);
+
     alter table Sample_AUD 
        add constraint FK7c3l5hxfww0tdps18v0amndd1 
+       foreign key (REV) 
+       references REVINFO (REV);
+
+    alter table SpecimentType_AUD 
+       add constraint FK4jh9vuijlnqx2sftathnhptm0 
        foreign key (REV) 
        references REVINFO (REV);
