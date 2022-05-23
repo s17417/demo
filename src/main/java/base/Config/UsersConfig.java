@@ -58,40 +58,6 @@ public class UsersConfig {
 	@Lazy
 	public TenantRepository tenantRepo;
 	
-	/*@EventListener
-    public void appReady(ApplicationReadyEvent event) {
-		if (usersRepo.findByEmail("tomasz")==null) {
-		Users user = new Users();
-		Users user2 = new Users();
-		
-		user.setEmail("1@1.pl");
-		user.setFirstname("tom");
-		//user.setLogin("tomasz");
-		user.setPassword("Game@122W");
-		user.setSurname("gogo");
-		user.setEnabled(true);
-		
-		user2.setEmail("tomasz.polawski@gmail.comdscdsc");
-		user2.setFirstname("tom");
-		user2.setPassword("Game@122W");
-		user2.setSurname("gogo");
-		
-        
-        Tenant tenant = new Tenant();
-        tenant.setDatabseUserName("root");
-        tenant.setDatabasePassword("root");
-        tenant.setName("default_schema1");
-       // tenant.setDatabasePassword(IdGenerator.getId().toString());
-        UsersTenantRole usr = new UsersTenantRole(user,tenant,Role.SPECIFIC_DATABASE_TECHNICHAN);
-        //UsersTenantRole usr1 = new UsersTenantRole(user,tenant,Role.APP_ADMIN);
-        //usrRepo.saveAll(Arrays.asList(usr));
-        usersRepo.save(user2);
-        
-        System.out.println(usrRepo.findByUsersEmailAndTenantName("1@1.pl", "default_schema1"));
-        System.out.println(usrRepo.findByUsersEmailAndTenantName("tomasz.polawski@gmail.com", "default_schema1"));
-		}
-    }*/
-	
 	@Bean(name="usersEntityManagerFactory")
 	@Primary
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory(EntityManagerFactoryBuilder builder, @Qualifier("usersDataSource")DataSource dataSource) {

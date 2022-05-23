@@ -45,16 +45,6 @@ public class LaboratoryConfig {
 	@Autowired
 	public DataSourceBasedMultiTenantConnectionProviderImpl dataSourceBasedMultiTenantConnectionProviderImpl;
 	
-	/*@EventListener
-    public void appReady(ApplicationReadyEvent event) {
-		Patient patient = new Patient();
-		patient.setName("tomasz");
-		patient.setSurname("game");
-        patientRepo.save(patient);
-    }*/
-	
-	 
-	
 	@Bean(name="laboratoryEntityManagerFactory")
 	   public LocalContainerEntityManagerFactoryBean entityManagerFactory(EntityManagerFactoryBuilder builder, @Qualifier("laboratoryDataSource") DataSource dataSource) {		
 		LocalContainerEntityManagerFactoryBean entityManagerFactory= builder
@@ -85,8 +75,6 @@ public class LaboratoryConfig {
         dataSource.setUrl("jdbc:mysql://vifon41.hopto.org:3306/empty"); //uncomment on production
         dataSource.setUsername("root");
         dataSource.setPassword("Lolita41bobo!");
-        
-        
         return dataSource;
     }
 	
@@ -101,11 +89,11 @@ public class LaboratoryConfig {
 	  private Properties additionalProperties() {
 	        Properties properties = new Properties();
 	        
-	        properties.setProperty("hibernate.hbm2ddl.delimiter",";");
-	        properties.setProperty("hibernate.hbm2dll.create_namespaces", "true");
-	        properties.setProperty("javax.persistence.schema-generation.scripts.action", "drop-and-create");
-	        properties.setProperty("javax.persistence.schema-generation.scripts.create-target", "laboratory-create.sql");
-	        properties.setProperty("javax.persistence.schema-generation.scripts.drop-target", "laboratory-drop.sql");
+	        //properties.setProperty("hibernate.hbm2ddl.delimiter",";");
+	        //properties.setProperty("hibernate.hbm2dll.create_namespaces", "true");
+	        //properties.setProperty("javax.persistence.schema-generation.scripts.action", "drop-and-create");
+	        //properties.setProperty("javax.persistence.schema-generation.scripts.create-target", "laboratory-create.sql");
+	        //properties.setProperty("javax.persistence.schema-generation.scripts.drop-target", "laboratory-drop.sql");
 	        
 	        properties.setProperty(Environment.HBM2DDL_AUTO, "none");
 	        properties.setProperty(Environment.DIALECT, "org.hibernate.dialect.MySQL8Dialect");
@@ -113,8 +101,8 @@ public class LaboratoryConfig {
 	        properties.put(Environment.MULTI_TENANT, MultiTenancyStrategy.DATABASE);
 	        properties.put(Environment.MULTI_TENANT_CONNECTION_PROVIDER, dataSourceBasedMultiTenantConnectionProviderImpl);
 	        properties.put(Environment.MULTI_TENANT_IDENTIFIER_RESOLVER, currentTenantIdentifierResolverImpl);
-	        properties.put(Environment.FORMAT_SQL, true);
-	        properties.put(Environment.SHOW_SQL, true);
+	        //properties.put(Environment.FORMAT_SQL, true);
+	        //properties.put(Environment.SHOW_SQL, true);
 		    properties.put(Environment.CONNECTION_HANDLING, PhysicalConnectionHandlingMode.DELAYED_ACQUISITION_AND_RELEASE_AFTER_TRANSACTION);
 		    //properties.put(Environment.POOL_SIZE, 15);
 		    properties.put(Environment.USE_QUERY_CACHE,  true);

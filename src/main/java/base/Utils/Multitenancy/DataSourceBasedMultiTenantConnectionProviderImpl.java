@@ -47,15 +47,12 @@ public class DataSourceBasedMultiTenantConnectionProviderImpl
 	
 	@Override
 	protected DataSource selectDataSource(String tenantIdentifier) {
-		if(tenantIdentifier.equals(TokenConstant.EMPTY_TOKEN_TENANT_FIELD)) 
+		if(tenantIdentifier.equals(TokenConstant.EMPTY_TOKEN_TENANT_FIELD.getValue())) 
 			return selectAnyDataSource();
-		//if(map.containsKey(tenantIdentifier)) return map.get(tenantIdentifier);
 		Tenant tenant=tenantDetailServiceImpl.getTenantByName(tenantIdentifier);
 		if (tenant==null)return selectAnyDataSource();
-	    //return dataSourceGenerator.createTenantDataSource(tenant);
 		var conn= dataSourceGenerator.createTenantDataSource(tenant);
-		//map.put(tenantIdentifier, conn);
-		return conn;
+			return conn;
 	}	
 
 	 public DataSource dataSource() {
