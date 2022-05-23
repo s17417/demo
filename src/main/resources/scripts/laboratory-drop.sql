@@ -1,7 +1,7 @@
 
     alter table AbstractAnalyteResult 
        drop 
-       foreign key FK8bmge3b9exphdy4b6h2w3t2in;
+       foreign key FK8bmge3b9exphdy4b6h2w3t2in; 
 
     alter table AbstractAnalyteResult 
        drop 

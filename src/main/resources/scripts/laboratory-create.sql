@@ -15,7 +15,7 @@
         labTestOrder_Id varchar(60),
         method_Id varchar(60),
         primary key (Id)
-    ) engine=InnoDB;
+    ) engine=InnoDB; 
 
     create table AbstractAnalyteResult_AUD (
        Id varchar(60) not null,
